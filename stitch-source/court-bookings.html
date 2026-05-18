@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ace &amp; Clay - Court Reservation Status</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#edeeef",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "primary": "#00685d",
+                        "background": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#7c2e19",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d1f041",
+                        "on-secondary-fixed": "#181e00",
+                        "on-primary-fixed-variant": "#005048",
+                        "outline-variant": "#bcc9c6",
+                        "primary-container": "#008376",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3c0800",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed": "#00201c",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#6fd8c8",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed": "#ffdbd2",
+                        "tertiary-container": "#b65a41",
+                        "secondary-container": "#ceed3e",
+                        "tertiary": "#97422b",
+                        "on-primary-container": "#f4fffb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed-dim": "#6fd8c8",
+                        "on-secondary-container": "#596a00",
+                        "primary-fixed": "#8cf5e4",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#3d4947",
+                        "secondary-fixed-dim": "#b5d321",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#006a60",
+                        "secondary": "#556500",
+                        "outline": "#6d7a77",
+                        "on-secondary-fixed-variant": "#3f4c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "xl": "64px",
+                        "margin-mobile": "16px",
+                        "lg": "40px",
+                        "xs": "4px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[style*="FILL' 1"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa; /* background */
+            color: #191c1d; /* on-background */
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md bg-background text-on-background min-h-screen">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 z-50 fixed left-0 top-0 bg-surface-container-low shadow-md py-md gap-base">
+<!-- Header -->
+<div class="px-6 mb-8 flex flex-col items-center">
+<div class="w-16 h-16 rounded-full overflow-hidden mb-4 shadow-sm border border-outline-variant/30">
+<img alt="Ace &amp; Clay Club Logo" class="w-full h-full object-cover" data-alt="A stylized logo for a modern tennis club, featuring crossed tennis rackets and a tennis ball in bright yellow against a deep court green background, reflecting a premium and energetic sports brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYv4waXISK7ivs9hhJ1wZ1xmRq8NC_maGTpIMRrOZpGxjOGvNVsDQljaVhbbzunosI_WO0QBita6JhZEz-PlCwcoXq5iy_ixu1x_99SIbvHsO4bMDQkfL9sNDnihC3aj2NeALm1St-rPVGFDsFQru287aOY1ibUcaMlQb6qG1IHW9kTvWfFmLHin7wVd0YXZZ0qmUlU6dE81cgpyu8PGfe1Yg759mrwBD1KbcdgC7h3QGYrfHaSYvTP4ymKVZ2l2Y2lBVcV06cXSRB"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary text-center">Ace &amp; Clay</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-center mt-1">Tennis Club Management</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-2 font-label-md text-label-md">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Schedule
+            </a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 mx-2 font-bold scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="sports_tennis" style="font-variation-settings: 'FILL' 1;">sports_tennis</span>
+                Courts
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Members
+            </a>
+</div>
+<!-- CTA -->
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                Book a Court
+            </button>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 h-16 z-40 shadow-sm bg-surface border-b border-outline-variant/30 flex justify-between items-center px-margin-desktop w-full md:ml-64 md:max-w-[calc(100%-16rem)]">
+<!-- Left / Search -->
+<div class="flex items-center flex-1">
+<div class="relative w-full max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant/50 rounded-full font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search courts, members, or bookings..." type="text"/>
+</div>
+<!-- Mobile Brand (hidden on desktop) -->
+<div class="md:hidden flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary">Ace &amp; Clay</span>
+</div>
+</div>
+<!-- Right / Actions -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 hover:opacity-80 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200 hover:opacity-80 active:scale-95">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2">
+<img alt="Member Profile Avatar" class="w-full h-full object-cover" data-alt="A portrait of an energetic young adult woman with short hair, wearing a sleek sporty white polo shirt, set against a bright, airy background indicative of a sunny tennis club. High-key lighting, vibrant colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATTMKvBo_U2FW9IU0pFFGPl5MIGn8o4d0xvpLbiPpg1QWDRiaKi6zWzfDvilWUYe7Zfb1duW-u1TjFQMYXDz4hp0ZR_VmNGqUIiO-5w8z1BIf_9our93Kvvuqqr7qTww92gqnr3G6zgTKfzkN26sFwEicGdZ6p63rVitG-gvti-mIVwY-e2Zq6cMt5dW55SAx8ThItFFUiSsLn9WMRNkplC-p_LR7S1sUBheU2CPBfPwgqf6yemxAttr3cnkwQcx_-lamxFmB-43-O"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="pt-24 pb-12 px-margin-mobile md:px-margin-desktop md:ml-64 min-h-screen flex flex-col gap-lg">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Court Reservations</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Weekly availability overview for major club facilities.</p>
+</div>
+<!-- Mobile Search (visible only on mobile) -->
+<div class="relative w-full md:hidden mt-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant/50 rounded-full font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search courts..." type="text"/>
+</div>
+<!-- Filters/Date Controls -->
+<div class="flex items-center gap-3 bg-surface border border-outline-variant/30 rounded-lg p-1 shadow-sm mt-4 md:mt-0 self-start md:self-auto">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="px-4 font-label-md text-label-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">calendar_month</span>
+                    Oct 23 - Oct 29
+                </div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-md transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid for Courts -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Jamsil Sports Complex (Featured / Largest) -->
+<div class="lg:col-span-12 bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden border-t-4 border-secondary-container">
+<div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start">
+<!-- Image/Info Area -->
+<div class="w-full md:w-1/3 flex flex-col gap-4">
+<div class="w-full h-48 rounded-lg overflow-hidden relative">
+<img alt="Jamsil Court" class="w-full h-full object-cover" data-alt="A wide shot of an immaculate, professional hard tennis court outdoors. The court is bright blue with crisp white lines, surrounded by a deep court green perimeter. The scene is bathed in brilliant midday sunlight, conveying high energy and premium quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb8NIq1IP87OmAGjeBr8RaS5HiSr86WC5mZzh-_pPyqkIL-d_p5wpV_brR5GBKNndyqgCkfRJCYXRxaRPE3yHS3KcCl13EhwJ--6wTc1JI_3HBxOJPIUmCxWdPRV4F4F_pWf7pMs3CwGwQj1gVDNeDpxnMpquLy3gmyIRJEaw720Z6wn6CWOXhwPpSi1kmKLbTLuRcDstm2BfWPSy8DTIcbKrOEWQe2ATNQKY-CmzQ7YOacsT0LcZ7HqBDBIIXCly-mHpG2QP0gZE1"/>
+<div class="absolute top-3 left-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full font-label-sm text-label-sm text-primary flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 14px;">verified</span> Premier
+                            </div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Jamsil Sports Complex</h3>
+<span class="bg-surface-container px-2 py-0.5 rounded-full font-label-sm text-label-sm text-on-surface-variant">Hard x4</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">location_on</span> Songpa-gu, Seoul
+                            </p>
+<button class="w-full bg-surface border border-primary text-primary hover:bg-primary/5 font-label-md text-label-md py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2">
+                                View Details <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Availability Schedule -->
+<div class="w-full md:w-2/3 flex-1">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-label-md text-label-md text-on-surface">Weekly Overview</h4>
+<div class="flex items-center gap-3 font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-secondary-container"></div> Available</span>
+<span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-surface-variant"></div> Booked</span>
+<span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-tertiary-container"></div> Maintenance</span>
+</div>
+</div>
+<!-- Simple Table Structure -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 font-label-sm text-label-sm text-on-surface-variant">
+<th class="py-3 px-2 font-medium">Time</th>
+<th class="py-3 px-2 font-medium text-center">Mon 23</th>
+<th class="py-3 px-2 font-medium text-center">Tue 24</th>
+<th class="py-3 px-2 font-medium text-center">Wed 25</th>
+<th class="py-3 px-2 font-medium text-center">Thu 26</th>
+<th class="py-3 px-2 font-medium text-center">Fri 27</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant/10 hover:bg-surface-bright transition-colors">
+<td class="py-4 px-2 text-on-surface-variant font-medium">06:00 - 08:00</td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-outline-variant/10 hover:bg-surface-bright transition-colors">
+<td class="py-4 px-2 text-on-surface-variant font-medium">08:00 - 10:00</td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container cursor-not-allowed" title="Maintenance"><span class="material-symbols-outlined" style="font-size: 16px;">build</span></div></td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-4 px-2 text-on-surface-variant font-medium">18:00 - 20:00</td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm cursor-pointer hover:scale-110 transition-transform"><span class="material-symbols-outlined" style="font-size: 16px;">add</span></div></td>
+<td class="py-4 px-2 text-center"><div class="mx-auto w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant cursor-not-allowed" title="Booked"></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Seoul Forest Courts (Standard Card) -->
+<div class="lg:col-span-6 bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden border border-outline-variant/20 flex flex-col hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300">
+<div class="h-32 w-full relative">
+<img alt="Seoul Forest Court" class="w-full h-full object-cover" data-alt="A sunlit clay tennis court surrounded by lush, dense green trees in a park setting. The rich orange hue of the clay contrasts beautifully with the vivid greens of the forest. The lighting is warm, late afternoon, creating long shadows and a calm, inviting atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfGKA1gc-Um8LiH0KHHhaTNcv508a4mDCMwEMGvdHdbySwvQh7C-0IbEemZBZHgbssY2zxlZi8fgJKncFOaPGj-f1vkFfxycoXRDEKDcRzkgDDC1oeHyipEA6nKio_FP1KjccZi9b4TRSJLc4HYZAb1FEljpQqw-6OXs2hDbMw7EIHf9dkYFwKTyoXZEBzm1mbzjBdClWeYRNYYoPm9DBxRAXlrJOM6NUqFQB8V7g_sFb8CoxN6LJkmbL1-hKaQXd7C9fSoRUYSXWy"/>
+<div class="absolute top-0 right-0 p-3">
+<span class="bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full font-label-sm text-label-sm text-on-surface flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span> 4 Slots Open
+                        </span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Seoul Forest Club</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">location_on</span> Seongdong-gu
+                            </p>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded text-xs font-medium text-on-surface-variant uppercase tracking-wide">Clay x2</span>
+</div>
+<div class="mt-4 mb-6 flex-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Next Available</p>
+<div class="flex gap-2 flex-wrap">
+<button class="px-3 py-1.5 border border-outline-variant rounded-full font-label-sm text-label-sm text-on-surface hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors">Today, 18:00</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-full font-label-sm text-label-sm text-on-surface hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors">Tomorrow, 07:00</button>
+</div>
+</div>
+<button class="w-full bg-surface-container-low border border-outline-variant/30 text-on-surface font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container transition-colors">
+                        View Schedule
+                    </button>
+</div>
+</div>
+<!-- Namsan Courts (Standard Card) -->
+<div class="lg:col-span-6 bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden border border-outline-variant/20 flex flex-col hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300">
+<div class="h-32 w-full relative">
+<img alt="Namsan Court" class="w-full h-full object-cover" data-alt="An artificial grass tennis court viewed from an elevated angle. The surface is a bright, synthetic green with pristine white boundary lines. The court looks freshly groomed and is situated in an urban recreational area with modern, clean surroundings. Crisp daylight lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrTAVYoxnSjRNN7j-4-F2eOxJLeYnuQLMG6hEVsr6SSeKa4Zn1WRUwmvXhmxg90t_YhjB6raj46kUd4j42jLU6NNN4Hvq7l9TC7LmahiNIeohkO7lgfbnkWShOST4YdAGkg8A8s0Iu9ZQG8SMXanxoZm6Y9m5PKNW0ddnIVuZF9h3QXOAWXrkqoXQu5vcfnXz98fr7nJCGMZuLIWImzIIhSqOObND0ph9urvpsok58n2-z4gBXUm54tfgm--Cbt1i0HIEPsRWfS6K-"/>
+<div class="absolute top-0 right-0 p-3">
+<span class="bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full font-label-sm text-label-sm text-on-surface flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Maint Today
+                        </span>
+</div>
+</div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Namsan Park Courts</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-outline" style="font-size: 16px;">location_on</span> Jung-gu
+                            </p>
+</div>
+<span class="bg-surface-container px-2 py-1 rounded text-xs font-medium text-on-surface-variant uppercase tracking-wide">Grass x3</span>
+</div>
+<div class="mt-4 mb-6 flex-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Next Available</p>
+<div class="flex gap-2 flex-wrap">
+<button class="px-3 py-1.5 border border-outline-variant rounded-full font-label-sm text-label-sm text-on-surface hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors">Wed, 09:00</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-full font-label-sm text-label-sm text-on-surface hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors">Wed, 11:00</button>
+</div>
+</div>
+<button class="w-full bg-surface-container-low border border-outline-variant/30 text-on-surface font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container transition-colors">
+                        View Schedule
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

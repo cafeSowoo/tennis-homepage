@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="아직도 성장중 로고">
+  <rect width="512" height="512" rx="112" fill="#f7ffe2"/>
+  <circle cx="256" cy="262" r="176" fill="#d7fb69" stroke="#202124" stroke-width="14"/>
+  <path d="M141 248c-11 67 2 135 42 183M345 93c26 52-16 111-92 119 3-50 39-91 92-119Z" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round"/>
+  <path d="M270 193c-36-35-75-45-127-27 31 38 80 50 127 27Z" fill="#8bd449" stroke="#202124" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M297 196c4-43 31-82 86-111 13 64-25 115-86 111Z" fill="#8bd449" stroke="#202124" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M285 193c14 20 24 45 29 73" fill="none" stroke="#202124" stroke-width="11" stroke-linecap="round"/>
+  <path d="M182 343c-41-16-71-50-78-96-8-55 26-102 76-110 49-8 95 27 103 82 7 46-15 88-52 111" fill="none" stroke="#202124" stroke-width="13" stroke-linecap="round"/>
+  <ellipse cx="178" cy="235" rx="64" ry="85" transform="rotate(-11 178 235)" fill="#f37755" stroke="#202124" stroke-width="13"/>
+  <ellipse cx="178" cy="235" rx="43" ry="61" transform="rotate(-11 178 235)" fill="none" stroke="#202124" stroke-width="9"/>
+  <path d="M130 201l87 73M121 234l98-42M141 285l80-103M97 248l136-26M162 315l64-87" fill="none" stroke="#202124" stroke-width="8" stroke-linecap="round"/>
+  <path d="M209 312l53 92" fill="none" stroke="#202124" stroke-width="14" stroke-linecap="round"/>
+  <path d="M247 404l50 75" fill="#f37755" stroke="#202124" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="225" cy="249" r="8" fill="#202124"/>
+  <circle cx="313" cy="240" r="8" fill="#202124"/>
+  <path d="M281 287c24 20 62 8 75-20" fill="none" stroke="#202124" stroke-width="10" stroke-linecap="round"/>
+  <path d="M110 418c94 47 198 47 292 0l22 48c-110 55-226 55-336 0Z" fill="#fff77b" stroke="#202124" stroke-width="12" stroke-linejoin="round"/>
+  <text x="256" y="466" text-anchor="middle" font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif" font-size="40" font-weight="900" fill="#202124">아직도 성장중</text>
+</svg>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ace &amp; Clay - Members Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#edeeef",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "primary": "#00685d",
+                        "background": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#7c2e19",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d1f041",
+                        "on-secondary-fixed": "#181e00",
+                        "on-primary-fixed-variant": "#005048",
+                        "outline-variant": "#bcc9c6",
+                        "primary-container": "#008376",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3c0800",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed": "#00201c",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#6fd8c8",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed": "#ffdbd2",
+                        "tertiary-container": "#b65a41",
+                        "secondary-container": "#ceed3e",
+                        "tertiary": "#97422b",
+                        "on-primary-container": "#f4fffb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed-dim": "#6fd8c8",
+                        "on-secondary-container": "#596a00",
+                        "primary-fixed": "#8cf5e4",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#3d4947",
+                        "secondary-fixed-dim": "#b5d321",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#006a60",
+                        "secondary": "#556500",
+                        "outline": "#6d7a77",
+                        "on-secondary-fixed-variant": "#3f4c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "xl": "64px",
+                        "margin-mobile": "16px",
+                        "lg": "40px",
+                        "xs": "4px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 z-50 fixed left-0 top-0 bg-surface-container-low shadow-md py-md gap-base border-r border-outline-variant/30">
+<div class="px-6 mb-8 flex flex-col items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary font-headline-md shadow-sm">
+                A&amp;C
+            </div>
+<div class="text-center">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Ace &amp; Clay</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tennis Club Management</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 font-label-md text-label-md hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 font-label-md text-label-md hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Schedule
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 font-label-md text-label-md hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>
+                Courts
+            </a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 mx-2 font-bold font-label-md text-label-md scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+                Members
+            </a>
+</div>
+<div class="px-6 mt-auto">
+<button class="w-full bg-secondary-container text-on-secondary-container font-label-md text-label-md py-3 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                Book a Court
+            </button>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 h-16 z-40 md:ml-64 shadow-sm bg-surface flex justify-between items-center px-margin-mobile md:px-margin-desktop">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-bold text-primary hidden md:block">Members Directory</h2>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary md:hidden">Members</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:outline-none focus:ring-0 text-body-md w-64 placeholder-on-surface-variant/50" placeholder="Search members..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden shadow-sm ml-2">
+<img alt="Member Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional woman with dark hair pulled back, wearing a crisp white collared shirt. She has a subtle, confident smile. The background is slightly blurred, suggesting a bright, airy indoor setting with natural light illuminating her face. The image has a clean, modern aesthetic suitable for a high-end corporate or club profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr-Q5palCTwkoBwnQXHfz1Cihv-jcGw-yEwGEo7GIpj2xSi1_DzwykQqjSUXW6eEktgJifLFBzf0gpQHXPml6vLWDvUSNzTHaLsdABXPPeTzbIzqe0tBq9fUwqAhm1sEmXaUl2HcGYL3UnAoUTa1MfikaIX3P3-a4xtucEW3BHzuzNaCR1g-SFL8mJ9BbkQyzbqvEdOtcqS30S3DQm7OUQL6bFajHmqbH_fDcjC9AJxm07Hx7esijGlByuY-0GCKZRXXVQgs6iEUdh"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-16 md:ml-64 p-margin-mobile md:p-margin-desktop bg-background min-h-[calc(100vh-4rem)]">
+<!-- Mobile Search & Filters (Visible only on small screens) -->
+<div class="md:hidden mb-lg flex flex-col gap-4">
+<div class="flex items-center bg-surface rounded-lg px-4 py-3 shadow-sm border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:outline-none w-full text-body-md" placeholder="Search members..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+<button class="whitespace-nowrap px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-sm text-label-sm shadow-sm border border-transparent">All Levels</button>
+<button class="whitespace-nowrap px-4 py-2 bg-surface text-on-surface-variant border border-outline-variant rounded-full font-label-sm text-label-sm shadow-sm">NTRP 3.0-3.5</button>
+<button class="whitespace-nowrap px-4 py-2 bg-surface text-on-surface-variant border border-outline-variant rounded-full font-label-sm text-label-sm shadow-sm">NTRP 4.0-4.5</button>
+<button class="whitespace-nowrap px-4 py-2 bg-surface text-on-surface-variant border border-outline-variant rounded-full font-label-sm text-label-sm shadow-sm">NTRP 5.0+</button>
+</div>
+</div>
+<!-- Desktop Filters & Actions -->
+<div class="hidden md:flex justify-between items-center mb-lg">
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-primary text-on-primary rounded-full font-label-md text-label-md shadow-sm border border-transparent hover:opacity-90 transition-opacity">All Levels</button>
+<button class="px-5 py-2.5 bg-surface text-on-surface border border-outline-variant rounded-full font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-colors">Beginner (1.0-2.5)</button>
+<button class="px-5 py-2.5 bg-surface text-on-surface border border-outline-variant rounded-full font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-colors">Intermediate (3.0-4.0)</button>
+<button class="px-5 py-2.5 bg-surface text-on-surface border border-outline-variant rounded-full font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-colors">Advanced (4.5+)</button>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label-md">
+<span class="material-symbols-outlined">filter_list</span>
+                    More Filters
+                </button>
+</div>
+</div>
+<!-- Members Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Member Card 1 (Featured/Pro) -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-t-4 border-secondary-container overflow-hidden group relative">
+<div class="p-6 pb-4">
+<div class="flex justify-between items-start mb-4">
+<div class="relative">
+<img alt="Sarah Jenkins Portrait" class="w-20 h-20 rounded-full object-cover border-2 border-surface shadow-sm" data-alt="A well-lit portrait of a fit, middle-aged man with short grey hair and a warm smile. He is wearing a dark athletic polo shirt. The background is a soft, out-of-focus tennis court with vibrant green and clay colors visible. The lighting suggests a bright, sunny afternoon. The overall feel is approachable, active, and energetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT5kmya4fBshyQaEtCRvZPIVQMT7yHjFmFtMCyoBx-6cXSTq2ckmig876Qlphby_7yk42-fFsHqBOT72oEywTv_xiOkN1Yhpazrk0GT58pmn5J_I419QPDQVuJfsnEnyyhGTYdYuo-2b7NRgTiXMntqx2aqaGFUYmG_b3SXQYIntD3fZoM5WTp0ppoX6_WWmO0keWfx7hu6ns6aQGijbvKXraBwGp1YgZ8csfYwZ_09QGSF6lUYYI2_IK7ZofGMagj7yxmIZMtBt2A"/>
+<div class="absolute -bottom-1 -right-1 bg-secondary-container text-on-secondary-container w-6 h-6 rounded-full flex items-center justify-center shadow-sm border-2 border-surface" title="Club Champion">
+<span class="material-symbols-outlined text-[14px]">trophy</span>
+</div>
+</div>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm font-bold shadow-sm">
+                            NTRP 5.0
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Marcus Thorne</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Joined 2019 • Mens Singles</p>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Win Rate</div>
+<div class="font-headline-md text-headline-md text-primary">78%</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Matches</div>
+<div class="font-headline-md text-headline-md text-on-surface">42-12</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 p-4 bg-surface-bright flex gap-3">
+<button class="flex-1 bg-surface text-primary border border-primary font-label-md text-label-md py-2.5 rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+                        Message
+                    </button>
+<button class="flex-1 bg-primary text-on-primary font-label-md text-label-md py-2.5 rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">sports_tennis</span>
+                        Challenge
+                    </button>
+</div>
+</div>
+<!-- Member Card 2 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden group">
+<div class="p-6 pb-4">
+<div class="flex justify-between items-start mb-4">
+<img alt="Elena Rodriguez Portrait" class="w-20 h-20 rounded-full object-cover border-2 border-surface shadow-sm" data-alt="A portrait of a young woman with wavy brown hair, smiling brightly at the camera. She is wearing a light blue athletic top. The background is a crisp, bright white wall with subtle shadows, creating a clean, modern aesthetic. The lighting is soft and flattering, highlighting her energetic expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIGxk0YmB58AfSt2_KBNlm6lijAe4Icn9X__bHyvAWffdiWevODCYzIWCZqyDcxxy2uhaiPus1oC62FYczolK-hxcpjP9V2SwtHu2ssHmTFeI_9JrEUGvasdqhSv8_iHSjnim98O77m8CrU_QcrMiBsszL3BkbLtQq5-6Csf7PSmUJ-1SbQQnIlBiN0hCXfmOOkASKa5tlJKMFh6QHivfezZsbA-KW9GRkPFK70QL2rM6QRZQURhrZ5GaQuyO1x3nGIikCJ_kJ4-hf"/>
+<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm font-bold shadow-sm border border-outline-variant/50">
+                            NTRP 4.0
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Elena Rodriguez</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Joined 2022 • Mixed Doubles</p>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Win Rate</div>
+<div class="font-headline-md text-headline-md text-primary">62%</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Matches</div>
+<div class="font-headline-md text-headline-md text-on-surface">18-11</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 p-4 bg-surface-bright flex gap-3">
+<button class="w-full bg-surface text-on-surface border border-outline-variant font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">person</span>
+                        View Profile
+                    </button>
+</div>
+</div>
+<!-- Member Card 3 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden group">
+<div class="p-6 pb-4">
+<div class="flex justify-between items-start mb-4">
+<img alt="David Chen Portrait" class="w-20 h-20 rounded-full object-cover border-2 border-surface shadow-sm" data-alt="A portrait of a man in his thirties with short black hair and glasses, looking slightly off-camera with a relaxed smile. He is wearing a white t-shirt. The background features a subtle hint of a chainlink fence and green foliage, suggesting an outdoor sports facility. The lighting is natural and bright, conveying a casual, friendly mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtFBjYNx6P2rybSFeqqTu3W6BeMqe1KSl5oJ3LCW4E26i9-baP3E1r2wrnAr3dfvjremNtY2o_3Q8cr25d9C_0BTMvNsAePBQjGunWfXcXRpAyY1-yVpcc1vWQFo0YVSOgvOlKGzgfLXOEf4w3S4jW0aJ-GFiytMzfKmvZiG8AwkXyKEgdSptU0-BI1ksGuTiZZ1ydjRS7kr1-O_RfZkipHs6SDS8hKbn667UlSgiYMyhLyC-RwGp27NGjPMzdqkrnGm9ZEHXD9dnc"/>
+<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm font-bold shadow-sm border border-outline-variant/50">
+                            NTRP 3.5
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">David Chen</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Joined 2023 • Mens Doubles</p>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Win Rate</div>
+<div class="font-headline-md text-headline-md text-primary">50%</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Matches</div>
+<div class="font-headline-md text-headline-md text-on-surface">15-15</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 p-4 bg-surface-bright flex gap-3">
+<button class="w-full bg-surface text-on-surface border border-outline-variant font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">person</span>
+                        View Profile
+                    </button>
+</div>
+</div>
+<!-- Member Card 4 (New Member) -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden group border border-primary/20 relative">
+<div class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider z-10">New Member</div>
+<div class="p-6 pb-4 mt-4">
+<div class="flex justify-between items-start mb-4">
+<div class="w-20 h-20 rounded-full bg-surface-variant flex items-center justify-center text-headline-md font-bold text-on-surface-variant border-2 border-surface shadow-sm">
+                            AW
+                        </div>
+<span class="bg-surface-container-high text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm font-bold shadow-sm border border-outline-variant/50">
+                            NTRP 3.0
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Aisha Williams</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Joined Oct 2023 • Womens Singles</p>
+<div class="grid grid-cols-2 gap-4 mb-6 opacity-70">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Win Rate</div>
+<div class="font-headline-md text-headline-md text-on-surface">--</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Matches</div>
+<div class="font-headline-md text-headline-md text-on-surface">0-0</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 p-4 bg-surface-bright flex gap-3">
+<button class="w-full bg-surface text-on-surface border border-outline-variant font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container-low transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">waving_hand</span>
+                        Say Hello
+                    </button>
+</div>
+</div>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-xl flex justify-center pb-xl">
+<button class="bg-surface text-primary border border-outline-variant font-label-md text-label-md px-8 py-3 rounded-full hover:bg-surface-container-low hover:border-primary transition-all shadow-sm flex items-center gap-2">
+                Load More Members
+                <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</main>
+</body></html>

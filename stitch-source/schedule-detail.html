@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ace &amp; Clay - Schedule Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#edeeef",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "primary": "#00685d",
+                        "background": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#7c2e19",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d1f041",
+                        "on-secondary-fixed": "#181e00",
+                        "on-primary-fixed-variant": "#005048",
+                        "outline-variant": "#bcc9c6",
+                        "primary-container": "#008376",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3c0800",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed": "#00201c",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#6fd8c8",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed": "#ffdbd2",
+                        "tertiary-container": "#b65a41",
+                        "secondary-container": "#ceed3e",
+                        "tertiary": "#97422b",
+                        "on-primary-container": "#f4fffb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed-dim": "#6fd8c8",
+                        "on-secondary-container": "#596a00",
+                        "primary-fixed": "#8cf5e4",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#3d4947",
+                        "secondary-fixed-dim": "#b5d321",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#006a60",
+                        "secondary": "#556500",
+                        "outline": "#6d7a77",
+                        "on-secondary-fixed-variant": "#3f4c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "xl": "64px",
+                        "margin-mobile": "16px",
+                        "lg": "40px",
+                        "xs": "4px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .ambient-shadow-lvl1 { box-shadow: 0px 4px 20px rgba(0,0,0,0.05); }
+        .ambient-shadow-lvl2 { box-shadow: 0px 12px 32px rgba(0,0,0,0.12); }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 h-16 z-40 bg-surface shadow-sm border-b border-outline-variant/30 hidden md:flex">
+<div class="flex justify-between items-center px-margin-desktop w-full ml-64 max-w-[calc(100%-16rem)]">
+<div class="flex items-center gap-4">
+<div class="relative text-on-surface-variant">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors w-64" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all duration-200">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img alt="Member Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIhMrFtfqv5o663ZukCTrD_hs6AN2KqRk_N6AHLlLQSp4pyBblHDqZ3J-FW77TJBxycaKzyeuR25tUK0lcJSH_8egRX7C3eHJ_R3EIzpJw5h0mpM_gsU9Cb_2f_zkCtpl6TjaoLVA4Petnozm80AzqkVOytBg8w2mmg5_R2mtF7IXfAciDnQIAVMHQldIG_lDGZonlZAiYcjETgSxfVWTrGEsiXYTbxOImgMVDc3GPxtFV4L8sbHYsYd-1nYP2oUww6NkEyvWhqf7h"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 z-50 bg-surface-container-low shadow-md hidden md:flex flex-col py-md gap-base">
+<div class="px-6 mb-8 flex flex-col gap-1">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Ace &amp; Clay</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tennis Club Management</p>
+</div>
+<div class="flex-1 px-2 flex flex-col gap-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 mx-2 font-bold scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-label-md text-label-md">Schedule</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">sports_tennis</span>
+<span class="font-label-md text-label-md">Courts</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Members</span>
+</a>
+</div>
+<div class="px-4 mt-auto mb-4">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
+                Book a Court
+            </button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="md:ml-64 md:pt-16 min-h-screen p-margin-mobile md:p-margin-desktop bg-background">
+<!-- Breadcrumb & Actions -->
+<div class="flex justify-between items-center mb-lg">
+<div class="flex items-center gap-2 text-on-surface-variant font-body-md text-body-md">
+<a class="hover:text-primary transition-colors" href="#">Schedule</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-on-surface font-medium">Match Details</span>
+</div>
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Match Info & Image -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Hero Info Card -->
+<div class="bg-surface rounded-xl ambient-shadow-lvl1 overflow-hidden">
+<div class="h-48 relative">
+<img alt="Tennis match hero" class="w-full h-full object-cover" data-alt="A sun-drenched outdoor clay tennis court viewed from a slightly elevated angle. The red clay contrasts beautifully with crisp white court lines. The bright, high-key lighting reflects a warm, inviting afternoon atmosphere. Deep court green fencing surrounds the area, maintaining a modern and sporty aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgpDuOsanH02A15WspfeAQMadQ38ciX5zgwOoRMcdsv917jTjsKL6RWWLKHU-wQgsUa5DCxqcwIh_eXtRiuS51-vMyUCNlpoNgvXbV2RrPYtvGCxNvnO4XHOozHT0wb5H1YA0Ge_xnDZ-Ad92XvP5B_68kCRaWfO0V8oYGUuinlBD-8yiKwSDh93iFj2b0zlExlcNnTodkfaFPiGpL0k9TuScg6Gpo_doRsguMslc8l3NRBzxnyIU8PHj1E0OrCArOgvmYQW_OfiJz"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-6 flex items-center gap-3">
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-3 py-1 rounded-full uppercase tracking-wider">Doubles Match</span>
+<span class="bg-surface/20 backdrop-blur-md text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full border border-on-primary/30">NTRP 3.5 - 4.0</span>
+</div>
+</div>
+<div class="p-6 md:p-8">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Evening Men's Doubles</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+                                    Olympic Park Court 3
+                                </p>
+</div>
+<div class="text-right bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 min-w-[200px]">
+<div class="font-label-md text-label-md text-primary mb-1 uppercase tracking-widest">Date &amp; Time</div>
+<div class="font-headline-md text-headline-md text-on-surface">Thu, Oct 12</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">18:00 - 20:00</div>
+</div>
+</div>
+<hr class="border-outline-variant/30 my-8"/>
+<!-- Attendees Section -->
+<div>
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Players (3/4)</h3>
+<span class="text-tertiary-container font-label-md text-label-md bg-tertiary-fixed px-3 py-1 rounded-full">1 Spot Left</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Player 1 -->
+<div class="flex items-center gap-4 p-4 rounded-lg border border-outline-variant/50 hover:border-primary/50 transition-colors bg-surface-bright">
+<img alt="Player" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKbp75AMYcV9RVkfwagkkpDqye48EksGgzCjTmgiZ48W1S9ozV6Q4GuVSGfKWfERreOr23gV5KaKz2B_IoOqX_C5_lAKM2JKEyKSNYXrabrnt2VY4G1nXlApB7XxstTlFb-q9FglM11KQZY9EuTj5dQcai8pjyFwf1fH1vciHUUYniJ9BYwvXnPtdBKZZqrfHCm5fCqboQeeeqkxG2J93XKxTs9YkZGlen3_mIqn2Q3XzYoGeJsJybYetWyJMbc3cHNhaQJsxIbugu"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Marcus Chen (Organizer)</div>
+<div class="font-label-sm text-label-sm text-primary mt-1">NTRP 4.0</div>
+</div>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center gap-4 p-4 rounded-lg border border-outline-variant/50 hover:border-primary/50 transition-colors bg-surface-bright">
+<img alt="Player" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqdLsri3bDfEuDkGTLBP8adjFag1yaFRky7qE8z83skfBa0drMVSaTSKgm46a8MYW-znn1cVGesSA2xBItFa_YbJrczNI7NNVkAnFdoxZ1E1zAYKJP8-lzR_XZ-aLfVbEi0WrXyG1oUDmblXGTviat6DSTzMzGpeGUxkApIvAom5Iv_5Q9OkLJvqzmyzfa-trNE2bmH97DMgCRE_QTFANYRwatFyduf83cfiv9vZ3EQCB1F4BAn4nhQeXxXnJi5TBm67r21tjTCETx"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Sarah Jenkins</div>
+<div class="font-label-sm text-label-sm text-primary mt-1">NTRP 3.5</div>
+</div>
+</div>
+<!-- Player 3 -->
+<div class="flex items-center gap-4 p-4 rounded-lg border border-outline-variant/50 hover:border-primary/50 transition-colors bg-surface-bright">
+<img alt="Player" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfrmuMKfNUzWYOxdGmE0GNtmCYZmsnUGPZw1KydUippzpWIigVNUJTVFGb6ciSotVRxXuz96DQar4_rKl7uhwXgx_LqNYK3VjQfMjxqN6QUFwW-6mnJOi_eVU8w6xD7HO-LeqOBcBkY4b4SmHlEgekekW7JfjIOozmW5hq0mdChsg2xvP3Ms5LPK9vd_2WMeYcRLMGf_kerO_pqiNt5ha0-hKWFbA805ldN128HhrLZsUsauLkLB55vJUAqQOKYKg7MopvRgTqrg_Q"/>
+<div>
+<div class="font-label-md text-label-md text-on-surface">David Ross</div>
+<div class="font-label-sm text-label-sm text-primary mt-1">NTRP 4.0</div>
+</div>
+</div>
+<!-- Empty Slot -->
+<div class="flex items-center justify-center gap-3 p-4 rounded-lg border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline">person_add</span>
+<span class="font-label-md text-label-md text-outline">Available Slot</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Comments Section -->
+<div class="bg-surface rounded-xl ambient-shadow-lvl1 p-6 md:p-8">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Match Discussion</h3>
+<div class="space-y-6 mb-8">
+<!-- Comment 1 -->
+<div class="flex gap-4">
+<img alt="User" class="w-10 h-10 rounded-full object-cover flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHT8GgyFTl1PtfJnAVQDnqIZLc0pv03NancF6mf7w94obsvXd32QEZMwmNtXIZzyAYO4v4NDLRab1G5Cxl6gIw7BHoHgBAZDRnHUwRcR1BJjiJPcPcvnb5oD6DAvj2rru264t9ex_hb82Tcwf14UFoc7ZpAoleGiFF7bZAnKDWxr30VTOg140So2Lwu-7hwNWDCHWTOK4aVGHks3dGvtPV1BRZcMpjrtk2KqbwsnppBDsgLRK_kF-W18206axa0qell5J4MIszo3Tn"/>
+<div class="bg-surface-container-low p-4 rounded-xl rounded-tl-none w-full">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-label-md text-label-md text-on-surface">Marcus Chen</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 hours ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Bringing a fresh can of Pro Penns. See everyone at 6!</p>
+</div>
+</div>
+</div>
+<!-- Leave Message Form -->
+<div class="flex gap-4 items-start">
+<img alt="Current User" class="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN_YMWsv2OuJgYVn-gWuu97Lhfe65v1r6762I2QUo19TLe0b0WOjCWd9BdWmtlhlSKiKygWZcjoAjNY4LS6n5tMqiRHwowI4d-UXKPwmfn3bEBZeh_cDjKrmjIwnjcFhHs9OdWH-4RD_WO_7dAGQKD57TSpYqaJVcqYhOb3JhkHCcCS_4iS-phIbQqHnUhSrt-ShRlHidZDMdXsAL8XVBDdX_46TnPirxsBBbNafX-5rJ2YUTcwIU5MiCvAzwXJJNW7IhXlvu9mw6Z"/>
+<div class="w-full relative">
+<textarea class="w-full p-4 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none transition-colors" placeholder="Leave a message for the players..." rows="3"></textarea>
+<button class="absolute bottom-3 right-3 text-primary hover:bg-primary-container hover:text-on-primary-container p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Action & Details -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Action Card -->
+<div class="bg-surface rounded-xl ambient-shadow-lvl1 p-6 border-t-4 border-secondary-container">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Join this Match</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">You meet the NTRP requirements for this doubles match. One spot remaining.</p>
+<button class="w-full bg-secondary-container text-on-secondary-container font-label-md text-label-md py-4 rounded-lg hover:bg-secondary-fixed transition-colors shadow-sm mb-4 flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">sports_tennis</span>
+                        Join Match
+                    </button>
+<button class="w-full bg-transparent text-primary font-label-md text-label-md py-3 rounded-lg border border-primary hover:bg-primary/5 transition-colors">
+                        Contact Organizer
+                    </button>
+</div>
+<!-- Weather/Conditions Card -->
+<div class="bg-surface rounded-xl ambient-shadow-lvl1 p-6">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4">Conditions</h4>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">light_mode</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">72°F</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Clear &amp; Sunny</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 flex items-center gap-3 border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary">info</span>
+<span class="font-label-sm text-label-sm text-on-surface">Court surface was swept this morning.</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ace &amp; Clay - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#edeeef",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "primary": "#00685d",
+                        "background": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#7c2e19",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d1f041",
+                        "on-secondary-fixed": "#181e00",
+                        "on-primary-fixed-variant": "#005048",
+                        "outline-variant": "#bcc9c6",
+                        "primary-container": "#008376",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3c0800",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed": "#00201c",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#6fd8c8",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed": "#ffdbd2",
+                        "tertiary-container": "#b65a41",
+                        "secondary-container": "#ceed3e",
+                        "tertiary": "#97422b",
+                        "on-primary-container": "#f4fffb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed-dim": "#6fd8c8",
+                        "on-secondary-container": "#596a00",
+                        "primary-fixed": "#8cf5e4",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#3d4947",
+                        "secondary-fixed-dim": "#b5d321",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#006a60",
+                        "secondary": "#556500",
+                        "outline": "#6d7a77",
+                        "on-secondary-fixed-variant": "#3f4c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "xl": "64px",
+                        "margin-mobile": "16px",
+                        "lg": "40px",
+                        "xs": "4px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen">
+<!-- SideNavBar (Web) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-50 bg-surface-container-low dark:bg-inverse-surface shadow-md py-md gap-base">
+<div class="px-margin-mobile mb-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Ace &amp; Clay</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Tennis Club Management</p>
+</div>
+<ul class="flex flex-col gap-sm flex-1">
+<li>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 mx-2 font-bold font-label-md text-label-md scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-lg transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                    Schedule
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-lg transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>
+                    Courts
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-lg transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Members
+                </a>
+</li>
+</ul>
+<div class="px-margin-mobile mt-auto">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-full hover:opacity-90 transition-opacity">
+                Book a Court
+            </button>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-0 h-16 z-40 flex justify-between items-center px-margin-desktop w-full md:ml-64 md:max-w-[calc(100%-16rem)] shadow-sm bg-surface dark:bg-surface border-b border-outline-variant/30">
+<div class="flex items-center gap-sm">
+<!-- Mobile Menu Icon (Placeholder) -->
+<button class="md:hidden text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<!-- Search on Left as per JSON -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none w-64 transition-colors" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border border-outline-variant ml-2 cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="Member Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional looking individual smiling warmly, suited for a profile avatar. The background is a soft, blurred light grey, emphasizing the subject. Lighting is bright, natural, and complimentary, fitting a modern club management interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuMyUwoVMpmndQorppf9yUzN09hvVQ2JkNo0hL8CSEilDM6mdYsUyTY6_OpJ_WWu7oJBlv1StOsWLZ0j78Pl7tOSsM4OsCClSkHzfPfrvn3Kf47acroXb4YzjAMAm-_AzrR_lKEmwUhRbHlvIY2E_HQ5NuRf2LF8-5U0UnT7tDfymGbN08-yr59fjKhvNbnnd9p8jtFxmUuESDhTuyL88MT-aNi3CwYLjCqVuV-vNqm4tJEUzKq8eJgiGVssRKXa616WL9x_wTn2Pu"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-24 md:pb-lg px-margin-mobile md:px-margin-desktop md:ml-64 min-h-screen">
+<div class="max-w-7xl mx-auto">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Dashboard</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Welcome back, here's your club overview.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+<!-- Center Area: Large Monthly Calendar -->
+<div class="xl:col-span-8 space-y-gutter">
+<div class="bg-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-md border-t-4 border-primary">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">October 2023</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Calendar Grid -->
+<div class="grid grid-cols-7 gap-2 mb-2">
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Sun</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Mon</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Tue</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Wed</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Thu</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Fri</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant py-2">Sat</div>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Placeholder empty cells for previous month -->
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>
+<!-- Days -->
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">1</span>
+</div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">2</span>
+</div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">3</span>
+<div class="absolute bottom-2 left-2 right-2 bg-secondary-container text-on-secondary-container rounded text-[10px] font-bold px-1 py-0.5 truncate shadow-sm">
+                                    League Play
+                                </div>
+</div>
+<!-- Current Day -->
+<div class="h-24 md:h-32 rounded-lg bg-primary-container border-2 border-primary p-2 hover:border-primary transition-colors cursor-pointer relative shadow-sm">
+<span class="font-label-md text-label-md text-on-primary-container font-bold bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center">4</span>
+<div class="absolute bottom-2 left-2 right-2 bg-tertiary-container text-on-tertiary-container rounded text-[10px] font-bold px-1 py-0.5 truncate shadow-sm mt-1">
+                                    14:00 - Match
+                                </div>
+</div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">5</span>
+</div>
+<!-- Next Row -->
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">6</span>
+</div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">7</span>
+</div>
+<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high p-2 hover:border-primary transition-colors cursor-pointer relative">
+<span class="font-label-md text-label-md text-on-surface">8</span>
+<div class="absolute bottom-2 left-2 right-2 bg-secondary-container text-on-secondary-container rounded text-[10px] font-bold px-1 py-0.5 truncate shadow-sm">
+                                    Clinic
+                                </div>
+</div>
+<!-- ... More days implied to keep concise ... -->
+<div class="col-span-4 rounded-lg bg-surface-container-lowest border border-surface-container-high p-4 flex items-center justify-center text-on-surface-variant font-label-md text-label-md">
+                                 ...
+                             </div>
+</div>
+</div>
+<!-- Scheduled Matches Section -->
+<div class="bg-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Today's Matches</h3>
+<div class="space-y-sm">
+<!-- Match Card -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4 mb-3 sm:mb-0">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Men's Singles Final</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                                            14:00 - 16:00 @ Seoul Forest Court
+                                        </p>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-label-sm bg-tertiary-container text-on-tertiary-container">
+                                        Occupied
+                                    </span>
+</div>
+</div>
+<!-- Match Card -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border border-outline-variant bg-surface-bright hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4 mb-3 sm:mb-0">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Junior Clinic</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                                            16:30 - 18:00 @ Court 3
+                                        </p>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container">
+                                        Available Soon
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Widget Area -->
+<div class="xl:col-span-4 space-y-gutter">
+<!-- Quick Stats Bento Box -->
+<div class="bg-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-md border-t-4 border-secondary-container">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Quick Overview</h3>
+<div class="grid grid-cols-1 gap-4">
+<!-- Stat Item -->
+<div class="bg-primary text-on-primary p-4 rounded-lg shadow-sm relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[100px]" data-icon="event_upcoming">event_upcoming</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-sm text-label-sm opacity-80 uppercase tracking-wider mb-1">Next Match</p>
+<p class="font-headline-md text-headline-md font-bold">Tomorrow 10am</p>
+<p class="font-body-md text-body-md mt-2 text-on-primary/90 text-sm">vs. Metro Club</p>
+</div>
+</div>
+<!-- Stat Item -->
+<div class="bg-tertiary-container text-on-tertiary-container p-4 rounded-lg shadow-sm relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[100px]" data-icon="celebration">celebration</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-sm text-label-sm opacity-80 uppercase tracking-wider mb-1">Upcoming Events</p>
+<div class="flex items-baseline gap-2">
+<p class="font-display-lg text-display-lg font-bold">3</p>
+<span class="font-body-md text-body-md">This Week</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-2 bg-secondary-container text-on-secondary-container font-label-md text-label-md py-3 rounded-lg hover:opacity-90 transition-opacity font-bold shadow-sm">
+                                View Full Calendar
+                            </button>
+</div>
+</div>
+<!-- Weather / Court Conditions -->
+<div class="bg-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Court Conditions</h3>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border border-outline-variant">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px] text-primary" data-icon="sunny">sunny</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Optimal</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Dry, 24°C</p>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container">
+                                All Courts Open
+                            </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
