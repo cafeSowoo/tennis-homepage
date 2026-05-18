@@ -11,37 +11,57 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
+      darkMode: "class",
       theme: {
         extend: {
           colors: {
-            background: "#f8f9fa",
-            surface: "#f8f9fa",
-            "surface-container": "#edeeef",
-            "surface-container-low": "#f3f4f5",
-            "surface-container-high": "#e7e8e9",
-            "surface-container-lowest": "#ffffff",
-            "surface-container-highest": "#e1e3e4",
-            "surface-variant": "#e1e3e4",
-            primary: "#00685d",
-            "primary-container": "#008376",
-            "primary-fixed": "#8cf5e4",
-            secondary: "#556500",
-            "secondary-container": "#ceed3e",
-            tertiary: "#97422b",
-            "tertiary-container": "#b65a41",
-            "tertiary-fixed": "#ffdbd2",
-            error: "#ba1a1a",
+            "background": "#f8f9fa",
+            "error": "#ba1a1a",
             "error-container": "#ffdad6",
-            outline: "#6d7a77",
-            "outline-variant": "#bcc9c6",
+            "inverse-on-surface": "#f0f1f2",
+            "inverse-primary": "#6fd8c8",
+            "inverse-surface": "#2e3132",
             "on-background": "#191c1d",
-            "on-surface": "#191c1d",
-            "on-surface-variant": "#3d4947",
+            "on-error": "#ffffff",
+            "on-error-container": "#93000a",
             "on-primary": "#ffffff",
             "on-primary-container": "#f4fffb",
+            "on-primary-fixed": "#00201c",
+            "on-primary-fixed-variant": "#005048",
+            "on-secondary": "#ffffff",
             "on-secondary-container": "#596a00",
+            "on-secondary-fixed": "#181e00",
+            "on-secondary-fixed-variant": "#3f4c00",
+            "on-surface": "#191c1d",
+            "on-surface-variant": "#3d4947",
+            "on-tertiary": "#ffffff",
             "on-tertiary-container": "#fffbff",
-            "on-error-container": "#93000a"
+            "on-tertiary-fixed": "#3c0800",
+            "on-tertiary-fixed-variant": "#7c2e19",
+            "outline": "#6d7a77",
+            "outline-variant": "#bcc9c6",
+            "primary": "#00685d",
+            "primary-container": "#008376",
+            "primary-fixed": "#8cf5e4",
+            "primary-fixed-dim": "#6fd8c8",
+            "secondary": "#556500",
+            "secondary-container": "#ceed3e",
+            "secondary-fixed": "#d1f041",
+            "secondary-fixed-dim": "#b5d321",
+            "surface": "#f8f9fa",
+            "surface-bright": "#f8f9fa",
+            "surface-container": "#edeeef",
+            "surface-container-high": "#e7e8e9",
+            "surface-container-highest": "#e1e3e4",
+            "surface-container-low": "#f3f4f5",
+            "surface-container-lowest": "#ffffff",
+            "surface-dim": "#d9dadb",
+            "surface-tint": "#006a60",
+            "surface-variant": "#e1e3e4",
+            "tertiary": "#97422b",
+            "tertiary-container": "#b65a41",
+            "tertiary-fixed": "#ffdbd2",
+            "tertiary-fixed-dim": "#ffb4a1"
           },
           borderRadius: {
             lg: "0.5rem",
@@ -50,6 +70,9 @@
             full: "9999px"
           },
           spacing: {
+            xs: "4px",
+            base: "8px",
+            sm: "12px",
             "margin-mobile": "16px",
             "margin-desktop": "48px",
             gutter: "24px",
@@ -59,7 +82,25 @@
           },
           fontFamily: {
             display: ["Montserrat", "Inter", "sans-serif"],
-            body: ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"]
+            body: ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"],
+            "display-lg": ["Montserrat", "Inter", "sans-serif"],
+            "headline-lg": ["Montserrat", "Inter", "sans-serif"],
+            "headline-lg-mobile": ["Montserrat", "Inter", "sans-serif"],
+            "headline-md": ["Montserrat", "Inter", "sans-serif"],
+            "body-lg": ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"],
+            "body-md": ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"],
+            "label-md": ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"],
+            "label-sm": ["Inter", "Apple SD Gothic Neo", "Noto Sans KR", "sans-serif"]
+          },
+          fontSize: {
+            "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "0", fontWeight: "700" }],
+            "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+            "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0", fontWeight: "600" }],
+            "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0", fontWeight: "500" }]
           },
           boxShadow: {
             ambient: "0 4px 20px rgba(0,0,0,0.05)",
@@ -70,26 +111,134 @@
     };
   </script>
   <style>
+    /* CSS 디자인 시스템 토큰 및 변수 바인딩 */
+    :root {
+      --primary: #00685d;
+      --primary-container: #008376;
+      --on-primary: #ffffff;
+      --on-primary-container: #f4fffb;
+      --secondary: #556500;
+      --secondary-container: #ceed3e;
+      --secondary-fixed: #d1f041;
+      --on-secondary-container: #596a00;
+      --tertiary: #97422b;
+      --tertiary-container: #b65a41;
+      --tertiary-fixed: #ffdbd2;
+      --on-tertiary-fixed: #3c0800;
+      --outline-variant: #bcc9c6;
+    }
+
     * { box-sizing: border-box; }
     html { scrollbar-gutter: stable; }
     body { font-family: Inter, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: #191c1d; background: #f8f9fa; letter-spacing: 0; }
+
+    /* 구글 머티리얼 심볼 최적화 */
     .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; font-size: 22px; line-height: 1; }
     .icon-fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
-    .nav-item.active { background: #008376 !important; color: #f4fffb !important; font-weight: 800; }
+
+    /* 네비게이션 액티브 */
+    .nav-item.active { background: var(--primary-container) !important; color: var(--on-primary-container) !important; font-weight: 800; transform: scale(.98); }
     .nav-item.active .material-symbols-outlined { color: inherit !important; }
+
+    /* 뷰 핸들러 */
     .view { display: none; }
     .view.active { display: block; }
-    .calendar-day.active-day { border-color: #00685d; box-shadow: inset 0 0 0 1px #00685d; }
-    .calendar-day.selected-date { border-color: #1a8cff; background: #d7ebff; box-shadow: inset 0 0 0 2px #1a8cff; }
-    .calendar-day.is-today { background: #00685d; color: white; }
-    .event-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 9999px;
-      box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+
+    /* 캘린더 인터랙션 클래스 */
+    .calendar-day.active-day { border-color: var(--primary); }
+    .calendar-day.selected-date { border-color: #1a8cff; background: #d7ebff; }
+    .calendar-day.is-today { background: var(--primary); color: white; }
+
+    /* 공통 프리미엄 그림자 클래스 */
+    .shadow-ambient { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .shadow-float { box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+
+    /* 프리미엄 블러 뱃지 */
+    .badge-blur {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(188, 201, 198, 0.2);
     }
-    .event-dot.daytime { background: #c9f432; }
-    .event-dot.nighttime { background: #00685d; }
+    .dark .badge-blur {
+      background: rgba(46, 49, 50, 0.85);
+      border: 1px solid rgba(109, 122, 119, 0.3);
+    }
+
+    /* 공통 버튼 시스템 */
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      font-weight: 700;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-container);
+      color: var(--on-primary-container);
+      box-shadow: 0 4px 12px rgba(0, 106, 96, 0.15);
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-container);
+      color: var(--on-secondary-container);
+      font-weight: 700;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover {
+      background-color: var(--secondary-fixed);
+      box-shadow: 0 4px 12px rgba(85, 101, 0, 0.15);
+    }
+    .btn-secondary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      font-weight: 700;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-outline:hover {
+      background-color: rgba(0, 104, 93, 0.05);
+      border-color: var(--primary-container);
+      color: var(--primary-container);
+    }
+    .btn-outline:active {
+      transform: scale(0.97);
+    }
+
+    /* 프리미엄 카드 호버 트랜지션 효과 */
+    .card-premium {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(188, 201, 198, 0.25);
+    }
+    .card-premium:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -6px rgba(0,0,0,0.04), 0 8px 16px -8px rgba(0,0,0,0.04);
+      border-color: rgba(0, 104, 93, 0.15);
+    }
+
     .avatar { background: linear-gradient(135deg, #00685d, #ceed3e); }
     .match-hero {
       background-image:
@@ -106,59 +255,63 @@
     @media (max-width: 767px) {
       .mobile-nav-open #sideNav { display: flex; }
       .mobile-nav-open #backdrop { display: block; }
-      .event-dot { width: 8px; height: 8px; }
     }
   </style>
 </head>
-<body class="min-h-screen bg-background text-on-background antialiased">
+<body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
   <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/30 md:hidden"></div>
 
-  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-2 bg-surface-container-low py-6 shadow-md md:flex">
-    <div class="mb-4 flex items-center gap-3 px-5">
-      <img class="h-14 w-14 shrink-0 object-contain" src="assets/logo.png" alt="아직도 성장중 로고">
-      <h1 class="font-display text-lg font-bold text-primary">아직도 성장중</h1>
+  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base bg-surface-container-low py-md shadow-md md:flex">
+    <div class="mb-lg px-margin-mobile">
+      <div class="flex items-center gap-3">
+        <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="아직도 성장중 로고">
+        <div>
+          <h1 class="font-headline-md text-headline-md font-bold text-primary">아직도 성장중</h1>
+          <p class="font-body-md text-sm text-on-surface-variant">Tennis Club Management</p>
+        </div>
+      </div>
     </div>
 
-    <div class="flex flex-1 flex-col gap-2 px-2 text-sm font-semibold">
-      <button class="nav-item active mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition hover:bg-surface-container-high" data-view="dashboard">
-        <span class="material-symbols-outlined">dashboard</span>Dashboard
+    <div class="flex flex-1 flex-col gap-sm text-label-md font-label-md">
+      <button class="nav-item active mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-on-surface" data-view="dashboard">
+        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>Dashboard
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition hover:bg-surface-container-high" data-view="schedule">
-        <span class="material-symbols-outlined">calendar_today</span>Schedule
+      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="schedule">
+        <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>Schedule
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition hover:bg-surface-container-high" data-view="courts">
-        <span class="material-symbols-outlined">sports_tennis</span>Courts
+      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="courts">
+        <span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>Courts
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition hover:bg-surface-container-high" data-view="members">
-        <span class="material-symbols-outlined">group</span>Members
+      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="members">
+        <span class="material-symbols-outlined" data-icon="group">group</span>Members
       </button>
     </div>
 
-    <div class="px-6">
-      <button class="w-full rounded-lg bg-primary py-3 text-sm font-bold text-on-primary shadow-ambient transition hover:bg-primary-container">
+    <div class="mt-auto px-margin-mobile">
+      <button class="w-full rounded-full bg-primary py-3 font-label-md text-label-md font-bold text-on-primary transition-opacity hover:opacity-90">
         Book a Court
       </button>
     </div>
   </nav>
 
-  <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/30 bg-surface px-4 shadow-sm md:left-64 md:px-margin-desktop">
-    <div class="flex flex-1 items-center gap-3">
-      <button id="mobileMenu" class="rounded-full p-2 text-on-surface-variant hover:bg-surface-container-high md:hidden">
-        <span class="material-symbols-outlined">menu</span>
+  <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/30 bg-surface px-margin-mobile shadow-sm md:left-64 md:px-margin-desktop">
+    <div class="flex items-center gap-sm">
+      <button id="mobileMenu" class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high md:hidden">
+        <span class="material-symbols-outlined" data-icon="menu">menu</span>
       </button>
-      <label class="relative hidden w-full max-w-md md:block">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-        <input id="globalSearch" class="w-full rounded-full border border-outline-variant bg-surface-container-low py-2 pl-10 pr-4 text-sm text-on-surface outline-none transition focus:border-primary focus:ring-1 focus:ring-primary" placeholder="일정, 장소, 참석자 검색..." type="search">
+      <label class="relative hidden sm:block">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+        <input id="globalSearch" class="w-64 rounded-full border border-outline-variant bg-surface-container-low py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Search..." type="search">
       </label>
-      <span class="font-display text-lg font-bold text-primary md:hidden">아직도 성장중</span>
+      <span class="font-headline-md text-headline-md font-bold text-primary sm:hidden">아직도 성장중</span>
     </div>
-    <div class="relative flex items-center gap-3">
-      <button class="rounded-full p-2 text-on-surface-variant hover:bg-surface-container-high"><span class="material-symbols-outlined">notifications</span></button>
-      <button id="helpButton" class="rounded-full p-2 text-on-surface-variant hover:bg-surface-container-high" type="button" aria-expanded="false" aria-controls="helpPopover"><span class="material-symbols-outlined">help</span></button>
+    <div class="relative flex items-center gap-sm">
+      <button class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+      <button id="helpButton" class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high" type="button" aria-expanded="false" aria-controls="helpPopover"><span class="material-symbols-outlined" data-icon="help">help</span></button>
       <div id="helpPopover" class="absolute right-10 top-12 z-50 hidden w-72 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-4 text-sm font-semibold leading-6 text-on-surface shadow-float">
         하루에 두번 반영됩니다. 실시간으로 반영이 안될수도 있으니 카톡 일정을 참고해주세요
       </div>
-      <div class="avatar flex h-9 w-9 items-center justify-center rounded-full text-xs font-black text-white">성</div>
+      <div class="avatar ml-2 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-outline-variant text-xs font-black text-white transition-opacity hover:opacity-80">성</div>
     </div>
   </header>
 
@@ -352,20 +505,62 @@
       const grid = document.querySelector("#calendarGrid");
       const firstOffset = new Date("2026-05-01T00:00:00").getDay();
       const cells = [];
-      for (let i = 0; i < firstOffset; i++) cells.push(`<div class="aspect-square rounded-lg bg-surface-container-lowest opacity-50"></div>`);
+
+      // Stitch bridge: Calendar HTML markup starts here.
+      for (let i = 0; i < firstOffset; i++) {
+        cells.push(`<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>`);
+      }
+
       for (let day = 1; day <= 31; day++) {
         const iso = `2026-05-${String(day).padStart(2, "0")}`;
         const events = byDate[iso] || [];
         const isToday = day === 15;
+
+        const eventChips = events.slice(0, 2).map(e => {
+          let chipClass = "bg-secondary-container text-on-secondary-container";
+          if (e.closed) {
+            chipClass = "bg-error-container text-on-error-container";
+          } else if (e.regular) {
+            chipClass = "bg-tertiary-container text-on-tertiary-container";
+          }
+
+          return `
+            <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(e)} ${e.place}">
+              ${timeStart(e).replace("오후 ", "").replace("오전 ", "")} · ${e.place}
+            </span>
+          `;
+        }).join("");
+
+        const overflowChip = events.length > 2
+          ? `<span class="block truncate rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-bold leading-normal text-on-surface-variant">+${events.length - 2} more</span>`
+          : "";
+
+        let cellClass = "bg-surface-container-lowest border border-surface-container-high";
+        let numberClass = "text-on-surface";
+
+        if (isToday) {
+          cellClass = "bg-primary-container border-2 border-primary shadow-sm";
+          numberClass = "text-on-primary-container font-bold bg-primary text-white";
+        } else if (state.selectedDate === iso) {
+          cellClass = "border-2 border-primary bg-primary/5 shadow-sm";
+        } else if (events.length) {
+          cellClass = "bg-surface-container-lowest border border-outline-variant hover:border-primary";
+        } else {
+          cellClass = "bg-surface-container-lowest border border-surface-container-high/60 hover:border-primary/50";
+        }
+
         cells.push(`
-          <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square rounded-lg border border-surface-container-high bg-surface-container-lowest p-2 text-left transition hover:border-primary" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
-            <span class="${isToday ? "is-today" : ""} absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold">${day}</span>
-            <div class="absolute bottom-3 left-2 right-2 flex flex-wrap items-center gap-1.5">
-              ${events.map(e => `<span class="event-dot ${eventTimeClass(e)}" title="${timeStart(e)} ${e.place}" aria-label="${timeStart(e)} ${e.place}"></span>`).join("")}
+          <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative h-24 md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200 hover:shadow-sm" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
+            <span class="${numberClass} inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
+            <div class="absolute bottom-2 left-2 right-2 space-y-1.5">
+              ${eventChips}
+              ${overflowChip}
             </div>
           </button>
         `);
       }
+      // Stitch bridge: Calendar HTML markup ends here.
+
       grid.innerHTML = cells.join("");
     }
 
@@ -387,46 +582,81 @@
     function scheduleRow(item, variant = "") {
       const empty = item.attendees.length === 0;
       const isDatePanel = variant === "datePanel";
+      const statusLabel = item.closed ? "마감" : empty ? "Available Soon" : item.regular ? "정기모임" : "Occupied";
+      const statusClass = item.closed
+        ? "bg-error-container text-on-error-container"
+        : empty
+          ? "bg-primary-container text-on-primary-container"
+          : item.regular
+            ? "bg-tertiary-container text-on-tertiary-container"
+            : "bg-secondary-container text-on-secondary-container";
+
+      const iconClass = empty
+        ? "bg-surface-container-high text-on-surface-variant"
+        : item.regular
+          ? "bg-tertiary-container/20 text-tertiary"
+          : "bg-secondary-container text-secondary";
+
+      const iconName = empty ? "fitness_center" : "sports_tennis";
+      const attendeeText = item.attendees.length ? item.attendees.join(", ") : "참석자 없음";
+
       if (isDatePanel) {
-        const attendeeText = item.attendees.length ? item.attendees.join(", ") : "참석자 없음";
+        // Stitch bridge: Selected-date compact match card markup starts here.
         return `
-          <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest shadow-ambient transition hover:border-primary/60 hover:shadow-float">
-            <button class="schedule-card-button block w-full px-4 py-3" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
-              <div class="grid gap-3 md:grid-cols-[130px_minmax(0,1fr)] md:items-start">
-                <p class="font-display text-base font-bold text-primary">${item.time}</p>
-                <div class="min-w-0">
-                  <p class="truncate text-sm font-semibold text-on-surface-variant">${item.place} · ${attendeeText}</p>
+          <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+            <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
+              <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div class="flex min-w-0 items-center gap-4">
+                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
+                    ${icon(iconName)}
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
+                    <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
+                      ${icon("schedule", "text-[16px] text-primary")} ${item.time} @ <span class="text-on-surface font-semibold">${item.place}</span>
+                    </p>
+                    <p class="mt-1.5 truncate text-xs font-semibold text-on-surface-variant flex items-center gap-1">
+                      ${icon("group", "text-[14px]")} ${attendeeText}
+                    </p>
+                  </div>
                 </div>
+                <span class="inline-flex shrink-0 items-center rounded-full px-3 py-1 font-label-sm text-label-sm font-bold shadow-sm ${statusClass}">${statusLabel}</span>
               </div>
             </button>
           </article>
         `;
       }
-      const gridClass = isDatePanel ? "md:grid-cols-[130px_minmax(0,1fr)]" : (variant === "compact" ? "" : "md:grid-cols-[150px_minmax(0,1fr)_110px]");
+
+      // Stitch bridge: Schedule match card markup starts here.
       return `
-        <article class="rounded-lg border border-outline-variant/40 bg-surface-container-lowest shadow-ambient transition hover:border-primary/60 hover:shadow-float">
-          <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
-          <div class="grid gap-4 ${gridClass}">
-            <div class="text-primary">
-              <p class="font-display text-base font-bold">${timeStart(item)}</p>
-              ${isDatePanel ? "" : `<p class="mt-1 text-xs font-semibold text-on-surface-variant">${dateLabel(item)}</p>`}
-            </div>
-            <div class="min-w-0">
-              <div class="mb-2 flex flex-wrap items-center gap-2">
-                <h4 class="font-display text-base font-semibold">${item.title}</h4>
-                ${item.regular ? `<span class="rounded-full bg-primary-fixed px-2 py-1 text-[11px] font-bold text-primary">정기모임</span>` : ""}
-                ${item.closed ? `<span class="rounded-full bg-error-container px-2 py-1 text-[11px] font-bold text-on-error-container">마감</span>` : ""}
+        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <button class="schedule-card-button block w-full p-5" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
+            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <div class="flex min-w-0 items-start gap-4 sm:items-center">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} shadow-sm">
+                  ${icon(iconName)}
+                </div>
+                <div class="min-w-0">
+                  <div class="mb-1 flex flex-wrap items-center gap-2">
+                    <h4 class="font-label-md text-label-md text-on-surface font-bold text-base">${item.title}</h4>
+                  </div>
+                  <p class="mt-1.5 flex items-center gap-1.5 font-body-md text-body-md text-on-surface-variant font-medium">
+                    ${icon("schedule", "text-[16px] text-primary")} ${timeStart(item)} - ${timeEnd(item)} @ <span class="text-on-surface font-semibold">${item.place}</span>
+                  </p>
+                  <p class="mt-1.5 text-xs font-bold text-on-surface-variant flex items-center gap-1">
+                    ${icon("calendar_month", "text-[14px] text-outline")} ${dateLabel(item)} · <span class="text-primary">${item.attendees.length}명 참석 중</span>
+                  </p>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    ${empty
+                      ? `<span class="rounded-full bg-surface-container-low border border-dashed border-outline-variant px-3 py-1 text-xs font-bold text-on-surface-variant shadow-sm flex items-center gap-1">${icon("person_add", "text-[14px]")} Available Slot</span>`
+                      : item.attendees.map(name => `<span class="rounded-full border border-outline-variant/30 bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors shadow-sm">${name}</span>`).join("")}
+                  </div>
+                </div>
               </div>
-              <p class="mb-3 flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant">${icon("location_on")} ${item.place}</p>
-              <div class="flex flex-wrap gap-2">
-                ${empty ? `<span class="rounded-full bg-surface-container px-3 py-1 text-xs font-semibold text-on-surface-variant">Available Slot</span>` : item.attendees.map(name => `<span class="rounded-full border border-outline-variant/50 bg-white px-3 py-1 text-xs font-semibold">${name}</span>`).join("")}
+              <div class="flex flex-wrap gap-2 self-end sm:self-center">
+                <span class="inline-flex items-center rounded-full px-3 py-1 font-label-sm text-label-sm font-bold shadow-sm ${statusClass}">${statusLabel}</span>
               </div>
             </div>
-            ${isDatePanel ? "" : `<div class="self-start rounded-lg ${empty ? "bg-surface-container-high text-on-surface-variant" : "bg-secondary-container text-on-secondary-container"} px-3 py-3 text-center">
-              <div class="font-display text-xl font-bold">${item.attendees.length}</div>
-              <div class="text-xs font-bold">참석</div>
-            </div>`}
-          </div>
           </button>
         </article>
       `;
@@ -439,51 +669,80 @@
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
       const capacity = Math.max(4, item.attendees.length);
       const spotsLeft = Math.max(0, capacity - item.attendees.length);
-      const playerCards = item.attendees.map((name, index) => `
-        <div class="flex items-center gap-4 rounded-lg border border-outline-variant/50 bg-surface-container-lowest p-4 transition hover:border-primary/50">
-          <div class="avatar flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-surface-container text-sm font-black text-white">${initials(name)}</div>
-          <div>
-            <div class="text-sm font-bold text-on-surface">${name}${index === 0 ? " (Organizer)" : ""}</div>
-            <div class="mt-1 text-xs font-semibold text-primary">참석 확정</div>
+
+      // Stitch bridge: Detail player card markup starts here.
+      const playerCards = item.attendees.map((name, index) => {
+        const initial = initials(name);
+        const isOrganizer = index === 0;
+
+        // dynamic visual NTRP for player details
+        let ntrp = "NTRP 3.5";
+        if (name.includes("성")) ntrp = "NTRP 4.0";
+        if (name.includes("재") || name.includes("민")) ntrp = "NTRP 3.8";
+
+        return `
+          <div class="flex items-center gap-4 rounded-xl border border-outline-variant/60 bg-surface-bright p-4 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
+            <div class="avatar flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-surface-container bg-gradient-to-tr from-primary to-primary-container text-sm font-black text-white shadow-sm">${initial}</div>
+            <div>
+              <div class="text-sm font-bold text-on-surface flex items-center gap-1.5">
+                ${name}
+                ${isOrganizer ? `<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">Organizer</span>` : ""}
+              </div>
+              <div class="mt-1 text-xs font-semibold text-primary flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                ${ntrp} · 참석 확정
+              </div>
+            </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
+
       const emptySlots = Array.from({ length: spotsLeft }, () => `
-        <div class="flex items-center justify-center gap-3 rounded-lg border-2 border-dashed border-outline-variant/50 bg-surface-container-low/60 p-4">
+        <div class="flex items-center justify-center gap-3 rounded-xl border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50 p-4 transition-colors hover:bg-surface-container-high/40 cursor-pointer min-h-[82px]">
           <span class="material-symbols-outlined text-outline">person_add</span>
-          <span class="text-sm font-semibold text-outline">Available Slot</span>
+          <span class="text-sm font-bold text-outline">Available Slot</span>
         </div>
       `).join("");
 
+      // Stitch bridge: Detail page HTML markup starts here.
       document.querySelector("#detailContent").innerHTML = `
         <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12">
+          <!-- Left Column: Match Info & Description -->
           <div class="flex flex-col gap-gutter lg:col-span-8">
-            <article class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
-              <div class="match-hero relative h-48" style="--court-image: url('${courtImage(item.place)}')">
+            <!-- Hero Info Card -->
+            <article class="overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-ambient">
+              <div class="relative h-56 w-full overflow-hidden bg-surface-dim">
+                <img src="${courtImage(item.place)}" alt="${item.place} 전경" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <div class="absolute bottom-4 left-6 flex flex-wrap items-center gap-3">
-                  <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-wider text-on-secondary-container">${item.regular ? "Regular Match" : "Doubles Match"}</span>
-                  <span class="rounded-full border border-white/30 bg-white/25 px-3 py-1 text-xs font-bold text-white backdrop-blur-md">${item.attendees.length}/${capacity} Players</span>
+                  <span class="rounded-full bg-secondary-container px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
+                  <span class="rounded-full border border-white/30 bg-white/20 px-3.5 py-1 text-xs font-bold text-white backdrop-blur-md shadow-sm">NTRP 3.5 - 4.5</span>
                 </div>
               </div>
+
               <div class="p-6 md:p-8">
                 <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-                  <div>
-                    <h2 class="font-display text-2xl font-bold text-on-surface md:text-3xl">${item.title}</h2>
-                    <p class="mt-3 flex items-center gap-2 text-base text-on-surface-variant">
-                      <span class="material-symbols-outlined text-primary">location_on</span>${item.place}
+                  <div class="space-y-2">
+                    <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-black leading-tight tracking-tight">${item.title}</h2>
+                    <p class="mt-3 flex items-center gap-2 text-base text-on-surface-variant font-medium">
+                      ${icon("location_on", "text-[20px] text-primary")} ${item.place}
                     </p>
                   </div>
-                  <div class="min-w-[200px] rounded-lg border border-outline-variant/30 bg-surface-container-low p-4 text-right">
+
+                  <div class="min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
                     <div class="mb-1 text-xs font-bold uppercase tracking-widest text-primary">Date & Time</div>
-                    <div class="font-display text-xl font-semibold text-on-surface">${dateLabel(item)}</div>
-                    <div class="mt-1 text-sm text-on-surface-variant">${timeStart(item)} - ${timeEnd(item)}</div>
+                    <div class="font-headline-md text-headline-md text-on-surface font-black text-lg">${dateLabel(item)}</div>
+                    <div class="mt-1.5 text-sm font-semibold text-on-surface-variant">${timeStart(item)} - ${timeEnd(item)}</div>
                   </div>
                 </div>
+
                 <hr class="my-8 border-outline-variant/30">
+
+                <!-- Players Grid -->
                 <div>
                   <div class="mb-6 flex items-center justify-between gap-4">
-                    <h3 class="font-display text-xl font-semibold text-on-surface">Players (${item.attendees.length}/${capacity})</h3>
-                    <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-tertiary" : "bg-primary-fixed text-primary"} px-3 py-1 text-sm font-bold">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg">Players (${item.attendees.length}/${capacity})</h3>
+                    <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-container/30" : "bg-primary-fixed text-on-primary-fixed border border-primary-container/30"} px-3 py-1 text-xs font-bold shadow-sm">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     ${playerCards || ""}
@@ -493,56 +752,73 @@
               </div>
             </article>
 
-            <article class="rounded-xl bg-surface-container-lowest p-6 shadow-ambient md:p-8">
-              <h3 class="mb-6 font-display text-xl font-semibold text-on-surface">Match Discussion</h3>
+            <!-- Comments/Discussion Card -->
+            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient md:p-8">
+              <h3 class="mb-6 font-headline-md text-headline-md text-on-surface font-bold text-lg flex items-center gap-2">
+                ${icon("forum", "text-[20px] text-primary")} Match Discussion
+              </h3>
+
               <div class="mb-8 space-y-6">
-                <div class="flex gap-4">
-                  <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white">${item.attendees[0] ? initials(item.attendees[0]) : "A"}</div>
-                  <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4">
-                    <div class="mb-1 flex items-baseline justify-between">
+                <div class="flex gap-4 items-start">
+                  <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-primary-container text-sm font-black text-white shadow-sm">
+                    ${item.attendees[0] ? initials(item.attendees[0]) : "O"}
+                  </div>
+                  <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4 border border-outline-variant/10 shadow-sm">
+                    <div class="mb-1.5 flex items-baseline justify-between">
                       <span class="text-sm font-bold text-on-surface">${item.attendees[0] || "Organizer"}</span>
-                      <span class="text-xs text-on-surface-variant">2 hours ago</span>
+                      <span class="text-xs text-on-surface-variant font-medium">2 hours ago</span>
                     </div>
-                    <p class="text-sm text-on-surface-variant">Bringing a fresh can of balls. See everyone on court!</p>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">안녕하세요! 조심히 오시고 새 공 챙겨가겠습니다. 코트에서 뵙겠습니다!</p>
                   </div>
                 </div>
               </div>
+
               <div class="flex items-start gap-4">
-                <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-outline-variant text-sm font-black text-white">성</div>
+                <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-low text-sm font-black text-on-surface-variant shadow-inner">
+                  성
+                </div>
                 <div class="relative w-full">
-                  <textarea class="w-full resize-none rounded-lg border border-outline-variant bg-surface p-4 text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Leave a message for the players..." rows="3"></textarea>
-                  <button class="absolute bottom-3 right-3 rounded-full p-2 text-primary transition hover:bg-primary-container hover:text-on-primary-container">
-                    <span class="material-symbols-outlined">send</span>
+                  <textarea class="w-full resize-none rounded-xl border border-outline-variant bg-surface p-4 text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" placeholder="Leave a message for the players..." rows="3"></textarea>
+                  <button class="absolute bottom-3.5 right-3.5 rounded-full p-2.5 bg-primary text-on-primary shadow hover:bg-primary-container hover:text-on-primary-container transition-all">
+                    ${icon("send", "text-[16px]")}
                   </button>
                 </div>
               </div>
             </article>
           </div>
 
+          <!-- Right Column: Join Action & Conditions -->
           <aside class="flex flex-col gap-gutter lg:col-span-4">
-            <article class="rounded-xl border-t-4 border-secondary-container bg-surface-container-lowest p-6 shadow-ambient">
-              <h3 class="mb-2 font-display text-xl font-semibold text-on-surface">${spotsLeft ? "Join this Match" : "Match Full"}</h3>
-              <p class="mb-6 text-sm text-on-surface-variant">${spotsLeft ? "You meet the requirements for this doubles match. One spot remaining." : "This match is currently full. Check back if a player cancels."}</p>
-              <button class="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary-container py-4 text-sm font-bold text-on-secondary-container shadow-sm transition hover:bg-primary-fixed">
-                <span class="material-symbols-outlined">sports_tennis</span>${spotsLeft ? "Join Match" : "Waitlist"}
+            <!-- Join Action Card -->
+            <article class="rounded-xl border-t-4 border-secondary bg-surface-container-lowest p-6 shadow-ambient border border-outline-variant/10">
+              <h3 class="mb-2 font-headline-md text-headline-md text-on-surface font-bold text-lg">${spotsLeft ? "Join this Match" : "Match Full"}</h3>
+              <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${spotsLeft ? "NTRP 등급 요건을 충족하셨습니다. 매치 참석 신청을 해보세요!" : "이 매치는 현재 모집 완료되었습니다. 대기자 명단에 등록할 수 있습니다."}</p>
+
+              <button class="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary-container py-4 text-sm font-bold text-on-secondary-container shadow hover:bg-secondary transition-all">
+                ${icon("sports_tennis")} ${spotsLeft ? "Join Match" : "Waitlist"}
               </button>
-              <button class="w-full rounded-lg border border-primary bg-transparent py-3 text-sm font-bold text-primary transition hover:bg-primary/5">Contact Organizer</button>
+              <button class="w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5">
+                Contact Organizer
+              </button>
             </article>
 
-            <article class="rounded-xl bg-surface-container-lowest p-6 shadow-ambient">
-              <h4 class="mb-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Conditions</h4>
-              <div class="mb-4 flex items-center gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-fixed text-tertiary">
-                  <span class="material-symbols-outlined">light_mode</span>
+            <!-- Weather/Conditions Card -->
+            <article class="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
+              <h4 class="mb-5 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Conditions</h4>
+
+              <div class="mb-5 flex items-center gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-fixed text-tertiary shadow-sm">
+                  ${icon("light_mode")}
                 </div>
                 <div>
-                  <div class="font-display text-xl font-semibold text-on-surface">72°F</div>
-                  <div class="text-sm text-on-surface-variant">Clear & Sunny</div>
+                  <div class="font-headline-md text-headline-md text-on-surface font-black text-xl">18°C / 64°F</div>
+                  <div class="text-sm font-semibold text-on-surface-variant">맑음 & 운동하기 좋은 날씨</div>
                 </div>
               </div>
-              <div class="flex items-center gap-3 rounded-lg border border-outline-variant/30 bg-surface-container-low p-3">
-                <span class="material-symbols-outlined text-primary">info</span>
-                <span class="text-xs font-semibold text-on-surface">Court surface was checked this morning.</span>
+
+              <div class="flex items-start gap-3 rounded-lg border border-outline-variant/30 bg-surface-container-low p-4">
+                ${icon("info", "text-primary shrink-0")}
+                <span class="text-xs font-semibold text-on-surface leading-normal">구장 코트 정비 및 sweep 상태가 매우 양호합니다.</span>
               </div>
             </article>
           </aside>
@@ -554,20 +830,20 @@
       const next = upcoming[0];
       const regular = schedules.filter(s => s.regular).length;
       document.querySelector("#quickOverview").innerHTML = `
-        <div class="rounded-lg bg-primary p-4 text-on-primary">
-          <p class="text-xs font-bold uppercase opacity-80">Next Match</p>
-          <p class="mt-1 font-display text-xl font-bold">${dateLabel(next)}</p>
-          <p class="text-sm opacity-90">${timeStart(next)} · ${next.place}</p>
+        <div class="rounded-xl bg-primary p-5 text-on-primary shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Next Match</p>
+          <p class="mt-1.5 font-headline-md text-headline-md font-bold">${dateLabel(next)}</p>
+          <p class="mt-1 text-sm opacity-90">${timeStart(next)} · ${next.place}</p>
         </div>
-        <div class="rounded-lg bg-tertiary-container p-4 text-on-tertiary-container">
-          <p class="text-xs font-bold uppercase opacity-80">Upcoming Events</p>
-          <p class="mt-1 font-display text-3xl font-bold">${upcoming.length}</p>
-          <p class="text-sm opacity-90">오늘 이후 일정</p>
+        <div class="rounded-xl bg-tertiary-container p-5 text-on-tertiary-container shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Upcoming Events</p>
+          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight">${upcoming.length}</p>
+          <p class="mt-1 text-sm opacity-90 font-medium">오늘 이후 일정</p>
         </div>
-        <div class="rounded-lg bg-secondary-container p-4 text-on-secondary-container">
-          <p class="text-xs font-bold uppercase opacity-80">Regular Meetings</p>
-          <p class="mt-1 font-display text-3xl font-bold">${regular}</p>
-          <p class="text-sm opacity-90">정기모임 등록</p>
+        <div class="rounded-xl bg-secondary-container p-5 text-on-secondary-container shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Regular Meetings</p>
+          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight">${regular}</p>
+          <p class="mt-1 text-sm opacity-90 font-medium">정기모임 등록</p>
         </div>
       `;
     }
@@ -588,37 +864,80 @@
     function renderSchedule() {
       const filtered = schedules.filter(matches);
       const groups = filtered.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
+      // Stitch bridge: Schedule grouped-list HTML markup starts here.
       document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, items]) => `
-        <section class="rounded-xl bg-surface-container-low p-4 shadow-ambient">
+        <section class="rounded-xl bg-surface-container-low p-5 shadow-ambient border border-outline-variant/10">
           <div class="mb-4 flex items-center justify-between">
-            <h3 class="font-display text-xl font-bold">${dateLabel(items[0])}</h3>
-            <span class="rounded-full bg-surface-container-lowest px-3 py-1 text-xs font-bold text-primary">${items.length}개 일정 · 참석 ${items.reduce((n, s) => n + s.attendees.length, 0)}명</span>
+            <h3 class="font-display text-xl font-bold text-on-surface">${dateLabel(items[0])}</h3>
+            <span class="rounded-full bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-primary border border-outline-variant/20 shadow-sm">${items.length}개 일정 · 참석 ${items.reduce((n, s) => n + s.attendees.length, 0)}명</span>
           </div>
           <div class="space-y-3">${items.map(item => scheduleRow(item)).join("")}</div>
         </section>
-      `).join("") || `<div class="rounded-xl bg-surface-container-lowest p-10 text-center text-on-surface-variant shadow-ambient">조건에 맞는 일정이 없습니다.</div>`;
+      `).join("") || `<div class="rounded-xl bg-surface-container-lowest p-10 text-center text-on-surface-variant shadow-ambient border border-outline-variant/15">조건에 맞는 일정이 없습니다.</div>`;
     }
 
     function renderCourts() {
+      // Stitch bridge: Courts grid HTML markup starts here.
       document.querySelector("#courtCards").innerHTML = places.map(place => {
         const items = schedules.filter(s => s.place === place);
         const next = items.find(s => new Date(s.date + "T00:00:00") >= today) || items[0];
         const image = courtImage(place);
+
+        // Determine Court Type tag for Stitch styling
+        let courtType = "Clay Court";
+        if (place.includes("새아침")) courtType = "Outdoor Hard";
+        if (place.includes("달빛") || place.includes("달축")) courtType = "DecoTurf Hard";
+        if (place.includes("승기")) courtType = "Premium Clay";
+
+        // Sub-location label
+        let subLocation = "인천 연수구 송도동";
+        if (place.includes("새아침")) subLocation = "남동구 만수동";
+        if (place.includes("승기")) subLocation = "연수구 동춘동";
+
         return `
-          <article class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
-            <div class="h-36 bg-cover bg-center p-4 text-white" style="background-image: url('${image}')">
-              <span class="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary">${items.length} Bookings</span>
-            </div>
-            <div class="p-md">
-              <div class="mb-4 flex items-start justify-between gap-4">
-                <div>
-                  <h3 class="font-display text-xl font-bold">${place}</h3>
-                  <p class="mt-1 text-sm text-on-surface-variant">${next ? `${dateLabel(next)} · ${timeStart(next)}` : "등록된 일정 없음"}</p>
-                </div>
-                <span class="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-on-secondary-container">${items.reduce((n,s)=>n+s.attendees.length,0)}명</span>
+          <article class="card-premium flex flex-col overflow-hidden bg-surface-container-lowest rounded-xl">
+            <div class="h-44 w-full relative overflow-hidden bg-surface-dim">
+              <img src="${image}" alt="${place}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+              <div class="absolute top-3 right-3">
+                <span class="badge-blur px-3 py-1.5 rounded-full font-label-sm text-label-sm text-on-surface flex items-center gap-1.5 font-bold shadow-sm">
+                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                  ${items.length} Bookings
+                </span>
               </div>
+            </div>
+
+            <div class="p-6 flex flex-col flex-1">
+              <div class="flex justify-between items-start mb-3 gap-2">
+                <div>
+                  <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg leading-snug">${place}</h3>
+                  <p class="font-body-md text-sm text-on-surface-variant flex items-center gap-1.5 mt-1 font-medium">
+                    ${icon("location_on", "text-[16px] text-primary")} ${subLocation}
+                  </p>
+                </div>
+                <span class="bg-primary/10 text-primary px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider shrink-0">${courtType}</span>
+              </div>
+
+              <div class="mt-4 mb-5 flex-1">
+                <p class="font-label-sm text-label-sm text-on-surface-variant mb-2 font-bold uppercase tracking-wider">Next Available</p>
+                <div class="flex gap-2 flex-wrap">
+                  ${next
+                    ? `<button class="btn-outline px-3.5 py-1.5 text-xs font-bold" data-detail-id="${next.id}">
+                        ${icon("event_available", "text-[14px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
+                       </button>`
+                    : `<span class="text-xs text-on-surface-variant font-semibold">예정된 일정이 없습니다.</span>`}
+                </div>
+              </div>
+
+              <hr class="border-outline-variant/30 mb-4" />
+
+              <p class="font-label-sm text-label-sm text-on-surface-variant mb-2.5 font-bold uppercase tracking-wider">All Slots (${items.length})</p>
               <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-                ${items.slice(0,6).map(s => `<div class="rounded-lg bg-surface-container-low p-2"><p class="text-primary">${dateLabel(s).replace("월 ","/").replace("일","")}</p><p class="mt-1 text-on-surface-variant">${s.attendees.length}명</p></div>`).join("")}
+                ${items.slice(0, 6).map(s => `
+                  <div class="rounded-lg bg-surface-container-low p-2.5 border border-outline-variant/10 hover:border-primary/20 hover:bg-surface-container-high transition-colors cursor-pointer" data-detail-id="${s.id}">
+                    <p class="text-primary font-bold text-[11px]">${dateLabel(s).replace("5월 ", "5/").split(" (")[0]}</p>
+                    <p class="mt-1 text-on-surface-variant text-[10px]">${s.attendees.length}명 참여</p>
+                  </div>
+                `).join("")}
               </div>
             </div>
           </article>
@@ -635,26 +954,77 @@
     }
 
     function renderMembers() {
-      document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => `
-        <article class="rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-5 shadow-ambient">
-          <div class="mb-4 flex items-start justify-between">
-            <div class="avatar flex h-16 w-16 items-center justify-center rounded-full text-lg font-black text-white">${m.name.slice(0,1)}</div>
-            <span class="rounded-full ${idx < 3 ? "bg-secondary-container text-on-secondary-container" : "bg-surface-container text-on-surface-variant"} px-3 py-1 text-xs font-bold">${m.count}회</span>
-          </div>
-          <h3 class="font-display text-lg font-bold">${m.name}</h3>
-          <p class="mt-1 text-sm text-on-surface-variant">최근: ${m.latest ? dateLabel(m.latest) : "-"}</p>
-          <div class="mt-5 grid grid-cols-2 gap-2">
-            <div class="rounded-lg bg-surface-container-low p-3">
-              <p class="text-[11px] font-bold text-on-surface-variant">MATCHES</p>
-              <p class="font-display text-xl font-bold">${m.count}</p>
+      // Stitch bridge: Members directory HTML markup starts here.
+      document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => {
+        const initial = m.name.slice(0, 1);
+        const rank = idx + 1;
+        const lastActiveDate = m.latest ? dateLabel(m.latest).split(" (")[0] : "없음";
+
+        // Dynamic NTRP rating for realistic visualization
+        let ntrp = "3.5";
+        if (rank === 1) ntrp = "4.5";
+        else if (rank <= 4) ntrp = "4.0";
+        else if (rank <= 8) ntrp = "3.8";
+
+        // Trophy & badge styling
+        let badgeHtml = "";
+        let avatarBorderClass = "border-outline-variant";
+        let avatarBg = "bg-gradient-to-tr from-primary to-primary-container text-white";
+
+        if (rank === 1) {
+          badgeHtml = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-amber-200">🏆 Champion</span>`;
+          avatarBorderClass = "border-4 border-amber-400";
+          avatarBg = "bg-gradient-to-tr from-amber-500 to-yellow-400 text-white";
+        } else if (rank === 2) {
+          badgeHtml = `<span class="bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-slate-200">🥈 Runner-up</span>`;
+          avatarBorderClass = "border-4 border-slate-300";
+          avatarBg = "bg-gradient-to-tr from-slate-400 to-slate-300 text-white";
+        } else if (rank === 3) {
+          badgeHtml = `<span class="bg-amber-700/10 text-amber-900 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-amber-800/20">🥉 Elite</span>`;
+          avatarBorderClass = "border-4 border-amber-600/60";
+          avatarBg = "bg-gradient-to-tr from-amber-700 to-amber-600 text-white";
+        } else {
+          badgeHtml = `<span class="bg-surface-container-high text-on-surface-variant font-semibold px-2 py-0.5 rounded-full text-[10px]">Rank #${rank}</span>`;
+        }
+
+        return `
+          <article class="card-premium flex flex-col items-center text-center bg-surface-container-lowest rounded-xl p-6 relative">
+            <div class="absolute top-4 right-4 flex flex-col items-end gap-1.5">
+              <span class="bg-secondary-container text-on-secondary-container font-label-sm text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">NTRP ${ntrp}</span>
+              ${badgeHtml}
             </div>
-            <div class="rounded-lg bg-surface-container-low p-3">
-              <p class="text-[11px] font-bold text-on-surface-variant">REGULAR</p>
-              <p class="font-display text-xl font-bold">${m.regular}</p>
+
+            <div class="w-20 h-20 rounded-full flex items-center justify-center ${avatarBg} ${avatarBorderClass} text-2xl font-black mb-4 shadow-md transition-transform duration-300 hover:scale-105">
+               ${initial}
             </div>
-          </div>
-        </article>
-      `).join("");
+
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-1 font-bold text-base">${m.name}</h3>
+            <p class="font-label-sm text-xs text-on-surface-variant mb-5 font-semibold">최근 참석: ${lastActiveDate}</p>
+
+            <div class="grid grid-cols-2 gap-3 w-full mb-5">
+              <div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+                <div class="font-label-sm text-[10px] text-on-surface-variant mb-0.5 uppercase tracking-wider font-bold">Matches</div>
+                <div class="font-headline-md text-headline-md text-primary font-black text-lg">${m.count}</div>
+              </div>
+              <div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+                <div class="font-label-sm text-[10px] text-on-surface-variant mb-0.5 uppercase tracking-wider font-bold">Regular</div>
+                <div class="font-headline-md text-headline-md text-secondary font-black text-lg">${m.regular}</div>
+              </div>
+            </div>
+
+            <hr class="w-full border-outline-variant/20 mb-4" />
+
+            <div class="flex gap-2 w-full">
+              <button class="btn-outline flex-1 py-2.5 text-xs font-bold">
+                ${icon("chat", "text-[14px]")} Message
+              </button>
+              <button class="btn-primary flex-1 py-2.5 text-xs font-bold">
+                ${icon("sports_tennis", "text-[14px]")} Challenge
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
     }
 
     function switchView(view) {
