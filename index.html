@@ -136,33 +136,142 @@
     .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; font-size: 22px; line-height: 1; }
     .icon-fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
 
-    /* 네비게이션 액티브 */
-    .nav-item.active { background: var(--primary-container) !important; color: var(--on-primary-container) !important; font-weight: 800; transform: scale(.98); }
-    .nav-item.active .material-symbols-outlined { color: inherit !important; }
+    /* 자석 네비게이션 스타일 */
+    .nav-container { position: relative; }
+    .nav-item {
+      position: relative;
+      z-index: 10;
+      background: transparent !important;
+      transition: color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .nav-item.active {
+      color: var(--primary) !important;
+      font-weight: 800;
+    }
+    .nav-item.active .material-symbols-outlined {
+      color: var(--primary) !important;
+      font-variation-settings: "FILL" 1, "wght" 600, "GRAD" 0, "opsz" 24;
+    }
+    #navIndicator {
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0, 104, 93, 0.08);
+      border: 1px solid rgba(0, 104, 93, 0.1);
+    }
 
-    /* 뷰 핸들러 */
-    .view { display: none; }
-    .view.active { display: block; }
+    /* 프리미엄 뷰 전환 애니메이션 */
+    .view {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px) scale(0.995);
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .view.active {
+      display: block;
+    }
+    .view.active-animate {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
 
-    /* 캘린더 인터랙션 클래스 */
+    /* 캘린더 인터랙션 클래스 고도화 */
+    .calendar-day {
+      transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .calendar-day:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      z-index: 20;
+    }
     .calendar-day.active-day { border-color: var(--primary); }
-    .calendar-day.selected-date { border-color: #1a8cff; background: #d7ebff; }
-    .calendar-day.is-today { background: var(--primary); color: white; }
+    .calendar-day.selected-date { border-color: #00685d; background: rgba(0, 104, 93, 0.05); }
+    .calendar-day.is-today {
+      background: transparent !important;
+      border: 2px solid var(--primary) !important;
+      color: var(--primary) !important;
+      font-weight: 900 !important;
+    }
 
-    /* 공통 프리미엄 그림자 클래스 */
-    .shadow-ambient { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .shadow-float { box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+    /* 캘린더 동적 펄싱 도트 */
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse-glow 2s infinite ease-in-out;
+    }
+    .pulse-dot.dot-primary {
+      background-color: var(--secondary-container);
+      box-shadow: 0 0 6px rgba(206, 237, 62, 0.7);
+    }
+    .pulse-dot.dot-tertiary {
+      background-color: var(--tertiary-container);
+      box-shadow: 0 0 6px rgba(182, 90, 65, 0.7);
+    }
+    .pulse-dot.dot-important {
+      background-color: #ff5449;
+      box-shadow: 0 0 6px rgba(255, 84, 73, 0.7);
+    }
+    .pulse-dot.my-schedule-dot {
+      width: 8px;
+      height: 8px;
+      border: 2px solid #111;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.95), 0 0 6px rgba(0, 0, 0, 0.18);
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); opacity: 0.65; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    /* 공통 프리미엄 그림자 & 스펙큘러 보더 */
+    .shadow-ambient { box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+    .shadow-float { box-shadow: 0 12px 36px rgba(0,0,0,0.09); }
+
+    /* 카드 입체감 조절용 Specular Border & Watermark */
+    .specular-card {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .card-watermark {
+      position: absolute;
+      bottom: -12px;
+      right: -12px;
+      opacity: 0.06;
+      pointer-events: none;
+      transform: rotate(-15deg);
+      transition: transform 0.4s ease-out;
+    }
+    .specular-card:hover .card-watermark {
+      transform: rotate(-5deg) scale(1.08);
+    }
 
     /* 프리미엄 블러 뱃지 */
     .badge-blur {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(188, 201, 198, 0.2);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
     }
-    .dark .badge-blur {
-      background: rgba(46, 49, 50, 0.85);
-      border: 1px solid rgba(109, 122, 119, 0.3);
+
+    /* 타이포그래피 정렬 보정 */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .tracking-tightest {
+      letter-spacing: -0.04em;
+    }
+
+    /* 스켈레톤 홀더 반짝임 효과 */
+    .skeleton-shine {
+      background: linear-gradient(90deg, #edeeef 25%, #f8f9fa 50%, #edeeef 75%);
+      background-size: 200% 100%;
+      animation: skeleton-glow 1.5s infinite linear;
+    }
+    @keyframes skeleton-glow {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     /* 공통 버튼 시스템 */
@@ -182,6 +291,7 @@
       background-color: var(--primary-container);
       color: var(--on-primary-container);
       box-shadow: 0 4px 12px rgba(0, 106, 96, 0.15);
+      transform: translateY(-1px);
     }
     .btn-primary:active {
       transform: scale(0.97);
@@ -202,6 +312,7 @@
     .btn-secondary:hover {
       background-color: var(--secondary-fixed);
       box-shadow: 0 4px 12px rgba(85, 101, 0, 0.15);
+      transform: translateY(-1px);
     }
     .btn-secondary:active {
       transform: scale(0.97);
@@ -223,6 +334,7 @@
       background-color: rgba(0, 104, 93, 0.05);
       border-color: var(--primary-container);
       color: var(--primary-container);
+      transform: translateY(-1px);
     }
     .btn-outline:active {
       transform: scale(0.97);
@@ -234,9 +346,9 @@
       border: 1px solid rgba(188, 201, 198, 0.25);
     }
     .card-premium:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px -6px rgba(0,0,0,0.04), 0 8px 16px -8px rgba(0,0,0,0.04);
-      border-color: rgba(0, 104, 93, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px -6px rgba(0,0,0,0.06), 0 8px 16px -8px rgba(0,0,0,0.04);
+      border-color: rgba(0, 104, 93, 0.2);
     }
 
     .avatar { background: linear-gradient(135deg, #00685d, #ceed3e); }
@@ -261,7 +373,7 @@
 <body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
   <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/30 md:hidden"></div>
 
-  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base bg-surface-container-low py-md shadow-md md:flex">
+  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base bg-surface-container-low/75 backdrop-blur-xl border-r border-outline-variant/15 py-md shadow-sm md:flex">
     <div class="mb-lg px-margin-mobile">
       <div class="flex items-center gap-3">
         <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="아직도 성장중 로고">
@@ -272,29 +384,30 @@
       </div>
     </div>
 
-    <div class="flex flex-1 flex-col gap-sm text-label-md font-label-md">
-      <button class="nav-item active mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high hover:text-on-surface" data-view="dashboard">
+    <div class="nav-container flex flex-1 flex-col gap-sm text-label-md font-label-md relative">
+      <div id="navIndicator" class="absolute left-2.5 w-[calc(100%-20px)] h-12 rounded-lg bg-primary-container/20 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"></div>
+      <button class="nav-item active mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="dashboard">
         <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>Dashboard
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="schedule">
+      <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="schedule">
         <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>Schedule
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="courts">
+      <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="courts">
         <span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>Courts
       </button>
-      <button class="nav-item mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" data-view="members">
+      <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="members">
         <span class="material-symbols-outlined" data-icon="group">group</span>Members
       </button>
     </div>
 
     <div class="mt-auto px-margin-mobile">
-      <button class="w-full rounded-full bg-primary py-3 font-label-md text-label-md font-bold text-on-primary transition-opacity hover:opacity-90">
+      <button class="btn-primary w-full py-3.5 text-label-md font-bold">
         Book a Court
       </button>
     </div>
   </nav>
 
-  <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/30 bg-surface px-margin-mobile shadow-sm md:left-64 md:px-margin-desktop">
+  <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/15 bg-surface/75 backdrop-blur-xl px-margin-mobile shadow-sm md:left-64 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
       <button id="mobileMenu" class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high md:hidden">
         <span class="material-symbols-outlined" data-icon="menu">menu</span>
@@ -303,7 +416,10 @@
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
         <input id="globalSearch" class="w-64 rounded-full border border-outline-variant bg-surface-container-low py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Search..." type="search">
       </label>
-      <span class="font-headline-md text-headline-md font-bold text-primary sm:hidden">아직도 성장중</span>
+      <div class="flex items-center gap-2 sm:hidden">
+        <img class="h-7 w-7 shrink-0 object-contain" src="assets/logo.png" alt="" aria-hidden="true">
+        <span class="font-headline-md text-headline-md font-bold text-primary">아직도 성장중</span>
+      </div>
     </div>
     <div class="relative flex items-center gap-sm">
       <button class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
@@ -346,9 +462,13 @@
           <section class="rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
               <h3 class="font-display text-xl font-semibold">May 2026</h3>
-              <div class="flex gap-2">
-                <button class="rounded-full border border-outline-variant p-2 text-on-surface-variant"><span class="material-symbols-outlined">chevron_left</span></button>
-                <button class="rounded-full border border-outline-variant p-2 text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+              <div class="flex items-center gap-1">
+                <button class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" aria-label="이전 달">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <button class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" aria-label="다음 달">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
               </div>
             </div>
             <div class="mb-2 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-on-surface-variant">
@@ -440,22 +560,23 @@
       { date:"2026-05-17", day:"일", time:"오후 12:00 ~ 오후 3:00", title:"5월 17일(일) 승기사업소 송도지소 12-15시", place:"승기사업소 송도지소", attendees:["신경은","민문기","김태환","조형철","허수정"] },
       { date:"2026-05-20", day:"수", time:"오후 8:00 ~ 오후 10:00", title:"5월 20일(수) 20시~22시 새아침 2번코트", place:"새아침 2번코트", attendees:["민문기","김태환","윤인선","허수정"] },
       { date:"2026-05-22", day:"금", time:"오후 8:00 ~ 오후 10:00", title:"5월22일 (금) 20시~22시 달빛 8번", place:"달빛 8번코트", attendees:["신경은","김태환","이상백","허수정"] },
-      { date:"2026-05-24", day:"일", time:"오후 12:00 ~ 오후 3:00", title:"5월 24일 (일) 12-15시 승기사업소 송도지소", place:"승기사업소 송도지소", attendees:["이상백"] },
+      { date:"2026-05-24", day:"일", time:"오후 12:00 ~ 오후 3:00", title:"5월 24일 (일) 12-15시 승기사업소 송도지소", place:"승기사업소 송도지소", attendees:["이상백","조형철"] },
       { date:"2026-05-24", day:"일", time:"오후 2:00 ~ 오후 6:00", title:"5월 24일(일) 정기모임 달빛축제 14-18시", place:"달빛축제", attendees:["김지석","신경은","민문기","박지영","박창언","이상백","조형철","최빛나","한인호","허수정"], regular:true },
-      { date:"2026-05-25", day:"월", time:"오후 4:00 ~ 오후 6:00", title:"5월 25일(월) 새아침 4코트 16-18시", place:"새아침 4번코트", attendees:["신경은","이상백","조형철"] },
-      { date:"2026-05-25", day:"월", time:"오후 6:00 ~ 오후 8:00", title:"5월25일(월) 18-20 새아침 4번", place:"새아침 4번코트", attendees:["송영희","이상백"] },
-      { date:"2026-05-25", day:"월", time:"오후 8:00 ~ 오후 10:00", title:"5월 25일(월) 20시~22시 새아침 3코트", place:"새아침 3번코트", attendees:[] },
-      { date:"2026-05-26", day:"화", time:"오후 8:00 ~ 오후 10:00", title:"5월26일 (화) 20시~22시 달빛 12번코트", place:"달빛 12번코트", attendees:["김태환","박창언"] },
+      { date:"2026-05-25", day:"월", time:"오후 4:00 ~ 오후 6:00", title:"5월 25일(월) 새아침 4코트 16-18시", place:"새아침 4번코트", attendees:["신경은","이상백"] },
+      { date:"2026-05-25", day:"월", time:"오후 6:00 ~ 오후 8:00", title:"5월25일(월) 18-20 새아침 4번", place:"새아침 4번코트", attendees:["송영희","이민경","이상백","한인호"] },
+      { date:"2026-05-25", day:"월", time:"오후 8:00 ~ 오후 10:00", title:"5월 25일(월) 20시~22시 새아침 3코트", place:"새아침 3번코트", attendees:["이상백","박지영","한인호"] },
+      { date:"2026-05-26", day:"화", time:"오후 8:00 ~ 오후 10:00", title:"5월26일 (화) 20시~22시 달빛 12번코트", place:"달빛 12번코트", attendees:["민문기","김태환","박창언"] },
       { date:"2026-05-27", day:"수", time:"오후 8:00 ~ 오후 10:00", title:"5월27일 (수) 20~22시 달빛 12번", place:"달빛 12번코트", attendees:["민문기","김태환"] },
       { date:"2026-05-29", day:"금", time:"오후 8:00 ~ 오후 10:00", title:"5월 29일(금) 20시~22시 새아침 4코트", place:"새아침 4번코트", attendees:[] },
-      { date:"2026-05-30", day:"토", time:"오후 8:00 ~ 오후 10:00", title:"5월30일(토) 20-22시 새아침4코트", place:"새아침 4번코트", attendees:["신경은","박지영","윤인선","허수정"] },
-      { date:"2026-05-31", day:"일", time:"오전 9:00 ~ 오후 12:00", title:"5월 31일 (일) 09시-12시 승기사업소", place:"승기사업소", attendees:["신경은","윤인선","조형철"] },
+      { date:"2026-05-30", day:"토", time:"오후 8:00 ~ 오후 10:00", title:"5월30일(토) 20-22시 달빛테니스장 8번 하드코트", place:"달빛테니스장 8번 하드코트", attendees:["박지영","윤인선","허수정"] },
+      { date:"2026-05-31", day:"일", time:"오전 9:00 ~ 오후 12:00", title:"5월 31일 (일) 09시-12시 승기사업소", place:"승기사업소", attendees:["김지석","신경은","윤인선","조형철"] },
       { date:"2026-05-31", day:"일", time:"오후 12:00 ~ 오후 3:00", title:"5월 31일(일)12-15시 승기사업소 송도지소", place:"승기사업소 송도지소", attendees:["신경은","조형철"] },
       { date:"2026-05-31", day:"일", time:"오후 4:00 ~ 오후 6:00", title:"5월31일(일) 16-18 새아침 3번", place:"새아침 3번코트", attendees:["조형철"] }
     ];
 
     schedules.forEach((schedule, index) => schedule.id = index);
 
+    const MY_NAME = "김지석";
     const today = new Date("2026-05-15T00:00:00");
     const state = { query: "", place: "all", person: "all", memberSort: "count", selectedId: 0, selectedDate: "" };
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
@@ -489,16 +610,39 @@
       return hour >= 6 && hour <= 18 ? "daytime" : "nighttime";
     }
 
+    function isMySchedule(item) {
+      return item.attendees.includes(MY_NAME);
+    }
+
     function icon(name, cls = "") {
       return `<span class="material-symbols-outlined ${cls}">${name}</span>`;
     }
 
+    function emptyStateHTML(title, message) {
+      return `
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-outline-variant/60 bg-surface-container-low/30 p-10 text-center shadow-sm">
+          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-surface-container-high/60 text-primary mb-4 shadow-sm">
+            <svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="9" r="5" />
+              <path d="M12.5 12.5 19 19" />
+              <path d="m14 16.5 2.5-2.5" />
+              <circle cx="16.5" cy="5.5" r="1.2" />
+            </svg>
+          </div>
+          <h4 class="text-sm font-bold text-on-surface tracking-tight">${title}</h4>
+          <p class="mt-1.5 text-xs font-semibold text-on-surface-variant leading-relaxed max-w-[280px]">${message}</p>
+          <button class="btn-outline mt-5 px-5 py-2 text-xs font-bold shadow-sm" type="button" onclick="switchView('courts')">
+            ${icon("calendar_today", "text-[14px]")} 새로운 코트 예약하기
+          </button>
+        </div>
+      `;
+    }
+
     function courtImage(place) {
-      if (place.includes("달빛축제") || place.includes("달축")) return "assets/courts/dalbit-festival.jpg";
-      if (place.includes("달빛") || place.includes("달빛공원")) return "assets/courts/dalbit.png";
-      if (place.includes("새아침")) return "assets/courts/saeachim.jpg";
-      if (place.includes("승기")) return "assets/courts/songdo-jiso.jpeg";
-      return "";
+      if (place.includes("달빛축제") || place.includes("달축") || place.includes("달빛") || place.includes("달빛공원")) return "assets/courts/moonlight_hard.png";
+      if (place.includes("새아침")) return "assets/courts/newmorning_forest.png";
+      if (place.includes("승기")) return "assets/courts/seunggi_clay.png";
+      return "assets/courts/moonlight_hard.png";
     }
 
     function renderCalendar() {
@@ -508,13 +652,14 @@
 
       // Stitch bridge: Calendar HTML markup starts here.
       for (let i = 0; i < firstOffset; i++) {
-        cells.push(`<div class="h-24 md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>`);
+        cells.push(`<div class="aspect-square h-auto md:aspect-auto md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>`);
       }
 
       for (let day = 1; day <= 31; day++) {
         const iso = `2026-05-${String(day).padStart(2, "0")}`;
         const events = byDate[iso] || [];
         const isToday = day === 15;
+        const hasMySchedule = events.some(isMySchedule);
 
         const eventChips = events.slice(0, 2).map(e => {
           let chipClass = "bg-secondary-container text-on-secondary-container";
@@ -522,6 +667,9 @@
             chipClass = "bg-error-container text-on-error-container";
           } else if (e.regular) {
             chipClass = "bg-tertiary-container text-on-tertiary-container";
+          }
+          if (isMySchedule(e)) {
+            chipClass += " ring-2 ring-primary/45 ring-offset-1 ring-offset-surface-container-lowest";
           }
 
           return `
@@ -537,10 +685,31 @@
 
         let cellClass = "bg-surface-container-lowest border border-surface-container-high";
         let numberClass = "text-on-surface";
+        const dotCount = Math.min(events.length, 3);
+        const dotsMarkup = events.slice(0, dotCount).map(e => {
+          let dotType = "dot-primary";
+          if (e.important) {
+            dotType = "dot-important";
+          } else if (e.regular) {
+            dotType = "dot-tertiary";
+          }
+          const myDotClass = isMySchedule(e) ? "my-schedule-dot" : "";
+          return `<span class="pulse-dot ${dotType} ${myDotClass}"></span>`;
+        }).join("");
+
+        const dotIndicator = events.length > 0
+          ? `<div class="absolute left-1/2 top-[30px] flex -translate-x-1/2 items-center justify-center gap-1 md:hidden">${dotsMarkup}</div>`
+          : "";
+        const myScheduleBadge = hasMySchedule
+          ? `<span class="absolute right-2 top-2 z-10 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white shadow-sm ring-2 ring-surface-container-lowest md:flex" title="${MY_NAME} 참석 일정" aria-label="${MY_NAME} 참석 일정">
+              <span class="text-[11px] font-black leading-none">✓</span>
+            </span>`
+          : "";
+
 
         if (isToday) {
-          cellClass = "bg-primary-container border-2 border-primary shadow-sm";
-          numberClass = "text-on-primary-container font-bold bg-primary text-white";
+          cellClass = "calendar-day is-today shadow-sm";
+          numberClass = "font-bold bg-primary text-white shadow-sm";
         } else if (state.selectedDate === iso) {
           cellClass = "border-2 border-primary bg-primary/5 shadow-sm";
         } else if (events.length) {
@@ -550,9 +719,11 @@
         }
 
         cells.push(`
-          <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative h-24 md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200 hover:shadow-sm" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
-            <span class="${numberClass} inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
-            <div class="absolute bottom-2 left-2 right-2 space-y-1.5">
+          <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
+            <span class="${numberClass} absolute top-2 left-2 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
+            ${myScheduleBadge}
+            ${dotIndicator}
+            <div class="absolute bottom-2 left-2 right-2 space-y-1.5 hidden md:block">
               ${eventChips}
               ${overflowChip}
             </div>
@@ -576,7 +747,7 @@
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
       document.querySelector("#selectedDateList").innerHTML = items.length
         ? items.map(item => scheduleRow(item, "datePanel")).join("")
-        : `<div class="rounded-lg border border-dashed border-outline-variant/60 bg-surface-container-low p-6 text-center text-sm font-semibold text-on-surface-variant">이 날짜에는 등록된 일정이 없습니다.</div>`;
+        : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
     }
 
     function scheduleRow(item, variant = "") {
@@ -613,7 +784,7 @@
                   <div class="min-w-0">
                     <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
                     <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
-                      ${icon("schedule", "text-[16px] text-primary")} ${item.time} @ <span class="text-on-surface font-semibold">${item.place}</span>
+                      ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
                     </p>
                     <p class="mt-1.5 truncate text-xs font-semibold text-on-surface-variant flex items-center gap-1">
                       ${icon("group", "text-[14px]")} ${attendeeText}
@@ -641,7 +812,7 @@
                     <h4 class="font-label-md text-label-md text-on-surface font-bold text-base">${item.title}</h4>
                   </div>
                   <p class="mt-1.5 flex items-center gap-1.5 font-body-md text-body-md text-on-surface-variant font-medium">
-                    ${icon("schedule", "text-[16px] text-primary")} ${timeStart(item)} - ${timeEnd(item)} @ <span class="text-on-surface font-semibold">${item.place}</span>
+                    ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${timeStart(item)} - ${timeEnd(item)}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
                   </p>
                   <p class="mt-1.5 text-xs font-bold text-on-surface-variant flex items-center gap-1">
                     ${icon("calendar_month", "text-[14px] text-outline")} ${dateLabel(item)} · <span class="text-primary">${item.attendees.length}명 참석 중</span>
@@ -829,21 +1000,34 @@
     function renderUpcoming() {
       const next = upcoming[0];
       const regular = schedules.filter(s => s.regular).length;
+
+      const watermarkSvg = `
+        <svg class="card-watermark w-28 h-28 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="9" r="5" />
+          <path d="M12.5 12.5 19 19" />
+          <path d="m14 16.5 2.5-2.5" />
+          <circle cx="16.5" cy="5.5" r="1.2" />
+        </svg>
+      `;
+
       document.querySelector("#quickOverview").innerHTML = `
-        <div class="rounded-xl bg-primary p-5 text-on-primary shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Next Match</p>
-          <p class="mt-1.5 font-headline-md text-headline-md font-bold">${dateLabel(next)}</p>
-          <p class="mt-1 text-sm opacity-90">${timeStart(next)} · ${next.place}</p>
+        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary to-[#004d44] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          ${watermarkSvg}
+          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Next Match</p>
+          <p class="mt-2 font-headline-md text-xl font-black tracking-tight">${dateLabel(next)}</p>
+          <p class="mt-1 text-xs font-semibold opacity-90">${timeStart(next)} · ${next.place}</p>
         </div>
-        <div class="rounded-xl bg-tertiary-container p-5 text-on-tertiary-container shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Upcoming Events</p>
-          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight">${upcoming.length}</p>
-          <p class="mt-1 text-sm opacity-90 font-medium">오늘 이후 일정</p>
+        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-tertiary to-[#732715] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          ${watermarkSvg}
+          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Upcoming Events</p>
+          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight tabular-nums">${upcoming.length}</p>
+          <p class="mt-1 text-xs font-medium opacity-90">오늘 이후 예정된 일정</p>
         </div>
-        <div class="rounded-xl bg-secondary-container p-5 text-on-secondary-container shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          <p class="text-xs font-bold uppercase tracking-widest opacity-80">Regular Meetings</p>
-          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight">${regular}</p>
-          <p class="mt-1 text-sm opacity-90 font-medium">정기모임 등록</p>
+        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#778d0a] to-[#556500] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          ${watermarkSvg}
+          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Regular Meetings</p>
+          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight tabular-nums">${regular}</p>
+          <p class="mt-1 text-xs font-medium opacity-90">등록된 클럽 정기 모임</p>
         </div>
       `;
     }
@@ -873,7 +1057,7 @@
           </div>
           <div class="space-y-3">${items.map(item => scheduleRow(item)).join("")}</div>
         </section>
-      `).join("") || `<div class="rounded-xl bg-surface-container-lowest p-10 text-center text-on-surface-variant shadow-ambient border border-outline-variant/15">조건에 맞는 일정이 없습니다.</div>`;
+      `).join("") || emptyStateHTML("조건에 맞는 경기가 없습니다 🔍", "다른 검색어를 입력하시거나, 구장/참석자 필터를 조절해 새로운 매치를 탐색해 보세요.");
     }
 
     function renderCourts() {
@@ -1028,8 +1212,67 @@
     }
 
     function switchView(view) {
-      document.querySelectorAll(".view").forEach(el => el.classList.toggle("active", el.id === view));
-      document.querySelectorAll(".nav-item").forEach(el => el.classList.toggle("active", el.dataset.view === (view === "detail" ? "schedule" : view)));
+      // 1. Magnetized Nav Indicator Sliding Motion
+      const targetView = view === "detail" ? "schedule" : view;
+      const activeBtn = document.querySelector(`.nav-item[data-view="${targetView}"]`);
+      const indicator = document.querySelector("#navIndicator");
+      if (activeBtn && indicator) {
+        indicator.style.top = `${activeBtn.offsetTop}px`;
+        indicator.style.height = `${activeBtn.offsetHeight}px`;
+        indicator.style.width = `${activeBtn.offsetWidth}px`;
+      }
+
+      // 2. Active Tab Text State
+      document.querySelectorAll(".nav-item").forEach(el => {
+        el.classList.toggle("active", el.dataset.view === targetView);
+      });
+
+      // 3. Trigger Skeleton Loading Screen (0.2s duration for extreme responsiveness)
+      if (view === "schedule") {
+        document.querySelector("#scheduleGroups").innerHTML = `
+          <div class="rounded-xl bg-surface-container-low p-6 space-y-4 skeleton-shine opacity-50 min-h-[300px] border border-outline-variant/10">
+            <div class="h-6 w-1/4 bg-on-surface-variant/20 rounded"></div>
+            <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
+            <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
+          </div>
+        `;
+        setTimeout(renderSchedule, 200);
+      } else if (view === "courts") {
+        document.querySelector("#courtCards").innerHTML = Array(3).fill(`
+          <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 space-y-4 skeleton-shine opacity-50">
+            <div class="h-44 w-full bg-on-surface-variant/15 rounded-lg"></div>
+            <div class="h-6 w-2/3 bg-on-surface-variant/10 rounded"></div>
+            <div class="h-4 w-1/2 bg-on-surface-variant/10 rounded"></div>
+          </div>
+        `).join("");
+        setTimeout(renderCourts, 200);
+      } else if (view === "members") {
+        document.querySelector("#memberGrid").innerHTML = Array(4).fill(`
+          <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 flex flex-col items-center space-y-4 skeleton-shine opacity-50">
+            <div class="w-20 h-20 rounded-full bg-on-surface-variant/15"></div>
+            <div class="h-6 w-1/2 bg-on-surface-variant/10 rounded"></div>
+            <div class="h-4 w-1/3 bg-on-surface-variant/10 rounded"></div>
+            <div class="h-10 w-full bg-on-surface-variant/10 rounded-lg"></div>
+          </div>
+        `).join("");
+        setTimeout(renderMembers, 200);
+      }
+
+      // 4. Elastic Tab Fade-Slide Transition
+      document.querySelectorAll(".view").forEach(el => {
+        if (el.id === view) {
+          el.style.display = "block";
+          // Trigger browser layout reflow to register style changes
+          el.offsetHeight;
+          el.classList.add("active");
+          // Apply animation class after short paint timeout
+          setTimeout(() => el.classList.add("active-animate"), 20);
+        } else {
+          el.classList.remove("active", "active-animate");
+          el.style.display = "none";
+        }
+      });
+
       document.body.classList.remove("mobile-nav-open");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1084,6 +1327,7 @@
       renderMembers();
     }));
 
+    // Initialize layout configurations on load
     renderCalendar();
     renderSelectedDate();
     renderUpcoming();
@@ -1092,6 +1336,9 @@
     renderCourts();
     renderMembers();
     renderDetail(schedules[state.selectedId]);
+
+    // Trigger switchView("dashboard") once to register initial visual animations and navigation positions
+    switchView("dashboard");
   </script>
 </body>
 </html>
