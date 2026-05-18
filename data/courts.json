@@ -1,0 +1,93 @@
+[
+  {
+    "id": "court-moonlight-12",
+    "name": "달빛 12번코트",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "DecoTurf Hard",
+    "location": "인천 연수구 송도동"
+  },
+  {
+    "id": "court-moonlight-8",
+    "name": "달빛 8번코트",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "DecoTurf Hard",
+    "location": "인천 연수구 송도동"
+  },
+  {
+    "id": "court-moonlight-festival",
+    "name": "달빛축제",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "DecoTurf Hard",
+    "location": "인천 연수구 송도동"
+  },
+  {
+    "id": "court-moonlight-festival-b",
+    "name": "달빛축제 B",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "DecoTurf Hard",
+    "location": "인천 연수구 송도동"
+  },
+  {
+    "id": "court-moonlight-tennis-8-hard",
+    "name": "달빛테니스장 8번 하드코트",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "DecoTurf Hard",
+    "location": "인천 연수구 송도동"
+  },
+  {
+    "id": "court-newmorning-2",
+    "name": "새아침 2번코트",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "남동구 만수동"
+  },
+  {
+    "id": "court-newmorning-3",
+    "name": "새아침 3번코트",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "남동구 만수동"
+  },
+  {
+    "id": "court-newmorning-4",
+    "name": "새아침 4번코트",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "남동구 만수동"
+  },
+  {
+    "id": "court-yonsei-tennis",
+    "name": "연세 테니스장",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "인천"
+  },
+  {
+    "id": "court-bookclub",
+    "name": "독서모임",
+    "image": "assets/logo.png",
+    "type": "Club Meetup",
+    "location": "인천"
+  },
+  {
+    "id": "court-seunggi",
+    "name": "승기사업소",
+    "image": "assets/courts/seunggi_clay.png",
+    "type": "Premium Clay",
+    "location": "연수구 동춘동"
+  },
+  {
+    "id": "court-seunggi-songdo",
+    "name": "승기사업소 송도지소",
+    "image": "assets/courts/seunggi_clay.png",
+    "type": "Premium Clay",
+    "location": "연수구 동춘동"
+  },
+  {
+    "id": "court-seunggi-songdo-short",
+    "name": "승기송도지소",
+    "image": "assets/courts/seunggi_clay.png",
+    "type": "Premium Clay",
+    "location": "연수구 동춘동"
+  }
+]

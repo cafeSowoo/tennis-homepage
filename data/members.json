@@ -1,0 +1,77 @@
+[
+  {
+    "id": "member-kim-jiseok",
+    "name": "김지석",
+    "status": "active"
+  },
+  {
+    "id": "member-kim-taehwan",
+    "name": "김태환",
+    "status": "active"
+  },
+  {
+    "id": "member-min-mungi",
+    "name": "민문기",
+    "status": "active"
+  },
+  {
+    "id": "member-park-jiyoung",
+    "name": "박지영",
+    "status": "active"
+  },
+  {
+    "id": "member-park-changeon",
+    "name": "박창언",
+    "status": "active"
+  },
+  {
+    "id": "member-song-younghee",
+    "name": "송영희",
+    "status": "active"
+  },
+  {
+    "id": "member-shin-kyoungeun",
+    "name": "신경은",
+    "status": "active"
+  },
+  {
+    "id": "member-yoon-inseon",
+    "name": "윤인선",
+    "status": "active"
+  },
+  {
+    "id": "member-lee-minkyung",
+    "name": "이민경",
+    "status": "active"
+  },
+  {
+    "id": "member-lee-sangbaek",
+    "name": "이상백",
+    "status": "active"
+  },
+  {
+    "id": "member-lee-heeji",
+    "name": "이희지",
+    "status": "active"
+  },
+  {
+    "id": "member-cho-hyeongcheol",
+    "name": "조형철",
+    "status": "active"
+  },
+  {
+    "id": "member-choi-bitna",
+    "name": "최빛나",
+    "status": "active"
+  },
+  {
+    "id": "member-han-inho",
+    "name": "한인호",
+    "status": "active"
+  },
+  {
+    "id": "member-heo-sujeong",
+    "name": "허수정",
+    "status": "active"
+  }
+]

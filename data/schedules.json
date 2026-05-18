@@ -1,0 +1,532 @@
+[
+  {
+    "id": 0,
+    "date": "2026-05-01",
+    "day": "금",
+    "time": "오후 12:00 ~ 오후 3:00",
+    "title": "5월1일(금) 12-15 승기송도지소",
+    "courtId": "court-seunggi-songdo-short",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-kim-taehwan",
+      "member-cho-hyeongcheol",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 1,
+    "date": "2026-05-01",
+    "day": "금",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "05.01(금) 새아침 4번코트 20~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-park-jiyoung",
+      "member-song-younghee",
+      "member-lee-minkyung",
+      "member-han-inho"
+    ]
+  },
+  {
+    "id": 2,
+    "date": "2026-05-04",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 4일(월) 20-22시 새아침 4번",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-kim-jiseok",
+      "member-shin-kyoungeun",
+      "member-lee-heeji",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 3,
+    "date": "2026-05-06",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 8:00",
+    "title": "(마감)5월6일(수) 달축B 18~20시",
+    "courtId": "court-moonlight-festival-b",
+    "attendeeIds": [
+      "member-kim-taehwan",
+      "member-cho-hyeongcheol",
+      "member-heo-sujeong"
+    ],
+    "closed": true
+  },
+  {
+    "id": 4,
+    "date": "2026-05-09",
+    "day": "토",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월9일(토) 20-22시 새아침4코트",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-park-jiyoung",
+      "member-yoon-inseon",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 5,
+    "date": "2026-05-10",
+    "day": "일",
+    "time": "오후 12:00 ~ 오후 3:00",
+    "title": "5월 10일(일) 12-15시 승기사업소 송도지소",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-kim-jiseok",
+      "member-shin-kyoungeun",
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 6,
+    "date": "2026-05-10",
+    "day": "일",
+    "time": "오후 3:00 ~ 오후 5:00",
+    "title": "5월 10일(일) 승기사업소 송도지소 15-17시",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-min-mungi",
+      "member-lee-minkyung",
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 7,
+    "date": "2026-05-10",
+    "day": "일",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "05.10(일) 새아침 4번코트 20~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-kim-taehwan",
+      "member-park-jiyoung",
+      "member-han-inho",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 8,
+    "date": "2026-05-11",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 11일(월) 20-22시 새아침 4번",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-kim-taehwan",
+      "member-lee-sangbaek",
+      "member-han-inho"
+    ]
+  },
+  {
+    "id": 9,
+    "date": "2026-05-12",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월12일 (화) 20시~22시 달빛 12번",
+    "courtId": "court-moonlight-12",
+    "attendeeIds": [
+      "member-min-mungi",
+      "member-yoon-inseon",
+      "member-lee-heeji",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 10,
+    "date": "2026-05-13",
+    "day": "수",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 13일(수) 정기모임 달빛축제 20-22시",
+    "courtId": "court-moonlight-festival",
+    "attendeeIds": [
+      "member-kim-jiseok",
+      "member-shin-kyoungeun",
+      "member-min-mungi",
+      "member-kim-taehwan",
+      "member-park-jiyoung",
+      "member-park-changeon",
+      "member-song-younghee",
+      "member-yoon-inseon",
+      "member-lee-minkyung",
+      "member-lee-sangbaek",
+      "member-lee-heeji",
+      "member-cho-hyeongcheol",
+      "member-choi-bitna",
+      "member-han-inho",
+      "member-heo-sujeong"
+    ],
+    "regular": true
+  },
+  {
+    "id": 11,
+    "date": "2026-05-15",
+    "day": "금",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월15일(금) 20-22 새아침3번",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": [
+      "member-kim-taehwan",
+      "member-park-jiyoung",
+      "member-song-younghee",
+      "member-han-inho"
+    ]
+  },
+  {
+    "id": 12,
+    "date": "2026-05-17",
+    "day": "일",
+    "time": "오전 9:00 ~ 오후 12:00",
+    "title": "5월 17일(일) 승기사업소 송도지소 09-12시",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-min-mungi",
+      "member-park-changeon",
+      "member-yoon-inseon",
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 13,
+    "date": "2026-05-17",
+    "day": "일",
+    "time": "오후 12:00 ~ 오후 3:00",
+    "title": "5월 17일(일) 승기사업소 송도지소 12-15시",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-min-mungi",
+      "member-kim-taehwan",
+      "member-cho-hyeongcheol",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 14,
+    "date": "2026-05-20",
+    "day": "수",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 20일(수) 20시~22시 새아침 2번코트",
+    "courtId": "court-newmorning-2",
+    "attendeeIds": [
+      "member-min-mungi",
+      "member-kim-taehwan",
+      "member-yoon-inseon",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 15,
+    "date": "2026-05-22",
+    "day": "금",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월22일 (금) 20시~22시 달빛 8번",
+    "courtId": "court-moonlight-8",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-kim-taehwan",
+      "member-lee-sangbaek",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 16,
+    "date": "2026-05-24",
+    "day": "일",
+    "time": "오후 12:00 ~ 오후 3:00",
+    "title": "5월 24일 (일) 12-15시 승기사업소 송도지소",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 17,
+    "date": "2026-05-24",
+    "day": "일",
+    "time": "오후 2:00 ~ 오후 6:00",
+    "title": "5월 24일(일) 정기모임 달빛축제 14-18시",
+    "courtId": "court-moonlight-festival",
+    "attendeeIds": [
+      "member-kim-jiseok",
+      "member-shin-kyoungeun",
+      "member-min-mungi",
+      "member-park-jiyoung",
+      "member-park-changeon",
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol",
+      "member-choi-bitna",
+      "member-han-inho",
+      "member-heo-sujeong"
+    ],
+    "regular": true
+  },
+  {
+    "id": 18,
+    "date": "2026-05-25",
+    "day": "월",
+    "time": "오후 4:00 ~ 오후 6:00",
+    "title": "5월 25일(월) 새아침 4코트 16-18시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-lee-sangbaek"
+    ]
+  },
+  {
+    "id": 19,
+    "date": "2026-05-25",
+    "day": "월",
+    "time": "오후 6:00 ~ 오후 8:00",
+    "title": "5월25일(월) 18-20 새아침 4번",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": [
+      "member-song-younghee",
+      "member-lee-minkyung",
+      "member-lee-sangbaek",
+      "member-han-inho"
+    ]
+  },
+  {
+    "id": 20,
+    "date": "2026-05-25",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 25일(월) 20시~22시 새아침 3코트",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": [
+      "member-lee-sangbaek",
+      "member-park-jiyoung",
+      "member-han-inho"
+    ]
+  },
+  {
+    "id": 21,
+    "date": "2026-05-26",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월26일 (화) 20시~22시 달빛 12번코트",
+    "courtId": "court-moonlight-12",
+    "attendeeIds": [
+      "member-min-mungi",
+      "member-kim-taehwan",
+      "member-park-changeon"
+    ]
+  },
+  {
+    "id": 32,
+    "date": "2026-05-27",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "5월 27일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 22,
+    "date": "2026-05-27",
+    "day": "수",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월27일 (수) 20~22시 달빛 12번",
+    "courtId": "court-moonlight-12",
+    "attendeeIds": [
+      "member-min-mungi",
+      "member-kim-taehwan"
+    ]
+  },
+  {
+    "id": 23,
+    "date": "2026-05-29",
+    "day": "금",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월 29일(금) 20시~22시 새아침 4코트",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": 24,
+    "date": "2026-05-30",
+    "day": "토",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "5월30일(토) 20-22시 달빛테니스장 8번 하드코트",
+    "courtId": "court-moonlight-tennis-8-hard",
+    "attendeeIds": [
+      "member-park-jiyoung",
+      "member-yoon-inseon",
+      "member-heo-sujeong"
+    ]
+  },
+  {
+    "id": 25,
+    "date": "2026-05-31",
+    "day": "일",
+    "time": "오전 9:00 ~ 오후 12:00",
+    "title": "5월 31일 (일) 09시-12시 승기사업소",
+    "courtId": "court-seunggi",
+    "attendeeIds": [
+      "member-kim-jiseok",
+      "member-shin-kyoungeun",
+      "member-yoon-inseon",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 26,
+    "date": "2026-05-31",
+    "day": "일",
+    "time": "오후 12:00 ~ 오후 3:00",
+    "title": "5월 31일(일)12-15시 승기사업소 송도지소",
+    "courtId": "court-seunggi-songdo",
+    "attendeeIds": [
+      "member-shin-kyoungeun",
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 27,
+    "date": "2026-05-31",
+    "day": "일",
+    "time": "오후 4:00 ~ 오후 6:00",
+    "title": "5월31일(일) 16-18 새아침 3번",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": [
+      "member-cho-hyeongcheol"
+    ]
+  },
+  {
+    "id": 28,
+    "date": "2026-06-06",
+    "day": "토",
+    "time": "오후 3:00 ~ 오후 5:00",
+    "title": "6월 6일(토) 독서모임 15-17시",
+    "courtId": "court-bookclub",
+    "attendeeIds": []
+  },
+  {
+    "id": 33,
+    "date": "2026-06-10",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "6월 10일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 34,
+    "date": "2026-06-17",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "6월 17일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 29,
+    "date": "2026-06-20",
+    "day": "토",
+    "time": "오후 3:00 ~ 오후 5:00",
+    "title": "6월 20일(토) 독서모임 15-17시",
+    "courtId": "court-bookclub",
+    "attendeeIds": []
+  },
+  {
+    "id": 35,
+    "date": "2026-06-24",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "6월 24일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 36,
+    "date": "2026-07-01",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "7월 1일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 30,
+    "date": "2026-07-04",
+    "day": "토",
+    "time": "오후 3:00 ~ 오후 5:00",
+    "title": "7월 4일(토) 독서모임 15-17시",
+    "courtId": "court-bookclub",
+    "attendeeIds": []
+  },
+  {
+    "id": 37,
+    "date": "2026-07-08",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "7월 8일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 38,
+    "date": "2026-07-15",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "7월 15일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 31,
+    "date": "2026-07-18",
+    "day": "토",
+    "time": "오후 3:00 ~ 오후 5:00",
+    "title": "7월 18일(토) 독서모임 15-17시",
+    "courtId": "court-bookclub",
+    "attendeeIds": []
+  },
+  {
+    "id": 39,
+    "date": "2026-07-22",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "7월 22일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  },
+  {
+    "id": 40,
+    "date": "2026-07-29",
+    "day": "수",
+    "time": "오후 6:00 ~ 오후 9:00",
+    "title": "7월 29일(수) 연세 테니스장 18-21시",
+    "courtId": "court-yonsei-tennis",
+    "attendeeIds": [
+      "member-kim-jiseok"
+    ]
+  }
+]
