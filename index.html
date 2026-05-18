@@ -439,25 +439,33 @@
     </div>
   </header>
 
-  <main class="min-h-screen px-margin-mobile pb-16 pt-24 md:ml-64 md:px-margin-desktop">
+  <main class="min-h-screen px-margin-mobile pb-16 pt-16 md:ml-64 md:px-margin-desktop">
     <section id="dashboard" class="view active">
-      <div class="mb-lg flex items-center justify-between gap-3">
+      <div class="mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 class="font-display text-3xl font-bold text-on-surface">Dashboard</h2>
         </div>
-        <section class="w-full max-w-[210px] rounded-xl bg-surface-container-lowest p-3 shadow-ambient sm:max-w-[320px] lg:max-w-[360px]">
-          <div class="flex items-center gap-3">
-            <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
-              <span class="material-symbols-outlined">partly_cloudy_day</span>
+        <section class="w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300">
+          <div class="flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+              <!-- Glow Icon Wrapper -->
+              <div class="inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary-fixed/25 to-primary-fixed/70 border border-primary-fixed-dim/30 text-primary shadow-inner">
+                <span class="material-symbols-outlined icon-fill text-[20px] sm:text-[22px]">partly_cloudy_day</span>
+              </div>
+              <!-- Weather details -->
+              <div class="min-w-0">
+                <span class="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-bold text-primary tracking-wider uppercase truncate leading-none">
+                  <span class="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0">location_on</span>
+                  인천 연수구 송도동
+                </span>
+                <p class="mt-px text-sm sm:text-base font-bold text-on-surface flex items-baseline gap-1 leading-none">
+                  <span class="font-display tracking-tight tabular-nums text-sm sm:text-lg">22°C</span>
+                  <span class="text-[10px] sm:text-xs font-semibold text-on-surface-variant">흐림</span>
+                </p>
+              </div>
             </div>
-            <div class="min-w-0 flex-1">
-              <p class="text-xs font-bold leading-5 text-on-surface-variant sm:text-sm">
-                <span class="block truncate">인천 연수구 송도동</span>
-                <span class="block truncate">약 22°C · 흐림</span>
-              </p>
-            </div>
-            <a class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-center text-[11px] font-black leading-tight text-on-primary" href="https://www.accuweather.com/en/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener">
-              날씨<br>확인
+            <a class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 hover:border-transparent hover:bg-primary hover:text-on-primary hover:shadow-sm hover:shadow-primary/10" href="https://www.accuweather.com/en/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="송도동 날씨 보기">
+              <span class="material-symbols-outlined text-[13px] font-bold">arrow_outward</span>
             </a>
           </div>
         </section>
@@ -1074,18 +1082,6 @@
       const isDatePanel = variant === "datePanel";
       const isBookClub = isBookClubSchedule(item);
       const isYonsei = isYonseiSchedule(item);
-      const statusLabel = item.closed ? "마감" : empty ? "Available Soon" : item.regular ? "정기모임" : "Occupied";
-      const statusClass = item.closed
-        ? "bg-error-container text-on-error-container"
-        : isBookClub
-          ? "border border-amber-300 bg-amber-50 text-amber-800"
-          : isYonsei
-            ? "border border-indigo-300 bg-indigo-50 text-indigo-700"
-        : empty
-          ? "bg-primary-container text-on-primary-container"
-          : item.regular
-            ? "bg-tertiary-container text-on-tertiary-container"
-            : "bg-secondary-container text-on-secondary-container";
 
       const iconClass = isBookClub
         ? "border border-amber-300 bg-amber-50 text-amber-800"
@@ -1099,9 +1095,7 @@
 
       const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
       const attendeeText = item.attendees.length ? item.attendees.join(", ") : "참석자 없음";
-      const localBadge = item.source === "local"
-        ? `<span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-black text-primary">로컬 추가</span>`
-        : "";
+      const tagListHTML = scheduleTagHTML(item);
 
       if (isDatePanel) {
         // Stitch bridge: Selected-date compact match card markup starts here.
@@ -1115,7 +1109,6 @@
                   </div>
                   <div class="min-w-0">
                     <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
-                    ${localBadge ? `<div class="mt-1">${localBadge}</div>` : ""}
                     <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
                       ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
                     </p>
@@ -1124,7 +1117,7 @@
                     </p>
                   </div>
                 </div>
-                <span class="inline-flex shrink-0 items-center rounded-full px-3 py-1 font-label-sm text-label-sm font-bold shadow-sm ${statusClass}">${statusLabel}</span>
+                ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 sm:max-w-[180px]">${tagListHTML}</div>` : ""}
               </div>
             </button>
           </article>
@@ -1143,7 +1136,6 @@
                 <div class="min-w-0">
                   <div class="mb-1 flex flex-wrap items-center gap-2">
                     <h4 class="font-label-md text-label-md text-on-surface font-bold text-base">${item.title}</h4>
-                    ${localBadge}
                   </div>
                   <p class="mt-1.5 flex items-center gap-1.5 font-body-md text-body-md text-on-surface-variant font-medium">
                     ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${timeStart(item)} - ${timeEnd(item)}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
@@ -1158,13 +1150,29 @@
                   </div>
                 </div>
               </div>
-              <div class="flex flex-wrap gap-2 self-end sm:self-center">
-                <span class="inline-flex items-center rounded-full px-3 py-1 font-label-sm text-label-sm font-bold shadow-sm ${statusClass}">${statusLabel}</span>
-              </div>
+              ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 self-end sm:max-w-[180px] sm:self-center">${tagListHTML}</div>` : ""}
             </div>
           </button>
         </article>
       `;
+    }
+
+    function scheduleTags(item) {
+      // Schedule card tags are additive and ordered: 참가 → 정기모임 → 마감 → 로컬.
+      return [
+        item.attendees.includes(MY_NAME) && { label: "참가", className: "border border-primary/30 bg-primary/10 text-primary" },
+        item.regular && { label: "정기모임", className: "border border-tertiary-container bg-tertiary-container text-on-tertiary-container" },
+        item.closed && { label: "마감", className: "border border-error/20 bg-error-container text-on-error-container" },
+        item.source === "local" && { label: "로컬", className: "border border-indigo-300 bg-indigo-50 text-indigo-700" }
+      ].filter(Boolean);
+    }
+
+    function scheduleTagHTML(item) {
+      return scheduleTags(item).map(tag => `
+        <span class="inline-flex w-fit items-center whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-black leading-none shadow-sm ${tag.className}">
+          ${tag.label}
+        </span>
+      `).join("");
     }
 
     function initials(name) {
