@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="env.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
       darkMode: "class",
@@ -699,6 +701,10 @@
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
+    const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
+    const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
+      ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
+      : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
     const state = { query: "", place: "all", person: "all", memberSort: "count", selectedId: 0, selectedDate: "", currentMonth: todayIso.slice(0, 7) };
@@ -730,6 +736,11 @@
     }
 
     async function loadData() {
+      if (supabaseClient) {
+        await loadSupabaseData();
+        return;
+      }
+
       const [memberRows, courtRows, scheduleRows, discussionRows] = await Promise.all([
         fetchJSON("data/members.json"),
         fetchJSON("data/courts.json"),
@@ -748,6 +759,89 @@
         ...discussionRows,
         ...loadLocalDiscussions()
       ];
+      rebuildDataIndexes();
+    }
+
+    function fromSupabaseSchedule(row) {
+      return {
+        id: row.id,
+        date: row.date,
+        day: row.day,
+        time: row.time,
+        title: row.title,
+        courtId: row.court_id,
+        attendeeIds: row.attendee_ids || [],
+        regular: row.regular || undefined,
+        closed: row.closed || undefined,
+        important: row.important || undefined,
+        source: row.source || "supabase",
+        createdAt: row.created_at
+      };
+    }
+
+    function toSupabaseSchedule(row) {
+      return {
+        id: String(row.id),
+        date: row.date,
+        day: row.day,
+        time: row.time,
+        title: row.title,
+        court_id: row.courtId,
+        attendee_ids: row.attendeeIds || [],
+        regular: Boolean(row.regular),
+        closed: Boolean(row.closed),
+        important: Boolean(row.important),
+        source: "supabase",
+        created_at: row.createdAt || new Date().toISOString()
+      };
+    }
+
+    function fromSupabaseDiscussion(row) {
+      return {
+        id: row.id,
+        scheduleId: row.schedule_id,
+        memberId: row.member_id,
+        displayTime: row.display_time,
+        message: row.message,
+        source: row.source || "supabase",
+        createdAt: row.created_at
+      };
+    }
+
+    function toSupabaseDiscussion(row) {
+      return {
+        id: String(row.id),
+        schedule_id: String(row.scheduleId),
+        member_id: row.memberId,
+        display_time: row.displayTime,
+        message: row.message,
+        source: "supabase",
+        created_at: row.createdAt || new Date().toISOString()
+      };
+    }
+
+    async function loadSupabaseData() {
+      const [membersResult, courtsResult, schedulesResult, discussionsResult] = await Promise.all([
+        supabaseClient.from("members").select("*").order("name"),
+        supabaseClient.from("courts").select("*").order("name"),
+        supabaseClient.from("schedules").select("*").order("date").order("time"),
+        supabaseClient.from("discussions").select("*").order("created_at")
+      ]);
+
+      const failed = [membersResult, courtsResult, schedulesResult, discussionsResult].find(result => result.error);
+      if (failed) throw failed.error;
+
+      dataStore.members = membersResult.data || [];
+      dataStore.courts = (courtsResult.data || []).map(row => ({
+        id: row.id,
+        name: row.name,
+        image: row.image,
+        type: row.type,
+        location: row.location,
+        canonicalName: row.canonical_name
+      }));
+      dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
+      dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
       rebuildDataIndexes();
     }
 
@@ -810,7 +904,7 @@
     function rebuildDataIndexes() {
       const memberById = new Map(dataStore.members.map(member => [member.id, member]));
       const courtById = new Map(dataStore.courts.map(court => [court.id, court]));
-      const attendeeOverrides = loadAttendeeOverrides();
+      const attendeeOverrides = supabaseClient ? {} : loadAttendeeOverrides();
 
       members = dataStore.members;
       courts = dataStore.courts;
@@ -1735,18 +1829,44 @@
       refreshViews();
     }
 
+    async function addSchedule(schedule) {
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from("schedules")
+          .insert(toSupabaseSchedule(schedule))
+          .select()
+          .single();
+        if (error) throw error;
+        dataStore.schedules.push(fromSupabaseSchedule(data));
+      } else {
+        addLocalSchedule(schedule);
+        return;
+      }
+
+      state.selectedId = schedule.id;
+      state.selectedDate = schedule.date;
+      state.currentMonth = schedule.date.slice(0, 7);
+      refreshViews();
+    }
+
     function attendeeIdsForSchedule(schedule) {
       if (!schedule) return [];
       if (Array.isArray(schedule.attendeeIds)) return [...schedule.attendeeIds];
       return (schedule.attendees || []).map(memberIdForName).filter(Boolean);
     }
 
-    function persistScheduleAttendees(scheduleId, attendeeIds) {
+    async function persistScheduleAttendees(scheduleId, attendeeIds) {
       const normalizedIds = [...new Set(attendeeIds.filter(Boolean).map(String))];
       const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
       if (!rawSchedule) return;
 
-      if (rawSchedule.source === "local") {
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from("schedules")
+          .update({ attendee_ids: normalizedIds })
+          .eq("id", String(scheduleId));
+        if (error) throw error;
+      } else if (rawSchedule.source === "local") {
         const localSchedules = loadLocalSchedules().map(item =>
           String(item.id) === String(scheduleId) ? { ...item, attendeeIds: normalizedIds } : item
         );
@@ -1791,24 +1911,24 @@
       document.body.style.overflow = "";
     }
 
-    function addAttendee(memberId) {
+    async function addAttendee(memberId) {
       const schedule = findScheduleById(state.selectedId);
       if (!schedule || !memberId) return;
       const attendeeIds = attendeeIdsForSchedule(schedule);
       if (attendeeIds.includes(memberId)) return;
-      persistScheduleAttendees(schedule.id, [...attendeeIds, memberId]);
+      await persistScheduleAttendees(schedule.id, [...attendeeIds, memberId]);
     }
 
-    function removeAttendee(memberId) {
+    async function removeAttendee(memberId) {
       const schedule = findScheduleById(state.selectedId);
       if (!schedule || !memberId) return;
       const member = members.find(item => item.id === memberId);
       if (!member) return;
       if (!confirm(`${member.name}님을 이 일정 참석자에서 제거할까요?`)) return;
-      persistScheduleAttendees(schedule.id, attendeeIdsForSchedule(schedule).filter(id => id !== memberId));
+      await persistScheduleAttendees(schedule.id, attendeeIdsForSchedule(schedule).filter(id => id !== memberId));
     }
 
-    function addDiscussionMessage(message) {
+    async function addDiscussionMessage(message) {
       const schedule = findScheduleById(state.selectedId);
       const author = members.find(member => member.name === MY_NAME) || members[0];
       const trimmed = message.trim();
@@ -1823,19 +1943,35 @@
         source: "local"
       };
 
-      const localDiscussions = loadLocalDiscussions();
-      localDiscussions.push(discussion);
-      saveLocalDiscussions(localDiscussions);
-      dataStore.discussions.push(discussion);
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from("discussions")
+          .insert(toSupabaseDiscussion(discussion))
+          .select()
+          .single();
+        if (error) throw error;
+        dataStore.discussions.push(fromSupabaseDiscussion(data));
+      } else {
+        const localDiscussions = loadLocalDiscussions();
+        localDiscussions.push(discussion);
+        saveLocalDiscussions(localDiscussions);
+        dataStore.discussions.push(discussion);
+      }
       refreshViews();
     }
 
-    function deleteSchedule(id) {
+    async function deleteSchedule(id) {
       const schedule = findScheduleById(id);
       if (!schedule) return;
       if (!confirm(`${schedule.title} 일정을 삭제할까요?`)) return;
 
-      if (schedule.source === "local") {
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from("schedules")
+          .delete()
+          .eq("id", String(schedule.id));
+        if (error) throw error;
+      } else if (schedule.source === "local") {
         saveLocalSchedules(loadLocalSchedules().filter(item => String(item.id) !== String(schedule.id)));
       } else {
         saveDeletedScheduleIds([...loadDeletedScheduleIds(), schedule.id]);
@@ -1924,7 +2060,7 @@
 
       const deleteButton = event.target.closest("[data-delete-schedule]");
       if (deleteButton) {
-        deleteSchedule(state.selectedId);
+        deleteSchedule(state.selectedId).catch(error => alert(error.message));
         return;
       }
 
@@ -1936,14 +2072,14 @@
 
       const removeAttendeeButton = event.target.closest("[data-remove-attendee]");
       if (removeAttendeeButton) {
-        removeAttendee(removeAttendeeButton.dataset.removeAttendee);
+        removeAttendee(removeAttendeeButton.dataset.removeAttendee).catch(error => alert(error.message));
         return;
       }
 
       const sendDiscussionButton = event.target.closest("[data-send-discussion]");
       if (sendDiscussionButton) {
         const input = document.querySelector("[data-discussion-input]");
-        addDiscussionMessage(input?.value || "");
+        addDiscussionMessage(input?.value || "").catch(error => alert(error.message));
         return;
       }
 
@@ -2002,10 +2138,10 @@
         closeAddSchedule();
       }
     });
-    document.querySelector("#addScheduleForm").addEventListener("submit", event => {
+    document.querySelector("#addScheduleForm").addEventListener("submit", async event => {
       event.preventDefault();
       try {
-        addLocalSchedule(createLocalSchedule(event.currentTarget));
+        await addSchedule(createLocalSchedule(event.currentTarget));
         closeAddSchedule();
         switchView("detail");
       } catch (error) {
@@ -2015,12 +2151,13 @@
     document.querySelector("#attendeeForm").addEventListener("submit", event => {
       event.preventDefault();
       const memberId = new FormData(event.currentTarget).get("memberId");
-      addAttendee(memberId);
-      closeAttendeeSheet();
+      addAttendee(memberId)
+        .then(closeAttendeeSheet)
+        .catch(error => alert(error.message));
     });
     document.addEventListener("keydown", event => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && event.target.matches("[data-discussion-input]")) {
-        addDiscussionMessage(event.target.value);
+        addDiscussionMessage(event.target.value).catch(error => alert(error.message));
       }
     });
     document.querySelectorAll(".member-sort").forEach(btn => btn.addEventListener("click", () => {

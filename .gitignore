@@ -1,2 +1,3 @@
 .playwright-mcp/
 mobile-calendar-*.png
+env.local.js
