@@ -387,7 +387,7 @@
       }
       .weather-card {
         max-width: 150px;
-        padding: 9px 10px;
+        padding: 6px 8px;
       }
       .weather-card .weather-icon {
         width: 36px;
@@ -411,7 +411,7 @@
       }
       .weather-card {
         max-width: 132px;
-        padding: 8px;
+        padding: 4px 6px;
       }
       .weather-card .weather-icon {
         display: none;
@@ -480,33 +480,32 @@
     </div>
   </header>
 
-  <main class="min-h-screen px-margin-mobile pb-16 pt-16 md:ml-64 md:px-margin-desktop">
+  <main class="min-h-screen px-margin-mobile pb-16 pt-20 md:pt-24 md:ml-64 md:px-margin-desktop">
     <section id="dashboard" class="view active">
       <div class="dashboard-summary mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 class="dashboard-title font-display text-3xl font-bold text-on-surface">Dashboard</h2>
         </div>
-        <a class="weather-card group block w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
-          <div class="flex items-center justify-between gap-2.5">
-            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-              <!-- Glow Icon Wrapper -->
-              <div class="weather-icon inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary-fixed/25 to-primary-fixed/70 border border-primary-fixed-dim/30 text-primary shadow-inner">
-                <span class="material-symbols-outlined icon-fill text-[20px] sm:text-[22px]">partly_cloudy_day</span>
-              </div>
-              <!-- Weather details -->
-              <div class="min-w-0">
-                <span class="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-bold text-primary tracking-wider uppercase truncate leading-none">
-                  <span class="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0">location_on</span>
-                  송도동
-                </span>
-                <p class="mt-px text-sm sm:text-base font-bold text-on-surface flex items-baseline gap-1 leading-none">
-                  <span class="font-display tracking-tight tabular-nums text-sm sm:text-lg">22°C</span>
-                  <span class="text-[10px] sm:text-xs font-semibold text-on-surface-variant">흐림</span>
-                </p>
-              </div>
+        <a class="weather-card group block w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-transparent border-0 p-1.5 sm:p-2 shadow-none hover:bg-primary/5 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-primary/20" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
+          <div class="flex items-center justify-end gap-2.5 text-right">
+            <!-- Weather details -->
+            <div class="min-w-0 text-right">
+              <span class="flex items-center justify-end gap-0.5 text-[9px] sm:text-[10px] font-bold text-primary tracking-wider uppercase truncate leading-none">
+                <span class="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0">location_on</span>
+                송도동
+              </span>
+              <p class="mt-px text-sm sm:text-base font-bold text-on-surface flex items-baseline justify-end gap-1 leading-none">
+                <span class="font-display tracking-tight tabular-nums text-sm sm:text-lg" data-weather-temp>22°C</span>
+                <span class="text-[10px] sm:text-xs font-semibold text-on-surface-variant" data-weather-label>흐림</span>
+              </p>
             </div>
-            <span class="weather-link inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-sm group-hover:shadow-primary/10" aria-hidden="true">
-              <span class="material-symbols-outlined text-[13px] font-bold">arrow_outward</span>
+            <!-- Glow Icon Wrapper (Tactile 3D glass dome effect) -->
+            <div class="weather-icon inline-flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-white to-primary/5 border border-primary/10 text-primary shadow-[0_3px_8px_rgba(0,104,93,0.06),_inset_0_1.5px_0_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_5px_15px_rgba(0,104,93,0.15)] group-hover:border-primary/20 group-hover:from-white group-hover:to-primary/10">
+              <span class="material-symbols-outlined icon-fill text-[18px] sm:text-[22px] transition-transform duration-300 group-hover:scale-110" data-weather-icon>partly_cloudy_day</span>
+            </div>
+            <!-- Arrow Link (if shown on desktop) -->
+            <span class="weather-link inline-flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border border-primary/5 bg-primary/5 text-primary transition-all duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-sm" aria-hidden="true">
+              <span class="material-symbols-outlined text-[12px] font-bold">arrow_outward</span>
             </span>
           </div>
         </a>
@@ -702,6 +701,7 @@
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
     const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
+    const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
       ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
       : null;
@@ -733,6 +733,36 @@
       const response = await fetch(path, { cache: "no-store" });
       if (!response.ok) throw new Error(`Failed to load ${path}: ${response.status}`);
       return response.json();
+    }
+
+    function weatherDetailsForCode(code, isDay = true) {
+      if (code === 0) return { label: "맑음", icon: isDay ? "sunny" : "clear_night" };
+      if ([1, 2].includes(code)) return { label: "구름 조금", icon: isDay ? "partly_cloudy_day" : "partly_cloudy_night" };
+      if (code === 3) return { label: "흐림", icon: "cloud" };
+      if ([45, 48].includes(code)) return { label: "안개", icon: "foggy" };
+      if ([51, 53, 55, 56, 57].includes(code)) return { label: "이슬비", icon: "rainy_light" };
+      if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return { label: "비", icon: "rainy" };
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return { label: "눈", icon: "weather_snowy" };
+      if ([95, 96, 99].includes(code)) return { label: "뇌우", icon: "thunderstorm" };
+      return { label: "날씨", icon: "partly_cloudy_day" };
+    }
+
+    async function refreshWeather() {
+      try {
+        const weather = await fetchJSON(SONGDO_WEATHER_URL);
+        const current = weather.current || {};
+        const temperature = Number(current.temperature_2m);
+        const details = weatherDetailsForCode(Number(current.weather_code), current.is_day !== 0);
+        const tempEl = document.querySelector("[data-weather-temp]");
+        const labelEl = document.querySelector("[data-weather-label]");
+        const iconEl = document.querySelector("[data-weather-icon]");
+
+        if (tempEl && Number.isFinite(temperature)) tempEl.textContent = `${Math.round(temperature)}°C`;
+        if (labelEl) labelEl.textContent = details.label;
+        if (iconEl) iconEl.textContent = details.icon;
+      } catch (error) {
+        console.warn("Weather could not be updated.", error);
+      }
     }
 
     async function loadData() {
@@ -2171,6 +2201,7 @@
 
     async function initApp() {
       try {
+        refreshWeather();
         await loadData();
         renderCalendar();
         renderSelectedDate();
