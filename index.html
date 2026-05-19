@@ -130,7 +130,7 @@
 
     * { box-sizing: border-box; }
     html { scrollbar-gutter: stable; }
-    body { font-family: Inter, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: #191c1d; background: #f8f9fa; letter-spacing: 0; }
+    body { font-family: Inter, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: #191c1d; background: #f8f9fa; letter-spacing: 0; overflow-x: hidden; }
 
     /* 구글 머티리얼 심볼 최적화 */
     .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; font-size: 22px; line-height: 1; }
@@ -375,6 +375,45 @@
     @media (max-width: 767px) {
       .mobile-nav-open #sideNav { display: flex; }
       .mobile-nav-open #backdrop { display: block; }
+      .dashboard-summary {
+        gap: 8px;
+        min-width: 0;
+      }
+      .dashboard-title {
+        font-size: 28px;
+        line-height: 34px;
+      }
+      .weather-card {
+        max-width: 150px;
+        padding: 9px 10px;
+      }
+      .weather-card .weather-icon {
+        width: 36px;
+        height: 36px;
+      }
+      .weather-card .weather-link {
+        display: none;
+      }
+      .calendar-card {
+        padding: 10px 8px;
+      }
+      .calendar-card #calendarGrid,
+      .calendar-card .weekday-grid {
+        gap: 4px;
+      }
+    }
+    @media (max-width: 374px) {
+      .dashboard-title {
+        font-size: 25px;
+        line-height: 31px;
+      }
+      .weather-card {
+        max-width: 132px;
+        padding: 8px;
+      }
+      .weather-card .weather-icon {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -435,28 +474,28 @@
       <div id="helpPopover" class="absolute right-10 top-12 z-50 hidden w-72 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-4 text-sm font-semibold leading-6 text-on-surface shadow-float">
         하루에 두번 반영됩니다. 실시간으로 반영이 안될수도 있으니 카톡 일정을 참고해주세요
       </div>
-      <div class="avatar ml-2 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-outline-variant text-xs font-black text-white transition-opacity hover:opacity-80">성</div>
+      <div class="avatar ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-outline-variant text-xs font-black text-white transition-opacity hover:opacity-80 sm:flex">성</div>
     </div>
   </header>
 
   <main class="min-h-screen px-margin-mobile pb-16 pt-16 md:ml-64 md:px-margin-desktop">
     <section id="dashboard" class="view active">
-      <div class="mb-3 flex items-center justify-between gap-3">
+      <div class="dashboard-summary mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 class="font-display text-3xl font-bold text-on-surface">Dashboard</h2>
+          <h2 class="dashboard-title font-display text-3xl font-bold text-on-surface">Dashboard</h2>
         </div>
-        <section class="w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300">
+        <section class="weather-card w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300">
           <div class="flex items-center justify-between gap-2.5">
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
               <!-- Glow Icon Wrapper -->
-              <div class="inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary-fixed/25 to-primary-fixed/70 border border-primary-fixed-dim/30 text-primary shadow-inner">
+              <div class="weather-icon inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-primary-fixed/25 to-primary-fixed/70 border border-primary-fixed-dim/30 text-primary shadow-inner">
                 <span class="material-symbols-outlined icon-fill text-[20px] sm:text-[22px]">partly_cloudy_day</span>
               </div>
               <!-- Weather details -->
               <div class="min-w-0">
                 <span class="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-bold text-primary tracking-wider uppercase truncate leading-none">
                   <span class="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0">location_on</span>
-                  인천 연수구 송도동
+                  송도동
                 </span>
                 <p class="mt-px text-sm sm:text-base font-bold text-on-surface flex items-baseline gap-1 leading-none">
                   <span class="font-display tracking-tight tabular-nums text-sm sm:text-lg">22°C</span>
@@ -464,7 +503,7 @@
                 </p>
               </div>
             </div>
-            <a class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 hover:border-transparent hover:bg-primary hover:text-on-primary hover:shadow-sm hover:shadow-primary/10" href="https://www.accuweather.com/en/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="송도동 날씨 보기">
+            <a class="weather-link inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 hover:border-transparent hover:bg-primary hover:text-on-primary hover:shadow-sm hover:shadow-primary/10" href="https://www.accuweather.com/en/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="송도동 날씨 보기">
               <span class="material-symbols-outlined text-[13px] font-bold">arrow_outward</span>
             </a>
           </div>
@@ -472,7 +511,7 @@
       </div>
 
       <div class="space-y-gutter">
-          <section class="rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
+          <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
               <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May 2026</h3>
               <div class="flex items-center gap-1">
@@ -487,7 +526,7 @@
                 </button>
               </div>
             </div>
-            <div class="mb-2 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-on-surface-variant">
+            <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-on-surface-variant">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
             <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
@@ -1025,7 +1064,7 @@
         }).join("");
 
         const dotIndicator = events.length > 0
-          ? `<div class="absolute left-1/2 top-[30px] flex -translate-x-1/2 items-center justify-center gap-1 md:hidden">${dotsMarkup}</div>`
+          ? `<div class="absolute left-1/2 bottom-1 flex -translate-x-1/2 items-center justify-center gap-1 md:hidden">${dotsMarkup}</div>`
           : "";
         const myScheduleBadge = hasMySchedule
           ? `<span class="absolute right-2 top-2 z-10 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white shadow-sm ring-2 ring-surface-container-lowest md:flex" title="${MY_NAME} 참석 일정" aria-label="${MY_NAME} 참석 일정">
@@ -1047,7 +1086,7 @@
 
         cells.push(`
           <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
-            <span class="${numberClass} absolute top-2 left-2 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
+            <span class="${numberClass} absolute top-1 left-1 md:top-2 md:left-2 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
             ${myScheduleBadge}
             ${dotIndicator}
             <div class="absolute bottom-2 left-2 right-2 space-y-1.5 hidden md:block">
