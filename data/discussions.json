@@ -1,5 +1,29 @@
 [
   {
+    "id": "discussion-20260520-1",
+    "scheduleId": 14,
+    "memberId": "member-min-mungi",
+    "displayTime": "5월 14일 12:24",
+    "createdAt": "2026-05-14T12:24:00+09:00",
+    "message": "토스뱅크 1000-0662-7082 민문기\n2800원씩!\n\n입금하시고 댓글남겨주시면 감사하겠습니다"
+  },
+  {
+    "id": "discussion-20260520-2",
+    "scheduleId": 14,
+    "memberId": "member-kim-taehwan",
+    "displayTime": "5월 18일 15:33",
+    "createdAt": "2026-05-18T15:33:00+09:00",
+    "message": "참석. 입완"
+  },
+  {
+    "id": "discussion-20260520-3",
+    "scheduleId": 14,
+    "memberId": "member-heo-sujeong",
+    "displayTime": "5월 18일 19:33",
+    "createdAt": "2026-05-18T19:33:00+09:00",
+    "message": "입완요"
+  },
+  {
     "id": "discussion-20260522-1",
     "scheduleId": 15,
     "memberId": "member-min-mungi",

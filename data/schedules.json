@@ -279,8 +279,8 @@
     "title": "5월 25일(월) 새아침 4코트 16-18시",
     "courtId": "court-newmorning-4",
     "attendeeIds": [
-      "member-shin-kyoungeun",
-      "member-lee-sangbaek"
+      "member-lee-sangbaek",
+      "member-cho-hyeongcheol"
     ]
   },
   {
@@ -294,7 +294,7 @@
       "member-song-younghee",
       "member-lee-minkyung",
       "member-lee-sangbaek",
-      "member-han-inho"
+      "member-cho-hyeongcheol"
     ]
   },
   {
@@ -318,7 +318,7 @@
     "title": "5월26일 (화) 20시~22시 달빛 12번코트",
     "courtId": "court-moonlight-12",
     "attendeeIds": [
-      "member-min-mungi",
+      "member-shin-kyoungeun",
       "member-kim-taehwan",
       "member-park-changeon"
     ]
@@ -343,7 +343,8 @@
     "courtId": "court-moonlight-12",
     "attendeeIds": [
       "member-min-mungi",
-      "member-kim-taehwan"
+      "member-kim-taehwan",
+      "member-cho-hyeongcheol"
     ]
   },
   {
@@ -365,6 +366,7 @@
     "attendeeIds": [
       "member-park-jiyoung",
       "member-yoon-inseon",
+      "member-cho-hyeongcheol",
       "member-heo-sujeong"
     ]
   },
@@ -377,7 +379,6 @@
     "courtId": "court-seunggi",
     "attendeeIds": [
       "member-kim-jiseok",
-      "member-shin-kyoungeun",
       "member-yoon-inseon",
       "member-cho-hyeongcheol"
     ]
@@ -390,7 +391,6 @@
     "title": "5월 31일(일)12-15시 승기사업소 송도지소",
     "courtId": "court-seunggi-songdo",
     "attendeeIds": [
-      "member-shin-kyoungeun",
       "member-cho-hyeongcheol"
     ]
   },
