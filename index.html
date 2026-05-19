@@ -486,7 +486,7 @@
         <div>
           <h2 class="dashboard-title font-display text-3xl font-bold text-on-surface">Dashboard</h2>
         </div>
-        <section class="weather-card w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300">
+        <a class="weather-card group block w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-outline-variant/40 p-2.5 sm:p-3 shadow-ambient hover:shadow-float hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
           <div class="flex items-center justify-between gap-2.5">
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
               <!-- Glow Icon Wrapper -->
@@ -505,11 +505,11 @@
                 </p>
               </div>
             </div>
-            <a class="weather-link inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 hover:border-transparent hover:bg-primary hover:text-on-primary hover:shadow-sm hover:shadow-primary/10" href="https://www.accuweather.com/en/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="송도동 날씨 보기">
+            <span class="weather-link inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/5 text-primary transition-all duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-sm group-hover:shadow-primary/10" aria-hidden="true">
               <span class="material-symbols-outlined text-[13px] font-bold">arrow_outward</span>
-            </a>
+            </span>
           </div>
-        </section>
+        </a>
       </div>
 
       <div class="space-y-gutter">
