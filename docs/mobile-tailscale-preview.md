@@ -4,20 +4,32 @@ Use this when you want to check the MacBook-hosted site from an Android phone ou
 
 ## One-time setup
 
-1. Install Tailscale on the MacBook and the Android phone.
+1. Install the official Tailscale Mac app on the MacBook.
 2. Sign in to the same Tailscale account on both devices.
-3. Confirm the MacBook has a Tailscale IPv4 address:
+3. Install the Tailscale Android app from Google Play.
+4. Turn on Tailscale on both devices.
+5. Confirm the MacBook has a Tailscale IPv4 address:
 
 ```bash
 tailscale ip -4
 ```
 
+If the command is not available or cannot connect, check the Mac app menu for the MacBook's `100.x.y.z` Tailscale IP instead.
+
 ## Run the site from the MacBook
 
-This project is a static `index.html` site, so a simple local server is enough:
+This project is a static `index.html` site. Use the helper script:
 
 ```bash
 cd /Users/dorm/coding/tennis-homepage
+./scripts/mobile-preview.sh
+```
+
+The script prints both the local URL and, after Tailscale login, the Android URL.
+
+You can also run the same server manually:
+
+```bash
 python3 -m http.server 8000 --bind 0.0.0.0
 ```
 
