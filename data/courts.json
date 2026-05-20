@@ -89,5 +89,29 @@
     "image": "assets/courts/seunggi_clay.png",
     "type": "Premium Clay",
     "location": "연수구 동춘동"
+  },
+  {
+    "id": "court-newmorning-1",
+    "name": "새아침 1코트",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "남동구 만수동",
+    "canonicalName": "새아침 1코트"
+  },
+  {
+    "id": "court-manseok-a",
+    "name": "만석동 A코트",
+    "image": "assets/courts/newmorning_forest.png",
+    "type": "Outdoor Hard",
+    "location": "인천 동구 만석동",
+    "canonicalName": "만석동테니스장 A코트"
+  },
+  {
+    "id": "court-jfield",
+    "name": "제이필드",
+    "image": "assets/courts/jfield_1977.jpg",
+    "type": "Indoor Hard",
+    "location": "인천 연수구 송도동",
+    "canonicalName": "제이필드 1977"
   }
 ]

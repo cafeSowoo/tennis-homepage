@@ -286,69 +286,170 @@
 
     /* 공통 버튼 시스템 */
     .btn-primary {
-      background-color: var(--primary);
+      background: linear-gradient(180deg, #007a6c 0%, #00685d 100%);
       color: var(--on-primary);
       font-weight: 700;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 9999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      border: 1px solid rgba(0, 104, 93, 0.2);
+      box-shadow:
+        0 2px 4px rgba(0, 104, 93, 0.15),
+        0 4px 8px rgba(0, 104, 93, 0.1),
+        inset 0 1.5px 0px rgba(255, 255, 255, 0.25),
+        inset 0 -1.5px 0px rgba(0, 0, 0, 0.15);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
     }
     .btn-primary:hover {
-      background-color: var(--primary-container);
-      color: var(--on-primary-container);
-      box-shadow: 0 4px 12px rgba(0, 106, 96, 0.15);
-      transform: translateY(-1px);
+      background: linear-gradient(180deg, #008f7f 0%, #007366 100%);
+      box-shadow:
+        0 4px 12px rgba(0, 104, 93, 0.25),
+        0 1px 2px rgba(0, 104, 93, 0.1),
+        inset 0 2px 0px rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1.5px);
     }
     .btn-primary:active {
-      transform: scale(0.97);
+      background: linear-gradient(180deg, #005a50 0%, #00685d 100%);
+      box-shadow:
+        0 1px 2px rgba(0, 104, 93, 0.15),
+        inset 0 1px 3px rgba(0, 0, 0, 0.3),
+        inset 0 -1px 0px rgba(255, 255, 255, 0.1);
+      transform: translateY(1px);
     }
 
     .btn-secondary {
-      background-color: var(--secondary-container);
+      background: linear-gradient(180deg, #dfff4f 0%, #ceed3e 100%);
       color: var(--on-secondary-container);
       font-weight: 700;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 9999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      border: 1px solid rgba(85, 101, 0, 0.2);
+      box-shadow:
+        0 2px 4px rgba(85, 101, 0, 0.12),
+        0 4px 8px rgba(85, 101, 0, 0.08),
+        inset 0 1.5px 0px rgba(255, 255, 255, 0.4),
+        inset 0 -1.5px 0px rgba(0, 0, 0, 0.1);
     }
     .btn-secondary:hover {
-      background-color: var(--secondary-fixed);
-      box-shadow: 0 4px 12px rgba(85, 101, 0, 0.15);
-      transform: translateY(-1px);
+      background: linear-gradient(180deg, #e4ff60 0%, #d4f24c 100%);
+      box-shadow:
+        0 4px 12px rgba(85, 101, 0, 0.2),
+        0 1px 2px rgba(85, 101, 0, 0.08),
+        inset 0 2px 0px rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0px rgba(0, 0, 0, 0.05);
+      transform: translateY(-1.5px);
     }
     .btn-secondary:active {
-      transform: scale(0.97);
+      background: linear-gradient(180deg, #b5d321 0%, #ceed3e 100%);
+      box-shadow:
+        0 1px 2px rgba(85, 101, 0, 0.12),
+        inset 0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 0px rgba(255, 255, 255, 0.2);
+      transform: translateY(1px);
     }
 
     .btn-outline {
-      background-color: transparent;
+      background-color: #ffffff;
       color: var(--primary);
       border: 1.5px solid var(--primary);
       font-weight: 700;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 9999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      box-shadow:
+        0 2px 4px rgba(0, 104, 93, 0.06),
+        0 4px 8px rgba(0, 104, 93, 0.04),
+        inset 0 1.5px 0px rgba(255, 255, 255, 0.9);
     }
     .btn-outline:hover {
-      background-color: rgba(0, 104, 93, 0.05);
+      background-color: rgba(0, 104, 93, 0.04);
       border-color: var(--primary-container);
       color: var(--primary-container);
-      transform: translateY(-1px);
+      box-shadow:
+        0 4px 10px rgba(0, 104, 93, 0.1),
+        inset 0 1.5px 0px rgba(255, 255, 255, 0.9);
+      transform: translateY(-1.5px);
     }
     .btn-outline:active {
-      transform: scale(0.97);
+      background-color: rgba(0, 104, 93, 0.08);
+      box-shadow:
+        0 1px 2px rgba(0, 104, 93, 0.04),
+        inset 0 1.5px 2px rgba(0, 0, 0, 0.05);
+      transform: translateY(1px);
     }
+
+    /* 입체감 있는 프리미엄 아바타 공통 스타일 */
+    .avatar-tactile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-weight: 900;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.08),
+        inset 0 2px 3px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+      user-select: none;
+    }
+    .avatar-tactile::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+    }
+    .avatar-tactile:hover {
+      transform: translateY(-3px) scale(1.06);
+      box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.15),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 랭킹 뱃지 입체감 앰보싱 스타일 */
+    .avatar-rank-1 {
+      background: linear-gradient(135deg, #ffe033 0%, #ffaa00 50%, #d97706 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 223, 0, 0.7) !important;
+    }
+    .avatar-rank-2 {
+      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 50%, #475569 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(226, 232, 240, 0.7) !important;
+    }
+    .avatar-rank-3 {
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 50%, #78350f 100%) !important;
+      color: #ffffff !important;
+      border-color: rgba(217, 119, 6, 0.7) !important;
+    }
+
+    /* 멤버 고유 해시 기반 다채로운 그라데이션 */
+    .avatar-default-1 { background: linear-gradient(135deg, #0d9488 0%, #0b685e 100%) !important; color: #ffffff !important; } /* Teal */
+    .avatar-default-2 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important; color: #ffffff !important; } /* Purple/Violet */
+    .avatar-default-3 { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important; color: #ffffff !important; } /* Pink */
+    .avatar-default-4 { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important; color: #ffffff !important; } /* Sky Blue */
+    .avatar-default-5 { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; color: #ffffff !important; } /* Orange */
+    .avatar-default-6 { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: #ffffff !important; } /* Emerald */
+    .avatar-default-7 { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important; color: #ffffff !important; } /* Rose */
 
     /* 프리미엄 카드 호버 트랜지션 효과 */
     .card-premium {
@@ -375,6 +476,60 @@
       outline-offset: 3px;
     }
     @media (max-width: 767px) {
+      /* 모바일 메인 스크롤 하단 여백 확보 (하단바 가림 방지) */
+      main {
+        padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)) !important;
+      }
+
+      /* 모바일 하단바 세이프 에어리어 대응 및 섀도우 */
+      #bottomNav {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(4rem + env(safe-area-inset-bottom));
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+      }
+
+      /* 모바일 하단 탭 아이템 구조화 */
+      #bottomNav .nav-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding-top: 4px;
+      }
+
+      #bottomNav .nav-item .material-symbols-outlined {
+        transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease;
+      }
+
+      #bottomNav .nav-item:active .material-symbols-outlined {
+        transform: scale(0.82);
+      }
+
+      #bottomNav .nav-item.active .material-symbols-outlined {
+        transform: translateY(-2px) scale(1.1);
+      }
+
+      /* 프리미엄 탭 활성화 언더라인 바 인디케이터 */
+      #bottomNav .nav-item::after {
+        content: "";
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        transform: translateX(-50%) scaleX(0);
+        width: 20px;
+        height: 2.5px;
+        border-radius: 99px;
+        background-color: var(--primary);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
+      }
+
+      #bottomNav .nav-item.active::after {
+        transform: translateX(-50%) scaleX(1);
+      }
+
       .mobile-nav-open #sideNav { display: flex; }
       .mobile-nav-open #backdrop { display: block; }
       .dashboard-summary {
@@ -458,7 +613,7 @@
 
   <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/15 bg-surface/75 backdrop-blur-xl px-margin-mobile shadow-sm md:left-64 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
-      <button id="mobileMenu" class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high md:hidden">
+      <button id="mobileMenu" class="hidden rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high">
         <span class="material-symbols-outlined" data-icon="menu">menu</span>
       </button>
       <label class="relative hidden sm:block">
@@ -471,12 +626,16 @@
       </div>
     </div>
     <div class="relative flex items-center gap-sm">
+      <!-- 모바일 단축 코트 예약 버튼 (sports_tennis) -->
+      <button class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-200 hover:bg-primary-container/20 md:hidden" data-add-schedule title="Book a Court">
+        <span class="material-symbols-outlined font-bold" data-icon="sports_tennis">sports_tennis</span>
+      </button>
       <button class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
       <button id="helpButton" class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high" type="button" aria-expanded="false" aria-controls="helpPopover"><span class="material-symbols-outlined" data-icon="help">help</span></button>
       <div id="helpPopover" class="absolute right-10 top-12 z-50 hidden w-72 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-4 text-sm font-semibold leading-6 text-on-surface shadow-float">
         하루에 두번 반영됩니다. 실시간으로 반영이 안될수도 있으니 카톡 일정을 참고해주세요
       </div>
-      <div class="avatar ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-outline-variant text-xs font-black text-white transition-opacity hover:opacity-80 sm:flex">성</div>
+      <div id="headerProfileAvatar" class="avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex">성</div>
     </div>
   </header>
 
@@ -600,6 +759,26 @@
       <div id="memberGrid" class="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
     </section>
   </main>
+
+  <!-- 모바일 하단 네비게이션 바 -->
+  <nav id="bottomNav" class="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-around border-t border-outline-variant/15 bg-surface/85 backdrop-blur-xl px-margin-mobile shadow-float md:hidden">
+    <button class="nav-item active flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="dashboard">
+      <span class="material-symbols-outlined transition-transform duration-200" data-icon="dashboard">dashboard</span>
+      <span class="text-[10px] font-bold">Dashboard</span>
+    </button>
+    <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="schedule">
+      <span class="material-symbols-outlined transition-transform duration-200" data-icon="calendar_today">calendar_today</span>
+      <span class="text-[10px] font-bold">Schedule</span>
+    </button>
+    <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="courts">
+      <span class="material-symbols-outlined transition-transform duration-200" data-icon="sports_tennis">sports_tennis</span>
+      <span class="text-[10px] font-bold">Courts</span>
+    </button>
+    <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="members">
+      <span class="material-symbols-outlined transition-transform duration-200" data-icon="group">group</span>
+      <span class="text-[10px] font-bold">Members</span>
+    </button>
+  </nav>
 
   <section id="addScheduleSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addScheduleBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="일정 추가 닫기"></button>
@@ -1116,9 +1295,10 @@
       `;
     }
 
-    function courtImage(place) {
-      const court = courts.find(item => item.name === place || item.canonicalName === place);
+    function courtImage(place, courtId = "") {
+      const court = courts.find(item => item.id === courtId || item.name === place || item.canonicalName === place);
       if (court?.image) return court.image;
+      if (place.includes("제이필드")) return "assets/courts/jfield_1977.jpg";
       if (place.includes("달빛축제") || place.includes("달축") || place.includes("달빛") || place.includes("달빛공원")) return "assets/courts/moonlight_hard.png";
       if (place.includes("새아침")) return "assets/courts/newmorning_forest.png";
       if (place.includes("승기")) return "assets/courts/seunggi_clay.png";
@@ -1210,7 +1390,7 @@
 
         cells.push(`
           <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
-            <span class="${numberClass} absolute top-1 left-1 md:top-2 md:left-2 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
+            <span class="${numberClass} absolute top-1 left-1/2 -translate-x-1/2 md:top-2 md:left-2 md:translate-x-0 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
             ${myScheduleBadge}
             ${dotIndicator}
             <div class="absolute bottom-2 left-2 right-2 space-y-1.5 hidden md:block">
@@ -1260,60 +1440,26 @@
       const attendeeText = item.attendees.length ? item.attendees.join(", ") : "참석자 없음";
       const tagListHTML = scheduleTagHTML(item);
 
-      if (isDatePanel) {
-        // Stitch bridge: Selected-date compact match card markup starts here.
-        return `
-          <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
-            <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
-              <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <div class="flex min-w-0 items-center gap-4">
-                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
-                    ${icon(iconName)}
-                  </div>
-                  <div class="min-w-0">
-                    <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
-                    <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
-                      ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
-                    </p>
-                    <p class="mt-1.5 truncate text-xs font-semibold text-on-surface-variant flex items-center gap-1">
-                      ${icon("group", "text-[14px]")} ${attendeeText}
-                    </p>
-                  </div>
-                </div>
-                ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 sm:max-w-[180px]">${tagListHTML}</div>` : ""}
-              </div>
-            </button>
-          </article>
-        `;
-      }
-
-      // Stitch bridge: Schedule match card markup starts here.
+      // Stitch bridge: Compact schedule match card markup starts here.
       return `
-        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-          <button class="schedule-card-button block w-full p-5" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
-            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div class="flex min-w-0 items-start gap-4 sm:items-center">
-                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} shadow-sm">
+        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
+            <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div class="flex min-w-0 items-center gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
                   ${icon(iconName)}
                 </div>
                 <div class="min-w-0">
-                  <div class="mb-1 flex flex-wrap items-center gap-2">
-                    <h4 class="font-label-md text-label-md text-on-surface font-bold text-base">${item.title}</h4>
-                  </div>
-                  <p class="mt-1.5 flex items-center gap-1.5 font-body-md text-body-md text-on-surface-variant font-medium">
-                    ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${timeStart(item)} - ${timeEnd(item)}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
+                  <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
+                  <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
+                    ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
                   </p>
-                  <p class="mt-1.5 text-xs font-bold text-on-surface-variant flex items-center gap-1">
-                    ${icon("calendar_month", "text-[14px] text-outline")} ${dateLabel(item)} · <span class="text-primary">${item.attendees.length}명 참석 중</span>
+                  <p class="mt-1.5 truncate text-xs font-semibold text-on-surface-variant flex items-center gap-1">
+                    ${icon("group", "text-[14px]")} ${attendeeText}
                   </p>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                    ${empty
-                      ? `<span class="rounded-full bg-surface-container-low border border-dashed border-outline-variant px-3 py-1 text-xs font-bold text-on-surface-variant shadow-sm flex items-center gap-1">${icon("person_add", "text-[14px]")} Available Slot</span>`
-                      : item.attendees.map(name => `<span class="rounded-full border border-outline-variant/30 bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors shadow-sm">${name}</span>`).join("")}
-                  </div>
                 </div>
               </div>
-              ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 self-end sm:max-w-[180px] sm:self-center">${tagListHTML}</div>` : ""}
+              ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 sm:max-w-[180px]">${tagListHTML}</div>` : ""}
             </div>
           </button>
         </article>
@@ -1387,7 +1533,7 @@
             const author = memberNameForId(row.memberId);
             return `
               <div class="flex gap-4 items-start">
-                <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-primary-container text-sm font-black text-white shadow-sm">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(author)}">
                   ${initials(author)}
                 </div>
                 <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4 border border-outline-variant/10 shadow-sm">
@@ -1421,7 +1567,7 @@
 
         return `
           <div class="group flex items-center gap-4 rounded-xl border border-outline-variant/60 bg-surface-bright p-4 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
-            <div class="avatar flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-surface-container bg-gradient-to-tr from-primary to-primary-container text-sm font-black text-white shadow-sm">${initial}</div>
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
             <div class="min-w-0 flex-1">
               <div class="text-sm font-bold text-on-surface flex items-center gap-1.5">
                 ${name}
@@ -1454,7 +1600,7 @@
             <!-- Hero Info Card -->
             <article class="overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-ambient">
               <div class="relative h-56 w-full overflow-hidden bg-surface-dim">
-                <img src="${courtImage(item.place)}" alt="${item.place} 전경" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <div class="absolute bottom-4 left-6 flex flex-wrap items-center gap-3">
                   <span class="rounded-full bg-secondary-container px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
@@ -1503,7 +1649,7 @@
               ${renderDiscussionMessages(item)}
 
               <div class="flex items-start gap-4">
-                <div class="avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-low text-sm font-black text-on-surface-variant shadow-inner">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(MY_NAME)}">
                   ${initials(MY_NAME)}
                 </div>
                 <div class="relative w-full">
@@ -1683,6 +1829,19 @@
       }).join("");
     }
 
+    function getAvatarClassForMember(name, rank = 99) {
+      if (rank === 1) return "avatar-tactile avatar-rank-1";
+      if (rank === 2) return "avatar-tactile avatar-rank-2";
+      if (rank === 3) return "avatar-tactile avatar-rank-3";
+
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const index = (Math.abs(hash) % 7) + 1; // 1 to 7
+      return `avatar-tactile avatar-default-${index}`;
+    }
+
     function memberStats() {
       return people.map(name => {
         const items = schedules.filter(s => s.attendees.includes(name));
@@ -1706,57 +1865,49 @@
 
         // Trophy & badge styling
         let badgeHtml = "";
-        let avatarBorderClass = "border-outline-variant";
-        let avatarBg = "bg-gradient-to-tr from-primary to-primary-container text-white";
 
         if (rank === 1) {
-          badgeHtml = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-amber-200">🏆 Champion</span>`;
-          avatarBorderClass = "border-4 border-amber-400";
-          avatarBg = "bg-gradient-to-tr from-amber-500 to-yellow-400 text-white";
+          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">🏆 Champion</span>`;
         } else if (rank === 2) {
-          badgeHtml = `<span class="bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-slate-200">🥈 Runner-up</span>`;
-          avatarBorderClass = "border-4 border-slate-300";
-          avatarBg = "bg-gradient-to-tr from-slate-400 to-slate-300 text-white";
+          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-700">🥈 Runner-up</span>`;
         } else if (rank === 3) {
-          badgeHtml = `<span class="bg-amber-700/10 text-amber-900 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-0.5 border border-amber-800/20">🥉 Elite</span>`;
-          avatarBorderClass = "border-4 border-amber-600/60";
-          avatarBg = "bg-gradient-to-tr from-amber-700 to-amber-600 text-white";
+          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-amber-800/20 bg-amber-700/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-900">🥉 Elite</span>`;
         } else {
-          badgeHtml = `<span class="bg-surface-container-high text-on-surface-variant font-semibold px-2 py-0.5 rounded-full text-[10px]">Rank #${rank}</span>`;
+          badgeHtml = `<span class="inline-flex w-fit items-center rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold text-on-surface-variant">Rank #${rank}</span>`;
         }
 
         return `
-          <article class="card-premium flex flex-col items-center text-center bg-surface-container-lowest rounded-xl p-6 relative">
-            <div class="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-              <span class="bg-secondary-container text-on-secondary-container font-label-sm text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">NTRP ${ntrp}</span>
-              ${badgeHtml}
-            </div>
-
-            <div class="w-20 h-20 rounded-full flex items-center justify-center ${avatarBg} ${avatarBorderClass} text-2xl font-black mb-4 shadow-md transition-transform duration-300 hover:scale-105">
-               ${initial}
-            </div>
-
-            <h3 class="font-headline-md text-headline-md text-on-surface mb-1 font-bold text-base">${m.name}</h3>
-            <p class="font-label-sm text-xs text-on-surface-variant mb-5 font-semibold">최근 참석: ${lastActiveDate}</p>
-
-            <div class="grid grid-cols-2 gap-3 w-full mb-5">
-              <div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-colors">
-                <div class="font-label-sm text-[10px] text-on-surface-variant mb-0.5 uppercase tracking-wider font-bold">Matches</div>
-                <div class="font-headline-md text-headline-md text-primary font-black text-lg">${m.count}</div>
+          <article class="card-premium flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-4">
+            <div class="flex items-start gap-4">
+              <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
+                ${initial}
               </div>
-              <div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-colors">
-                <div class="font-label-sm text-[10px] text-on-surface-variant mb-0.5 uppercase tracking-wider font-bold">Regular</div>
-                <div class="font-headline-md text-headline-md text-secondary font-black text-lg">${m.regular}</div>
+              <div class="min-w-0 flex-1 pt-0.5">
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
+                  <h3 class="font-headline-md text-lg font-black leading-tight text-on-surface">${m.name}</h3>
+                  <span class="rounded-full bg-secondary-container px-2.5 py-1 text-[11px] font-black leading-none text-on-secondary-container">NTRP ${ntrp}</span>
+                  ${badgeHtml}
+                </div>
+                <p class="mt-1.5 text-xs font-semibold text-on-surface-variant">최근 참석: ${lastActiveDate}</p>
               </div>
             </div>
 
-            <hr class="w-full border-outline-variant/20 mb-4" />
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex min-h-12 items-center justify-between rounded-lg bg-surface-container-low px-3">
+                <div class="text-xs font-semibold uppercase text-on-surface-variant">Matches</div>
+                <div class="font-headline-md text-xl font-black text-primary">${m.count}</div>
+              </div>
+              <div class="flex min-h-12 items-center justify-between rounded-lg bg-surface-container-low px-3">
+                <div class="text-xs font-semibold uppercase text-on-surface-variant">Regular</div>
+                <div class="font-headline-md text-xl font-black text-secondary">${m.regular}</div>
+              </div>
+            </div>
 
-            <div class="flex gap-2 w-full">
-              <button class="btn-outline flex-1 py-2.5 text-xs font-bold">
+            <div class="grid grid-cols-2 gap-3">
+              <button class="btn-outline min-h-10 px-3 text-sm font-bold">
                 ${icon("chat", "text-[14px]")} Message
               </button>
-              <button class="btn-primary flex-1 py-2.5 text-xs font-bold">
+              <button class="btn-primary min-h-10 px-3 text-sm font-bold">
                 ${icon("sports_tennis", "text-[14px]")} Challenge
               </button>
             </div>
@@ -2016,17 +2167,17 @@
     }
 
     function switchView(view) {
-      // 1. Magnetized Nav Indicator Sliding Motion
+      // 1. Magnetized Nav Indicator Sliding Motion (Desktop #sideNav only)
       const targetView = view === "detail" ? "schedule" : view;
-      const activeBtn = document.querySelector(`.nav-item[data-view="${targetView}"]`);
+      const activeBtnDesktop = document.querySelector(`#sideNav .nav-item[data-view="${targetView}"]`);
       const indicator = document.querySelector("#navIndicator");
-      if (activeBtn && indicator) {
-        indicator.style.top = `${activeBtn.offsetTop}px`;
-        indicator.style.height = `${activeBtn.offsetHeight}px`;
-        indicator.style.width = `${activeBtn.offsetWidth}px`;
+      if (activeBtnDesktop && indicator && window.innerWidth >= 768) {
+        indicator.style.top = `${activeBtnDesktop.offsetTop}px`;
+        indicator.style.height = `${activeBtnDesktop.offsetHeight}px`;
+        indicator.style.width = `${activeBtnDesktop.offsetWidth}px`;
       }
 
-      // 2. Active Tab Text State
+      // 2. Active Tab Text State (Both desktop sideNav & mobile bottomNav)
       document.querySelectorAll(".nav-item").forEach(el => {
         el.classList.toggle("active", el.dataset.view === targetView);
       });
@@ -2212,6 +2363,13 @@
         renderCourts();
         renderMembers();
         renderDetail(findScheduleById(state.selectedId));
+
+        // Dynamic styling for header profile avatar
+        const headerAvatar = document.querySelector("#headerProfileAvatar");
+        if (headerAvatar) {
+          headerAvatar.className = `avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex ${getAvatarClassForMember(MY_NAME)}`;
+          headerAvatar.textContent = initials(MY_NAME);
+        }
 
         // Trigger switchView("dashboard") once to register initial visual animations and navigation positions
         switchView("dashboard");
