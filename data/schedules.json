@@ -406,12 +406,75 @@
     ]
   },
   {
+    "id": "20260601-newmorning-4-20-22",
+    "date": "2026-06-01",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "06. 01(월) 새아침 4코트 20-22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260602-newmorning-4-20-22",
+    "date": "2026-06-02",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 2일(화) 새아침 4코트 20-22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260603-newmorning-1-20-22",
+    "date": "2026-06-03",
+    "day": "수",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 3일 (수) 새아침 1코트 20시~22시",
+    "courtId": "court-newmorning-1",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260603-newmorning-4-20-22",
+    "date": "2026-06-03",
+    "day": "수",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "06.03(수) 새아침 4코트 20-22",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
     "id": 28,
     "date": "2026-06-06",
     "day": "토",
     "time": "오후 3:00 ~ 오후 5:00",
     "title": "6월 6일(토) 독서모임 15-17시",
     "courtId": "court-bookclub",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260606-newmorning-4-20-22",
+    "date": "2026-06-06",
+    "day": "토",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 6일(토) 새아침 4코트 20-22",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260608-newmorning-3-20-22",
+    "date": "2026-06-08",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월8일(월) 새아침3 20-22",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260608-newmorning-4-20-22",
+    "date": "2026-06-08",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 8일 (월) 새아침 4코트 20시-22시",
+    "courtId": "court-newmorning-4",
     "attendeeIds": []
   },
   {
@@ -424,6 +487,53 @@
     "attendeeIds": [
       "member-kim-jiseok"
     ]
+  },
+  {
+    "id": "20260613-newmorning-3-16-18",
+    "date": "2026-06-13",
+    "day": "토",
+    "time": "오후 4:00 ~ 오후 6:00",
+    "title": "6월13일(토) 새아침3 16-18",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260614-manseok-a-19-21",
+    "date": "2026-06-14",
+    "day": "일",
+    "time": "오후 7:00 ~ 오후 9:00",
+    "title": "6월14일 (일) 만석동A코트 19시~21시",
+    "courtId": "court-manseok-a",
+    "attendeeIds": []
+  },
+  {
+    "id": "local-1779264375857",
+    "date": "2026-06-14",
+    "day": "일",
+    "time": "오후 2:00 ~ 오후 5:00",
+    "title": "6월 14일 (일) 제이필드 14시~17시 D코트 <정기모임>",
+    "courtId": "court-jfield",
+    "attendeeIds": [],
+    "regular": true,
+    "source": "supabase"
+  },
+  {
+    "id": "20260616-newmorning-3-20-22",
+    "date": "2026-06-16",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 16일 (화) 새아침 3코트 20시~22시",
+    "courtId": "court-newmorning-3",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260616-newmorning-4-20-22",
+    "date": "2026-06-16",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 16일 (화) 새아침 4코트 20시~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
   },
   {
     "id": 34,
@@ -446,6 +556,33 @@
     "attendeeIds": []
   },
   {
+    "id": "20260621-manseok-a-19-21",
+    "date": "2026-06-21",
+    "day": "일",
+    "time": "오후 7:00 ~ 오후 9:00",
+    "title": "6월 21일 (일) 만석동 A코트 19시~21시",
+    "courtId": "court-manseok-a",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260622-newmorning-4-20-22",
+    "date": "2026-06-22",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "06.22(월) 새아침 4코트 20-22",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260623-newmorning-4-20-22",
+    "date": "2026-06-23",
+    "day": "화",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 23일 (화) 새아침 4코트 20시~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
     "id": 35,
     "date": "2026-06-24",
     "day": "수",
@@ -455,6 +592,33 @@
     "attendeeIds": [
       "member-kim-jiseok"
     ]
+  },
+  {
+    "id": "20260627-newmorning-4-20-22",
+    "date": "2026-06-27",
+    "day": "토",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 27일 (토) 새아침 4코트 20시~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260628-newmorning-4-20-22",
+    "date": "2026-06-28",
+    "day": "일",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 28일(일) 새아침 4코트 20-22",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
+  },
+  {
+    "id": "20260629-newmorning-4-20-22",
+    "date": "2026-06-29",
+    "day": "월",
+    "time": "오후 8:00 ~ 오후 10:00",
+    "title": "6월 29일 (월) 새아침 4코트 20시~22시",
+    "courtId": "court-newmorning-4",
+    "attendeeIds": []
   },
   {
     "id": 36,
