@@ -747,12 +747,22 @@
             <div class="mb-md flex items-center justify-between">
               <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May 2026</h3>
               <div class="flex items-center gap-1">
-                <button class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-colors hover:bg-primary-container hover:text-on-primary-container" type="button" data-add-schedule aria-label="일정 추가">
-                  <span class="material-symbols-outlined text-[18px]">add</span>
-                </button>
-                <button class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-colors hover:bg-sky-600" type="button" data-add-event aria-label="다른 일정 추가">
-                  <span class="material-symbols-outlined text-[18px]">event</span>
-                </button>
+                <!-- 통합 일정 추가 버튼 및 드롭다운 -->
+                <div class="relative inline-block">
+                  <button id="calendarAddBtn" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-all duration-200 hover:bg-primary-container hover:text-on-primary-container" type="button" aria-label="일정 추가 및 생성" aria-controls="calendarAddMenu" aria-expanded="false" onclick="event.preventDefault(); event.stopImmediatePropagation(); window.toggleCalendarAddMenu();">
+                    <span id="calendarAddIcon" class="material-symbols-outlined text-[18px] transition-transform duration-200">add</span>
+                  </button>
+                  <div id="calendarAddMenu" class="absolute right-0 top-12 z-[70] hidden w-48 origin-top-right rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-1.5 shadow-float transition-all duration-200 ease-out transform scale-95 opacity-0">
+                    <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-bold text-on-surface hover:bg-primary/5 transition-colors" type="button" data-add-schedule>
+                      <span class="material-symbols-outlined text-primary text-[18px]">sports_tennis</span>
+                      <span>테니스 매치 추가</span>
+                    </button>
+                    <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-bold text-on-surface hover:bg-sky-600/5 transition-colors" type="button" data-add-event>
+                      <span class="material-symbols-outlined text-sky-600 text-[18px]">event</span>
+                      <span>일반 일정 추가</span>
+                    </button>
+                  </div>
+                </div>
                 <button id="prevMonth" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="이전 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
@@ -1045,6 +1055,7 @@
     let eventsByDate = {};
     let upcoming = [];
     let viewRenderRequest = 0;
+    let calendarAddMenuCloseTimer = 0;
     let fileSchedules = [];
     let fileEvents = [];
     let fileDiscussions = [];
@@ -2551,7 +2562,7 @@
       card.addEventListener("pointerdown", event => {
         if (!isMobileCalendar()) return;
         if (event.button !== undefined && event.button !== 0) return;
-        if (event.target.closest("#prevMonth, #nextMonth, [data-add-schedule], [data-add-event]")) return;
+        if (event.target.closest("#calendarAddBtn, #calendarAddMenu, #prevMonth, #nextMonth, [data-add-schedule], [data-add-event]")) return;
 
         calendarDrag = {
           pointerId: event.pointerId,
@@ -3071,7 +3082,46 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function toggleCalendarAddMenu(show) {
+      const menu = document.querySelector("#calendarAddMenu");
+      const icon = document.querySelector("#calendarAddIcon");
+      const button = document.querySelector("#calendarAddBtn");
+      if (!menu || !icon) return;
+
+      const isCurrentlyHidden = menu.classList.contains("hidden");
+      const forceShow = typeof show === "boolean" ? show : isCurrentlyHidden;
+      window.clearTimeout(calendarAddMenuCloseTimer);
+
+      if (forceShow) {
+        menu.classList.remove("hidden");
+        menu.offsetHeight;
+        menu.classList.remove("scale-95", "opacity-0");
+        menu.classList.add("scale-100", "opacity-100");
+        icon.classList.add("rotate-45");
+        button?.setAttribute("aria-expanded", "true");
+      } else {
+        menu.classList.remove("scale-100", "opacity-100");
+        menu.classList.add("scale-95", "opacity-0");
+        icon.classList.remove("rotate-45");
+        button?.setAttribute("aria-expanded", "false");
+
+        calendarAddMenuCloseTimer = window.setTimeout(() => {
+          menu.classList.add("hidden");
+        }, 180);
+      }
+    }
+    window.toggleCalendarAddMenu = toggleCalendarAddMenu;
+
     document.addEventListener("click", event => {
+      const menu = document.querySelector("#calendarAddMenu");
+      if (menu && !menu.classList.contains("hidden")) {
+        const clickedInsideMenu = event.target.closest("#calendarAddMenu");
+        const clickedMenuBtn = event.target.closest("#calendarAddMenu button");
+        if (clickedMenuBtn || !clickedInsideMenu) {
+          toggleCalendarAddMenu(false);
+        }
+      }
+
       const addButton = event.target.closest("[data-add-schedule]");
       if (addButton) {
         openAddSchedule();
@@ -3177,6 +3227,11 @@
       state.query = event.target.value.trim();
       renderSchedule();
       switchView("schedule");
+    });
+    document.querySelector("#calendarAddBtn")?.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleCalendarAddMenu();
     });
     document.querySelector("#placeFilter").addEventListener("change", event => { state.place = event.target.value; renderSchedule(); });
         document.querySelector("#personFilter").addEventListener("change", event => { state.person = event.target.value; renderSchedule(); });
