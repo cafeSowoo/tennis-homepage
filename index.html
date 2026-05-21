@@ -221,6 +221,26 @@
       background-color: #f59e0b;
       box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
     }
+    .pulse-dot.dot-event-personal {
+      background-color: #0ea5e9;
+      box-shadow: 0 0 6px rgba(14, 165, 233, 0.55);
+    }
+    .pulse-dot.dot-event-work {
+      background-color: #8b5cf6;
+      box-shadow: 0 0 6px rgba(139, 92, 246, 0.55);
+    }
+    .pulse-dot.dot-event-travel {
+      background-color: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.55);
+    }
+    .pulse-dot.dot-event-family {
+      background-color: #f43f5e;
+      box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
+    }
+    .pulse-dot.dot-event-other {
+      background-color: #64748b;
+      box-shadow: 0 0 6px rgba(100, 116, 139, 0.55);
+    }
     .pulse-dot.my-schedule-dot {
       width: 8px;
       height: 8px;
@@ -894,17 +914,20 @@
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
     const state = { query: "", place: "all", person: "all", memberSort: "count", memberMonth: "all", selectedId: 0, selectedDate: "", currentMonth: todayIso.slice(0, 7) };
-    const dataStore = { members: [], courts: [], schedules: [], discussions: [] };
+    const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
     let schedules = [];
+    let calendarEvents = [];
     let discussions = [];
     let people = [];
     let places = [];
     let byDate = {};
+    let eventsByDate = {};
     let upcoming = [];
     let viewRenderRequest = 0;
     let fileSchedules = [];
+    let fileEvents = [];
     let fileDiscussions = [];
     let calendarDrag = null;
     let suppressCalendarClick = false;
@@ -962,15 +985,17 @@
         return;
       }
 
-      const [memberRows, courtRows, scheduleRows, discussionRows] = await Promise.all([
+      const [memberRows, courtRows, scheduleRows, eventRows, discussionRows] = await Promise.all([
         fetchJSON("data/members.json"),
         fetchJSON("data/courts.json"),
         fetchJSON("data/schedules.json"),
+        fetchJSON("data/events.json"),
         fetchJSON("data/discussions.json")
       ]);
 
       const deletedIds = loadDeletedScheduleIds();
       fileSchedules = scheduleRows;
+      fileEvents = eventRows;
       fileDiscussions = discussionRows;
       dataStore.members = memberRows;
       dataStore.courts = courtRows;
@@ -1057,6 +1082,7 @@
         canonicalName: row.canonical_name
       }));
       dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
+      dataStore.events = [];
       dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
       rebuildDataIndexes();
     }
@@ -1123,6 +1149,7 @@
         ...fileSchedules.filter(schedule => !deletedIds.includes(String(schedule.id))),
         ...loadLocalSchedules()
       ];
+      dataStore.events = fileEvents;
       dataStore.discussions = [
         ...fileDiscussions,
         ...loadLocalDiscussions()
@@ -1154,10 +1181,17 @@
           attendees
         };
       }).sort(compareSchedulesByTime);
+      calendarEvents = dataStore.events.map((event, index) => ({
+        ...event,
+        id: event.id ?? `event-${index}`,
+        category: event.category || "other",
+        source: "event"
+      })).sort(compareCalendarItemsByTime);
 
       people = unique(members.map(member => member.name));
       places = unique(schedules.map(schedule => schedule.place));
       byDate = schedules.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
+      eventsByDate = calendarEvents.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
       upcoming = schedules.filter(schedule => new Date(schedule.date + "T00:00:00") >= today);
     }
 
@@ -1184,7 +1218,8 @@
 
     function dateLabel(item) {
       const [, m, d] = item.date.split("-");
-      return `${Number(m)}월 ${Number(d)}일 (${item.day})`;
+      const day = item.day || dayNameFromDate(item.date);
+      return `${Number(m)}월 ${Number(d)}일 (${day})`;
     }
 
     function monthLabel(monthValue) {
@@ -1243,6 +1278,19 @@
         String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
     }
 
+    function calendarItemStartMinutes(item) {
+      if (item.time) return scheduleStartMinutes(item);
+      if (!item.startTime) return 0;
+      const [hourText = "0", minuteText = "0"] = item.startTime.split(":");
+      return Number(hourText) * 60 + Number(minuteText);
+    }
+
+    function compareCalendarItemsByTime(a, b) {
+      return a.date.localeCompare(b.date) ||
+        calendarItemStartMinutes(a) - calendarItemStartMinutes(b) ||
+        String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+    }
+
     function toTwentyFourHourLabel(koreanTime) {
       const match = koreanTime.match(/(오전|오후)\s*(\d{1,2}):(\d{2})/);
       if (!match) return koreanTime;
@@ -1254,6 +1302,7 @@
     }
 
     function calendarTimeLabel(item) {
+      if (item.startTime) return item.startTime;
       return toTwentyFourHourLabel(timeStart(item));
     }
 
@@ -1324,6 +1373,55 @@
       `;
     }
 
+    function calendarEventCategory(event) {
+      const categories = {
+        personal: { label: "개인", icon: "event", chip: "border border-sky-300 bg-sky-50 text-sky-800", dot: "dot-event-personal" },
+        work: { label: "업무", icon: "business_center", chip: "border border-violet-300 bg-violet-50 text-violet-800", dot: "dot-event-work" },
+        travel: { label: "이동", icon: "directions_car", chip: "border border-emerald-300 bg-emerald-50 text-emerald-800", dot: "dot-event-travel" },
+        family: { label: "가족", icon: "home", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-family" },
+        other: { label: "기타", icon: "event_note", chip: "border border-slate-300 bg-slate-50 text-slate-700", dot: "dot-event-other" }
+      };
+      return categories[event.category] || categories.other;
+    }
+
+    function eventTimeLabel(event) {
+      if (event.startTime && event.endTime) return `${event.startTime}-${event.endTime}`;
+      if (event.startTime) return event.startTime;
+      if (event.allDay) return "종일";
+      return "일정";
+    }
+
+    function calendarEventChip(event) {
+      const category = calendarEventCategory(event);
+      return `
+        <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${category.chip} shadow-sm" title="${escapeHTML(event.title)}">
+          ${eventTimeLabel(event)} · ${escapeHTML(event.title)}
+        </span>
+      `;
+    }
+
+    function calendarEventRow(event) {
+      const category = calendarEventCategory(event);
+      const location = event.location ? ` @ ${escapeHTML(event.location)}` : "";
+      const note = event.note ? `<p class="mt-1 text-xs font-semibold text-on-surface-variant">${escapeHTML(event.note)}</p>` : "";
+      return `
+        <article class="rounded-xl border border-outline-variant bg-surface-bright p-4">
+          <div class="flex min-w-0 items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${category.chip} shadow-sm">
+              ${icon(category.icon)}
+            </div>
+            <div class="min-w-0">
+              <h4 class="truncate font-label-md text-label-md font-bold text-on-surface">${escapeHTML(event.title)}</h4>
+              <p class="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-on-surface-variant">
+                ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${eventTimeLabel(event)}</span>${location}
+              </p>
+              ${note}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
     function courtImage(place, courtId = "") {
       const court = courts.find(item => item.id === courtId || item.name === place || item.canonicalName === place);
       if (court?.image) return court.image;
@@ -1349,55 +1447,66 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const iso = `${state.currentMonth}-${String(day).padStart(2, "0")}`;
-        const events = [...(byDate[iso] || [])].sort(compareSchedulesByTime);
+        const dateSchedules = [...(byDate[iso] || [])].sort(compareSchedulesByTime);
+        const dateEvents = [...(eventsByDate[iso] || [])].sort(compareCalendarItemsByTime);
+        const calendarItems = [
+          ...dateSchedules.map(item => ({ type: "schedule", item })),
+          ...dateEvents.map(item => ({ type: "event", item }))
+        ].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
         const isToday = iso === todayIso;
-        const hasMySchedule = events.some(isMySchedule);
+        const hasMySchedule = dateSchedules.some(isMySchedule);
 
-        const eventChips = events.slice(0, 2).map(e => {
+        const eventChips = calendarItems.slice(0, 2).map(({ type, item }) => {
+          if (type === "event") return calendarEventChip(item);
+
           let chipClass = "bg-secondary-container text-on-secondary-container";
-          if (e.closed) {
+          if (item.closed) {
             chipClass = "bg-error-container text-on-error-container";
-          } else if (isBookClubSchedule(e)) {
+          } else if (isBookClubSchedule(item)) {
             chipClass = "border border-amber-300 bg-amber-50 text-amber-800";
-          } else if (isYonseiSchedule(e)) {
+          } else if (isYonseiSchedule(item)) {
             chipClass = "border border-indigo-300 bg-indigo-50 text-indigo-700";
-          } else if (e.regular) {
+          } else if (item.regular) {
             chipClass = "bg-tertiary-container text-on-tertiary-container";
           }
-          if (isMySchedule(e)) {
+          if (isMySchedule(item)) {
             chipClass += " ring-2 ring-primary/45 ring-offset-1 ring-offset-surface-container-lowest";
           }
 
           return `
-            <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(e)} ${e.place}">
-              ${calendarTimeLabel(e)} · ${e.place}
+            <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(item)} ${item.place}">
+              ${calendarTimeLabel(item)} · ${item.place}
             </span>
           `;
         }).join("");
 
-        const overflowChip = events.length > 2
-          ? `<span class="block truncate rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-bold leading-normal text-on-surface-variant">+${events.length - 2} more</span>`
+        const overflowChip = calendarItems.length > 2
+          ? `<span class="block truncate rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-bold leading-normal text-on-surface-variant">+${calendarItems.length - 2} more</span>`
           : "";
 
         let cellClass = "bg-surface-container-lowest border border-surface-container-high";
         let numberClass = "text-on-surface";
-        const dotCount = Math.min(events.length, 3);
-        const dotsMarkup = events.slice(0, dotCount).map(e => {
+        const dotCount = Math.min(calendarItems.length, 3);
+        const dotsMarkup = calendarItems.slice(0, dotCount).map(({ type, item }) => {
+          if (type === "event") {
+            return `<span class="pulse-dot ${calendarEventCategory(item).dot}"></span>`;
+          }
+
           let dotType = "dot-primary";
-          if (e.important) {
+          if (item.important) {
             dotType = "dot-important";
-          } else if (isBookClubSchedule(e)) {
+          } else if (isBookClubSchedule(item)) {
             dotType = "dot-bookclub";
-          } else if (isYonseiSchedule(e)) {
+          } else if (isYonseiSchedule(item)) {
             dotType = "dot-yonsei";
-          } else if (e.regular) {
+          } else if (item.regular) {
             dotType = "dot-tertiary";
           }
-          const myDotClass = isMySchedule(e) ? "my-schedule-dot" : "";
+          const myDotClass = isMySchedule(item) ? "my-schedule-dot" : "";
           return `<span class="pulse-dot ${dotType} ${myDotClass}"></span>`;
         }).join("");
 
-        const dotIndicator = events.length > 0
+        const dotIndicator = calendarItems.length > 0
           ? `<div class="absolute left-1/2 bottom-1 flex -translate-x-1/2 items-center justify-center gap-1 md:hidden">${dotsMarkup}</div>`
           : "";
         const myScheduleBadge = hasMySchedule
@@ -1412,14 +1521,14 @@
           numberClass = "font-bold bg-primary text-white shadow-sm";
         } else if (state.selectedDate === iso) {
           cellClass = "border-2 border-primary bg-primary/5 shadow-sm";
-        } else if (events.length) {
+        } else if (calendarItems.length) {
           cellClass = "bg-surface-container-lowest border border-outline-variant hover:border-primary";
         } else {
           cellClass = "bg-surface-container-lowest border border-surface-container-high/60 hover:border-primary/50";
         }
 
         cells.push(`
-          <button class="calendar-day ${events.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${events.length}개 일정">
+          <button class="calendar-day ${calendarItems.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${calendarItems.length}개 일정">
             <span class="${numberClass} absolute top-1 left-1/2 -translate-x-1/2 md:top-2 md:left-2 md:translate-x-0 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
             ${myScheduleBadge}
             ${dotIndicator}
@@ -1442,11 +1551,24 @@
         return;
       }
       const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
-      const sample = items[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
+      const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
+      const sample = items[0] || eventItems[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
+      const tennisHTML = items.length
+        ? `<div class="space-y-3">
+            <h4 class="text-xs font-black uppercase tracking-wider text-primary">테니스 일정</h4>
+            ${items.map(item => scheduleRow(item, "datePanel")).join("")}
+          </div>`
+        : "";
+      const eventHTML = eventItems.length
+        ? `<div class="space-y-3">
+            <h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">다른 일정</h4>
+            ${eventItems.map(calendarEventRow).join("")}
+          </div>`
+        : "";
       panel.classList.remove("hidden");
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
-      document.querySelector("#selectedDateList").innerHTML = items.length
-        ? items.map(item => scheduleRow(item, "datePanel")).join("")
+      document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
+        ? `<div class="space-y-5">${tennisHTML}${eventHTML}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
     }
 
