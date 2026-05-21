@@ -1,4 +1,5 @@
 .playwright-mcp/
 .netlify/
+.DS_Store
 mobile-calendar-*.png
 env.local.js

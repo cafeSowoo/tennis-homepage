@@ -2,56 +2,56 @@
   {
     "id": "court-moonlight-12",
     "name": "달빛 12번코트",
-    "image": "assets/courts/moonlight_hard.png",
+    "image": "assets/courts/dalbit_2.jpeg",
     "type": "DecoTurf Hard",
     "location": "인천 연수구 송도동"
   },
   {
     "id": "court-moonlight-8",
     "name": "달빛 8번코트",
-    "image": "assets/courts/moonlight_hard.png",
+    "image": "assets/courts/dalbit_2.jpeg",
     "type": "DecoTurf Hard",
     "location": "인천 연수구 송도동"
   },
   {
     "id": "court-moonlight-festival",
     "name": "달빛축제",
-    "image": "assets/courts/moonlight_hard.png",
+    "image": "assets/courts/dalbit-festival.jpg",
     "type": "DecoTurf Hard",
     "location": "인천 연수구 송도동"
   },
   {
     "id": "court-moonlight-festival-b",
     "name": "달빛축제 B",
-    "image": "assets/courts/moonlight_hard.png",
+    "image": "assets/courts/dalbit-festival.jpg",
     "type": "DecoTurf Hard",
     "location": "인천 연수구 송도동"
   },
   {
     "id": "court-moonlight-tennis-8-hard",
     "name": "달빛테니스장 8번 하드코트",
-    "image": "assets/courts/moonlight_hard.png",
+    "image": "assets/courts/dalbit_2.jpeg",
     "type": "DecoTurf Hard",
     "location": "인천 연수구 송도동"
   },
   {
     "id": "court-newmorning-2",
     "name": "새아침 2번코트",
-    "image": "assets/courts/newmorning_forest.png",
+    "image": "assets/courts/saeachim.jpg",
     "type": "Outdoor Hard",
     "location": "남동구 만수동"
   },
   {
     "id": "court-newmorning-3",
     "name": "새아침 3번코트",
-    "image": "assets/courts/newmorning_forest.png",
+    "image": "assets/courts/saeachim.jpg",
     "type": "Outdoor Hard",
     "location": "남동구 만수동"
   },
   {
     "id": "court-newmorning-4",
     "name": "새아침 4번코트",
-    "image": "assets/courts/newmorning_forest.png",
+    "image": "assets/courts/saeachim.jpg",
     "type": "Outdoor Hard",
     "location": "남동구 만수동"
   },
@@ -93,7 +93,7 @@
   {
     "id": "court-newmorning-1",
     "name": "새아침 1코트",
-    "image": "assets/courts/newmorning_forest.png",
+    "image": "assets/courts/saeachim.jpg",
     "type": "Outdoor Hard",
     "location": "남동구 만수동",
     "canonicalName": "새아침 1코트"
