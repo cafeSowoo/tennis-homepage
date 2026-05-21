@@ -979,6 +979,7 @@
     const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
     const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
     const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
+    const MATCH_CAPACITY = 16;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
       ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
       : null;
@@ -1849,8 +1850,12 @@
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
       if (!item) return;
       document.querySelector("#detailCrumbTitle").textContent = "Match Details";
-      const capacity = Math.max(4, item.attendees.length);
-      const spotsLeft = Math.max(0, capacity - item.attendees.length);
+      const capacity = MATCH_CAPACITY;
+      const attendeeCount = item.attendees.length;
+      const spotsLeft = Math.max(0, capacity - attendeeCount);
+      const visibleEmptySlots = attendeeCount < 4
+        ? Math.min(spotsLeft, 4 - attendeeCount)
+        : Math.min(spotsLeft, 1);
 
       // Stitch bridge: Detail player card markup starts here.
       const playerCards = item.attendees.map((name, index) => {
@@ -1883,7 +1888,7 @@
         `;
       }).join("");
 
-      const emptySlots = Array.from({ length: spotsLeft }, () => `
+      const emptySlots = Array.from({ length: visibleEmptySlots }, () => `
         <button class="flex min-h-[82px] items-center justify-center gap-3 rounded-xl border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50 p-4 text-left transition-colors hover:border-primary hover:bg-surface-container-high/40 focus:outline-none focus:ring-2 focus:ring-primary" type="button" data-add-attendee>
           <span class="material-symbols-outlined text-outline">person_add</span>
           <span class="text-sm font-bold text-outline">Available Slot</span>
@@ -1927,7 +1932,7 @@
                 <!-- Players Grid -->
                 <div>
                   <div class="mb-6 flex items-center justify-between gap-4">
-                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg">Players (${item.attendees.length}/${capacity})</h3>
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg">Players (${attendeeCount}/${capacity})</h3>
                     <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-container/30" : "bg-primary-fixed text-on-primary-fixed border border-primary-container/30"} px-3 py-1 text-xs font-bold shadow-sm">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
                   </div>
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
