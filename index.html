@@ -1113,6 +1113,38 @@
       };
     }
 
+    function fromSupabaseEvent(row) {
+      return {
+        id: row.id,
+        date: row.date,
+        title: row.title,
+        category: row.category || "other",
+        startTime: row.start_time || undefined,
+        endTime: row.end_time || undefined,
+        allDay: row.all_day || undefined,
+        location: row.location || undefined,
+        note: row.note || undefined,
+        source: row.source || "supabase",
+        createdAt: row.created_at
+      };
+    }
+
+    function toSupabaseEvent(row) {
+      return {
+        id: String(row.id),
+        date: row.date,
+        title: row.title,
+        category: row.category || "other",
+        start_time: row.startTime || null,
+        end_time: row.endTime || null,
+        all_day: Boolean(row.allDay),
+        location: row.location || null,
+        note: row.note || null,
+        source: "supabase",
+        created_at: row.createdAt || new Date().toISOString()
+      };
+    }
+
     function fromSupabaseDiscussion(row) {
       return {
         id: row.id,
@@ -1138,14 +1170,15 @@
     }
 
     async function loadSupabaseData() {
-      const [membersResult, courtsResult, schedulesResult, discussionsResult] = await Promise.all([
+      const [membersResult, courtsResult, schedulesResult, eventsResult, discussionsResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
         supabaseClient.from("courts").select("*").order("name"),
         supabaseClient.from("schedules").select("*").order("date").order("time"),
+        supabaseClient.from("events").select("*").order("date").order("start_time", { nullsFirst: true }),
         supabaseClient.from("discussions").select("*").order("created_at")
       ]);
 
-      const failed = [membersResult, courtsResult, schedulesResult, discussionsResult].find(result => result.error);
+      const failed = [membersResult, courtsResult, schedulesResult, eventsResult, discussionsResult].find(result => result.error);
       if (failed) throw failed.error;
 
       dataStore.members = membersResult.data || [];
@@ -1158,7 +1191,7 @@
         canonicalName: row.canonical_name
       }));
       dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
-      dataStore.events = [];
+      dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
       dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
       rebuildDataIndexes();
     }
@@ -2592,21 +2625,45 @@
       refreshViews();
     }
 
-    function addEvent(event) {
-      const localEvents = loadLocalEvents();
-      localEvents.push(event);
-      saveLocalEvents(localEvents);
-      dataStore.events.push(event);
-      state.selectedDate = event.date;
-      state.currentMonth = event.date.slice(0, 7);
+    async function addEvent(event) {
+      let storedEvent = event;
+
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from("events")
+          .insert(toSupabaseEvent(event))
+          .select()
+          .single();
+        if (error) throw error;
+        storedEvent = fromSupabaseEvent(data);
+      } else {
+        const localEvents = loadLocalEvents();
+        localEvents.push(event);
+        saveLocalEvents(localEvents);
+      }
+
+      dataStore.events.push(storedEvent);
+      state.selectedEventId = storedEvent.id;
+      state.detailType = "event";
+      state.selectedDate = storedEvent.date;
+      state.currentMonth = storedEvent.date.slice(0, 7);
       refreshViews();
     }
 
-    function updateEvent(eventId, updates) {
+    async function updateEvent(eventId, updates) {
       const rawEvent = dataStore.events.find(item => String(item.id) === String(eventId));
       if (!rawEvent) return;
 
-      if (rawEvent.source === "local") {
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from("events")
+          .update(toSupabaseEvent({ ...rawEvent, ...updates }))
+          .eq("id", String(eventId))
+          .select()
+          .single();
+        if (error) throw error;
+        updates = fromSupabaseEvent(data);
+      } else if (rawEvent.source === "local") {
         saveLocalEvents(loadLocalEvents().map(item =>
           String(item.id) === String(eventId) ? { ...item, ...updates } : item
         ));
@@ -2763,12 +2820,18 @@
       switchView("schedule");
     }
 
-    function deleteEvent(id) {
+    async function deleteEvent(id) {
       const event = findEventById(id);
       if (!event) return;
       if (!confirm(`${event.title} 일정을 삭제할까요?`)) return;
 
-      if (event.source === "local") {
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from("events")
+          .delete()
+          .eq("id", String(event.id));
+        if (error) throw error;
+      } else if (event.source === "local") {
         saveLocalEvents(loadLocalEvents().filter(item => String(item.id) !== String(event.id)));
       } else {
         const overrides = loadEventOverrides();
@@ -2789,7 +2852,7 @@
 
     function deleteCurrentDetail() {
       if (state.detailType === "event") {
-        deleteEvent(state.selectedEventId);
+        deleteEvent(state.selectedEventId).catch(error => alert(error.message));
       } else {
         deleteSchedule(state.selectedId).catch(error => alert(error.message));
       }
@@ -3015,19 +3078,19 @@
         alert(error.message);
       }
     });
-    document.querySelector("#addEventForm").addEventListener("submit", event => {
+    document.querySelector("#addEventForm").addEventListener("submit", async event => {
       event.preventDefault();
       try {
         const calendarEvent = createLocalEvent(event.currentTarget);
         const mode = eventFormMode;
         const eventId = editingEventId;
-        closeAddEvent();
         if (mode === "edit" && eventId) {
           const { id, source, createdAt, ...updates } = calendarEvent;
-          updateEvent(eventId, updates);
+          await updateEvent(eventId, updates);
         } else {
-          addEvent(calendarEvent);
+          await addEvent(calendarEvent);
         }
+        closeAddEvent();
       } catch (error) {
         alert(error.message);
       }

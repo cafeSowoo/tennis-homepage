@@ -4,6 +4,7 @@ const readJSON = path => JSON.parse(readFileSync(new URL(`../${path}`, import.me
 const members = readJSON("data/members.json");
 const courts = readJSON("data/courts.json");
 const schedules = readJSON("data/schedules.json");
+const events = readJSON("data/events.json");
 const discussions = readJSON("data/discussions.json");
 
 const sql = value => {
@@ -30,6 +31,13 @@ console.log("insert into public.schedules (id, date, day, time, title, court_id,
 console.log(schedules.map(schedule =>
   `  (${sql(schedule.id)}, ${sql(schedule.date)}, ${sql(schedule.day)}, ${sql(schedule.time)}, ${sql(schedule.title)}, ${sql(schedule.courtId)}, ${textArray(schedule.attendeeIds)}, ${bool(schedule.regular)}, ${bool(schedule.closed)}, ${bool(schedule.important)}, ${sql(schedule.source || "seed")}, ${sql(schedule.createdAt)})`
 ).join(",\n") + "\non conflict (id) do update set date = excluded.date, day = excluded.day, time = excluded.time, title = excluded.title, court_id = excluded.court_id, attendee_ids = excluded.attendee_ids, regular = excluded.regular, closed = excluded.closed, important = excluded.important;");
+
+if (events.length) {
+  console.log("insert into public.events (id, date, title, category, start_time, end_time, all_day, location, note, source, created_at) values");
+  console.log(events.map(event =>
+    `  (${sql(event.id)}, ${sql(event.date)}, ${sql(event.title)}, ${sql(event.category || "other")}, ${sql(event.startTime)}, ${sql(event.endTime)}, ${bool(event.allDay)}, ${sql(event.location)}, ${sql(event.note)}, ${sql(event.source || "seed")}, ${sql(event.createdAt)})`
+  ).join(",\n") + "\non conflict (id) do update set date = excluded.date, title = excluded.title, category = excluded.category, start_time = excluded.start_time, end_time = excluded.end_time, all_day = excluded.all_day, location = excluded.location, note = excluded.note, created_at = excluded.created_at;");
+}
 
 console.log("insert into public.discussions (id, schedule_id, member_id, display_time, message, source, created_at) values");
 console.log(discussions.map(discussion =>
