@@ -23,6 +23,8 @@ SUPABASE_ANON_KEY=your-public-anon-key
 
 The build command in `netlify.toml` writes those values into `env.js` at deploy time. Without those values, the app falls back to local JSON files and browser `localStorage`.
 
+For local static preview, `env.js` contains the same public Supabase preview settings so `http://127.0.0.1:4173/` writes to the preview database as well. The key is a publishable browser key, not a service-role secret.
+
 ## Supabase setup
 
 1. Create a Supabase project.
