@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - staging
+      - codex/netlify-supabase-preview
   workflow_dispatch:
 
 permissions:
