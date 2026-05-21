@@ -241,10 +241,6 @@
       background-color: #8b5cf6;
       box-shadow: 0 0 6px rgba(139, 92, 246, 0.55);
     }
-    .pulse-dot.dot-event-travel {
-      background-color: #10b981;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.55);
-    }
     .pulse-dot.dot-event-family {
       background-color: #f43f5e;
       box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
@@ -911,7 +907,7 @@
             <select id="addEventCategory" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="category" required>
               <option value="personal">개인</option>
               <option value="work">업무</option>
-              <option value="travel">이동</option>
+              <option value="bookclub">독서모임</option>
               <option value="family">가족</option>
               <option value="other">기타</option>
             </select>
@@ -1565,7 +1561,7 @@
       const categories = {
         personal: { label: "개인", icon: "event", chip: "border border-sky-300 bg-sky-50 text-sky-800", dot: "dot-event-personal" },
         work: { label: "업무", icon: "business_center", chip: "border border-violet-300 bg-violet-50 text-violet-800", dot: "dot-event-work" },
-        travel: { label: "이동", icon: "directions_car", chip: "border border-emerald-300 bg-emerald-50 text-emerald-800", dot: "dot-event-travel" },
+        bookclub: { label: "독서모임", icon: "menu_book", chip: "border border-amber-300 bg-amber-50 text-amber-800", dot: "dot-bookclub" },
         family: { label: "가족", icon: "home", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-family" },
         other: { label: "기타", icon: "event_note", chip: "border border-slate-300 bg-slate-50 text-slate-700", dot: "dot-event-other" }
       };

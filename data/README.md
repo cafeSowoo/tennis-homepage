@@ -5,7 +5,7 @@ This folder is the local data source for the single-file SPA.
 - `members.json`: member records. Schedules reference members by `member.id`.
 - `courts.json`: court records. Schedules reference courts by `court.id`.
 - `schedules.json`: schedule records. UI display fields such as `place` and attendee names are hydrated in `index.html`.
-- `events.json`: non-tennis calendar events. Use this for personal, work, travel, family, or other dates that should appear on the dashboard calendar.
+- `events.json`: non-tennis calendar events. Use this for personal, work, book club, family, or other dates that should appear on the dashboard calendar.
 - `discussions.json`: match discussion records. Discussion rows reference schedules by `schedule.id` and members by `member.id`. Use `displayTime` when the source only provides a human-readable timestamp.
 
 Keep `id` values stable. They are the bridge to a future hosted database such as Supabase.
@@ -25,4 +25,4 @@ Example `events.json` row:
 }
 ```
 
-Supported categories: `personal`, `work`, `travel`, `family`, `other`.
+Supported categories: `personal`, `work`, `bookclub`, `family`, `other`.

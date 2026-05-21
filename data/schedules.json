@@ -442,15 +442,6 @@
     "attendeeIds": []
   },
   {
-    "id": 28,
-    "date": "2026-06-06",
-    "day": "토",
-    "time": "오후 3:00 ~ 오후 5:00",
-    "title": "6월 6일(토) 독서모임 15-17시",
-    "courtId": "court-bookclub",
-    "attendeeIds": []
-  },
-  {
     "id": "20260606-newmorning-4-20-22",
     "date": "2026-06-06",
     "day": "토",
@@ -547,15 +538,6 @@
     ]
   },
   {
-    "id": 29,
-    "date": "2026-06-20",
-    "day": "토",
-    "time": "오후 3:00 ~ 오후 5:00",
-    "title": "6월 20일(토) 독서모임 15-17시",
-    "courtId": "court-bookclub",
-    "attendeeIds": []
-  },
-  {
     "id": "20260621-manseok-a-19-21",
     "date": "2026-06-21",
     "day": "일",
@@ -632,15 +614,6 @@
     ]
   },
   {
-    "id": 30,
-    "date": "2026-07-04",
-    "day": "토",
-    "time": "오후 3:00 ~ 오후 5:00",
-    "title": "7월 4일(토) 독서모임 15-17시",
-    "courtId": "court-bookclub",
-    "attendeeIds": []
-  },
-  {
     "id": 37,
     "date": "2026-07-08",
     "day": "수",
@@ -661,15 +634,6 @@
     "attendeeIds": [
       "member-kim-jiseok"
     ]
-  },
-  {
-    "id": 31,
-    "date": "2026-07-18",
-    "day": "토",
-    "time": "오후 3:00 ~ 오후 5:00",
-    "title": "7월 18일(토) 독서모임 15-17시",
-    "courtId": "court-bookclub",
-    "attendeeIds": []
   },
   {
     "id": 39,
