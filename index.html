@@ -553,6 +553,11 @@
       }
       .calendar-card {
         padding: 10px 8px;
+        touch-action: pan-y;
+        user-select: none;
+      }
+      .calendar-card .calendar-day {
+        touch-action: pan-y;
       }
       .calendar-card #calendarGrid,
       .calendar-card .weekday-grid {
@@ -751,11 +756,13 @@
           <h2 class="font-display text-3xl font-bold">Members Directory</h2>
           <p class="mt-2 text-sm text-on-surface-variant">참석 횟수 기준으로 멤버별 참여 현황을 봅니다.</p>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="memberMonthFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" aria-label="멤버 랭킹 집계 기간"></select>
           <button class="member-sort rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary" data-sort="count">참석순</button>
           <button class="member-sort rounded-full bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" data-sort="name">이름순</button>
         </div>
       </div>
+      <div id="memberPeriodSummary" class="mb-gutter rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm font-semibold text-on-surface-variant shadow-ambient"></div>
       <div id="memberGrid" class="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
     </section>
   </main>
@@ -886,7 +893,7 @@
       : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
-    const state = { query: "", place: "all", person: "all", memberSort: "count", selectedId: 0, selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+    const state = { query: "", place: "all", person: "all", memberSort: "count", memberMonth: "all", selectedId: 0, selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const dataStore = { members: [], courts: [], schedules: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -896,6 +903,11 @@
     let places = [];
     let byDate = {};
     let upcoming = [];
+    let viewRenderRequest = 0;
+    let fileSchedules = [];
+    let fileDiscussions = [];
+    let calendarDrag = null;
+    let suppressCalendarClick = false;
 
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
 
@@ -958,16 +970,11 @@
       ]);
 
       const deletedIds = loadDeletedScheduleIds();
+      fileSchedules = scheduleRows;
+      fileDiscussions = discussionRows;
       dataStore.members = memberRows;
       dataStore.courts = courtRows;
-      dataStore.schedules = [
-        ...scheduleRows.filter(schedule => !deletedIds.includes(String(schedule.id))),
-        ...loadLocalSchedules()
-      ];
-      dataStore.discussions = [
-        ...discussionRows,
-        ...loadLocalDiscussions()
-      ];
+      syncStoredLocalData(deletedIds);
       rebuildDataIndexes();
     }
 
@@ -1110,6 +1117,18 @@
       localStorage.setItem(ATTENDEE_OVERRIDES_KEY, JSON.stringify(rows));
     }
 
+    function syncStoredLocalData(deletedIds = loadDeletedScheduleIds()) {
+      if (supabaseClient) return;
+      dataStore.schedules = [
+        ...fileSchedules.filter(schedule => !deletedIds.includes(String(schedule.id))),
+        ...loadLocalSchedules()
+      ];
+      dataStore.discussions = [
+        ...fileDiscussions,
+        ...loadLocalDiscussions()
+      ];
+    }
+
     function rebuildDataIndexes() {
       const memberById = new Map(dataStore.members.map(member => [member.id, member]));
       const courtById = new Map(dataStore.courts.map(court => [court.id, court]));
@@ -1143,15 +1162,20 @@
     }
 
     function refreshViews() {
+      syncStoredLocalData();
       rebuildDataIndexes();
-      renderCalendar();
-      renderSelectedDate();
-      renderUpcoming();
+      renderDashboard();
       renderFilters();
       renderSchedule();
       renderCourts();
       renderMembers();
       renderDetail(findScheduleById(state.selectedId));
+    }
+
+    function renderDashboard() {
+      renderCalendar();
+      renderSelectedDate();
+      renderUpcoming();
     }
 
     function findScheduleById(id) {
@@ -1169,6 +1193,11 @@
         month: "long",
         year: "numeric"
       });
+    }
+
+    function monthLabelKo(monthValue) {
+      const [year, month] = monthValue.split("-").map(Number);
+      return `${year}년 ${Number(month)}월`;
     }
 
     function addMonths(monthValue, delta) {
@@ -1299,8 +1328,9 @@
       const court = courts.find(item => item.id === courtId || item.name === place || item.canonicalName === place);
       if (court?.image) return court.image;
       if (place.includes("제이필드")) return "assets/courts/jfield_1977.jpg";
-      if (place.includes("달빛축제") || place.includes("달축") || place.includes("달빛") || place.includes("달빛공원")) return "assets/courts/moonlight_hard.png";
-      if (place.includes("새아침")) return "assets/courts/newmorning_forest.png";
+      if (place.includes("달빛축제") || place.includes("달축")) return "assets/courts/dalbit-festival.jpg";
+      if (place.includes("달빛") || place.includes("달빛공원")) return "assets/courts/dalbit_2.jpeg";
+      if (place.includes("새아침")) return "assets/courts/saeachim.jpg";
       if (place.includes("승기")) return "assets/courts/seunggi_clay.png";
       return "assets/courts/moonlight_hard.png";
     }
@@ -1842,15 +1872,48 @@
       return `avatar-tactile avatar-default-${index}`;
     }
 
+    function memberMonthOptions() {
+      return [...new Set(schedules.map(schedule => schedule.date.slice(0, 7)))].sort();
+    }
+
+    function activeMemberSchedules() {
+      return state.memberMonth === "all"
+        ? schedules
+        : schedules.filter(schedule => schedule.date.startsWith(state.memberMonth));
+    }
+
+    function renderMemberMonthFilter() {
+      const select = document.querySelector("#memberMonthFilter");
+      const summary = document.querySelector("#memberPeriodSummary");
+      if (!select || !summary) return;
+
+      const months = memberMonthOptions();
+      if (state.memberMonth !== "all" && !months.includes(state.memberMonth)) {
+        state.memberMonth = "all";
+      }
+
+      select.innerHTML = [
+        `<option value="all">전체 누적</option>`,
+        ...months.map(month => `<option value="${month}">${monthLabelKo(month)} 누적</option>`)
+      ].join("");
+      select.value = state.memberMonth;
+
+      const periodSchedules = activeMemberSchedules();
+      const periodLabel = state.memberMonth === "all" ? "전체 누적" : `${monthLabelKo(state.memberMonth)} 누적`;
+      summary.textContent = `${periodLabel} 기준 · 일정 ${periodSchedules.length}개 · 참석 기록 ${periodSchedules.reduce((total, schedule) => total + schedule.attendees.length, 0)}건`;
+    }
+
     function memberStats() {
+      const periodSchedules = activeMemberSchedules();
       return people.map(name => {
-        const items = schedules.filter(s => s.attendees.includes(name));
+        const items = periodSchedules.filter(s => s.attendees.includes(name));
         const regular = items.filter(s => s.regular).length;
         return { name, count: items.length, regular, latest: items[items.length - 1] };
       }).sort((a,b) => state.memberSort === "name" ? a.name.localeCompare(b.name, "ko") : b.count - a.count || a.name.localeCompare(b.name, "ko"));
     }
 
     function renderMembers() {
+      renderMemberMonthFilter();
       // Stitch bridge: Members directory HTML markup starts here.
       document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => {
         const initial = m.name.slice(0, 1);
@@ -1962,6 +2025,61 @@
         renderSelectedDate();
       }
       renderCalendar();
+    }
+
+    function setupCalendarSwipe() {
+      const card = document.querySelector(".calendar-card");
+      if (!card || !window.PointerEvent) return;
+
+      const isMobileCalendar = () => window.matchMedia("(max-width: 767px)").matches;
+      const resetDrag = () => { calendarDrag = null; };
+
+      card.addEventListener("pointerdown", event => {
+        if (!isMobileCalendar()) return;
+        if (event.button !== undefined && event.button !== 0) return;
+        if (event.target.closest("#prevMonth, #nextMonth, [data-add-schedule]")) return;
+
+        calendarDrag = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          isHorizontal: false
+        };
+        card.setPointerCapture?.(event.pointerId);
+      });
+
+      card.addEventListener("pointermove", event => {
+        if (!calendarDrag || event.pointerId !== calendarDrag.pointerId) return;
+
+        const dx = event.clientX - calendarDrag.startX;
+        const dy = event.clientY - calendarDrag.startY;
+        if (Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+          calendarDrag.isHorizontal = true;
+          event.preventDefault();
+        }
+      });
+
+      card.addEventListener("pointerup", event => {
+        if (!calendarDrag || event.pointerId !== calendarDrag.pointerId) return;
+
+        const dx = event.clientX - calendarDrag.startX;
+        const dy = event.clientY - calendarDrag.startY;
+        const shouldChangeMonth = Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.2;
+        if (shouldChangeMonth) {
+          suppressCalendarClick = true;
+          changeCalendarMonth(dx < 0 ? 1 : -1);
+          window.setTimeout(() => { suppressCalendarClick = false; }, 250);
+        }
+        resetDrag();
+      });
+
+      card.addEventListener("pointercancel", resetDrag);
+      card.addEventListener("click", event => {
+        if (!suppressCalendarClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        suppressCalendarClick = false;
+      }, true);
     }
 
     function createLocalSchedule(form) {
@@ -2167,6 +2285,8 @@
     }
 
     function switchView(view) {
+      const renderRequest = ++viewRenderRequest;
+
       // 1. Magnetized Nav Indicator Sliding Motion (Desktop #sideNav only)
       const targetView = view === "detail" ? "schedule" : view;
       const activeBtnDesktop = document.querySelector(`#sideNav .nav-item[data-view="${targetView}"]`);
@@ -2183,7 +2303,11 @@
       });
 
       // 3. Trigger Skeleton Loading Screen (0.2s duration for extreme responsiveness)
-      if (view === "schedule") {
+      if (view === "dashboard") {
+        syncStoredLocalData();
+        rebuildDataIndexes();
+        renderDashboard();
+      } else if (view === "schedule") {
         document.querySelector("#scheduleGroups").innerHTML = `
           <div class="rounded-xl bg-surface-container-low p-6 space-y-4 skeleton-shine opacity-50 min-h-[300px] border border-outline-variant/10">
             <div class="h-6 w-1/4 bg-on-surface-variant/20 rounded"></div>
@@ -2191,7 +2315,9 @@
             <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
           </div>
         `;
-        setTimeout(renderSchedule, 200);
+        setTimeout(() => {
+          if (renderRequest === viewRenderRequest) renderSchedule();
+        }, 200);
       } else if (view === "courts") {
         document.querySelector("#courtCards").innerHTML = Array(3).fill(`
           <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 space-y-4 skeleton-shine opacity-50">
@@ -2200,7 +2326,9 @@
             <div class="h-4 w-1/2 bg-on-surface-variant/10 rounded"></div>
           </div>
         `).join("");
-        setTimeout(renderCourts, 200);
+        setTimeout(() => {
+          if (renderRequest === viewRenderRequest) renderCourts();
+        }, 200);
       } else if (view === "members") {
         document.querySelector("#memberGrid").innerHTML = Array(4).fill(`
           <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 flex flex-col items-center space-y-4 skeleton-shine opacity-50">
@@ -2210,7 +2338,9 @@
             <div class="h-10 w-full bg-on-surface-variant/10 rounded-lg"></div>
           </div>
         `).join("");
-        setTimeout(renderMembers, 200);
+        setTimeout(() => {
+          if (renderRequest === viewRenderRequest) renderMembers();
+        }, 200);
       }
 
       // 4. Elastic Tab Fade-Slide Transition
@@ -2302,10 +2432,15 @@
     });
     document.querySelector("#placeFilter").addEventListener("change", event => { state.place = event.target.value; renderSchedule(); });
     document.querySelector("#personFilter").addEventListener("change", event => { state.person = event.target.value; renderSchedule(); });
+    document.querySelector("#memberMonthFilter").addEventListener("change", event => {
+      state.memberMonth = event.target.value;
+      renderMembers();
+    });
     document.querySelector("#mobileMenu").addEventListener("click", () => document.body.classList.add("mobile-nav-open"));
     document.querySelector("#backdrop").addEventListener("click", () => document.body.classList.remove("mobile-nav-open"));
     document.querySelector("#prevMonth").addEventListener("click", () => changeCalendarMonth(-1));
     document.querySelector("#nextMonth").addEventListener("click", () => changeCalendarMonth(1));
+    setupCalendarSwipe();
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
