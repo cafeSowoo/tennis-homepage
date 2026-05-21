@@ -186,6 +186,18 @@
     }
     .calendar-day.active-day { border-color: var(--primary); }
     .calendar-day.selected-date { border-color: #00685d; background: rgba(0, 104, 93, 0.05); }
+    .calendar-day.is-past:not(.is-today):not(.selected-date) {
+      background: #f1f3f2 !important;
+      border-color: #e0e4e2 !important;
+      color: rgba(25, 31, 29, 0.58);
+    }
+    .calendar-day.is-past:not(.is-today):not(.selected-date) > span:first-child {
+      color: rgba(25, 31, 29, 0.5);
+    }
+    .calendar-day.is-past:not(.is-today):not(.selected-date) .pulse-dot,
+    .calendar-day.is-past:not(.is-today):not(.selected-date) [title] {
+      opacity: 0.58;
+    }
     .calendar-day.is-today {
       background: transparent !important;
       border: 2px solid var(--primary) !important;
@@ -1632,6 +1644,7 @@
           ...dateEvents.map(item => ({ type: "event", item }))
         ].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
         const isToday = iso === todayIso;
+        const isPast = iso < todayIso;
         const hasMySchedule = dateSchedules.some(isMySchedule);
 
         const eventChips = calendarItems.slice(0, 2).map(({ type, item }) => {
@@ -1706,7 +1719,7 @@
         }
 
         cells.push(`
-          <button class="calendar-day ${calendarItems.length ? "active-day" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${calendarItems.length}개 일정">
+          <button class="calendar-day ${calendarItems.length ? "active-day" : ""} ${isPast ? "is-past" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${calendarItems.length}개 일정">
             <span class="${numberClass} absolute top-1 left-1/2 -translate-x-1/2 md:top-2 md:left-2 md:translate-x-0 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
             ${myScheduleBadge}
             ${dotIndicator}
