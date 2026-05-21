@@ -628,9 +628,13 @@
         font-size: 18px;
         line-height: 21px;
       }
-      header img {
+      header img:not(.brand-wordmark) {
         height: 24px !important;
         width: 24px !important;
+      }
+      header .brand-wordmark {
+        height: 26px !important;
+        max-width: 150px;
       }
       .dashboard-title {
         font-size: 25px;
@@ -705,19 +709,38 @@
     /* Avatar Rank Overlay Badge */
     .avatar-rank-badge {
       position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 18px;
-      height: 18px;
+      top: -1px;
+      right: -1px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
+      font-size: 8px;
       font-weight: 900;
       border: 1.5px solid #ffffff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
       z-index: 10;
+    }
+    .member-avatar {
+      height: 40px;
+      width: 40px;
+      font-size: 17px;
+    }
+    @media (min-width: 640px) {
+      .avatar-rank-badge {
+        top: -2px;
+        right: -2px;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+      }
+      .member-avatar {
+        height: 64px;
+        width: 64px;
+        font-size: 24px;
+      }
     }
 
     /* Sticky bottom bar for detail sheet */
@@ -743,7 +766,7 @@
         <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="아직도 성장중 로고">
         <div>
           <h1 class="sr-only">아직도 성장중</h1>
-          <img class="h-7 w-auto max-w-[142px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
+          <img class="brand-wordmark h-7 w-auto max-w-[142px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
           <p class="font-body-md text-sm text-on-surface-variant">Tennis Club Management</p>
         </div>
       </div>
@@ -783,7 +806,7 @@
       </label>
       <div class="flex items-center gap-2 sm:hidden">
         <img class="h-7 w-7 shrink-0 object-contain" src="assets/logo.png" alt="" aria-hidden="true">
-        <img class="h-6 w-auto max-w-[124px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
+        <img class="brand-wordmark h-8 w-auto max-w-[168px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
       </div>
     </div>
     <div class="relative flex items-center gap-sm">
@@ -2684,7 +2707,7 @@
           <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4">
             <div class="flex items-start gap-2.5 sm:gap-4">
               <div class="relative shrink-0">
-                <div class="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full text-xl sm:text-2xl font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
+                <div class="member-avatar flex items-center justify-center rounded-full font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
                   ${initial}
                 </div>
                 ${rank === 1 ? `
