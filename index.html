@@ -591,8 +591,27 @@
       .calendar-card .weekday-grid {
         gap: 4px;
       }
+      .calendar-card .calendar-day {
+        min-height: 38px;
+        padding: 6px 4px;
+      }
+      .calendar-card .calendar-day > span:first-child {
+        top: 3px;
+      }
+      .calendar-card .pulse-dot {
+        width: 6px;
+        height: 6px;
+      }
     }
     @media (max-width: 374px) {
+      header .font-headline-md {
+        font-size: 18px;
+        line-height: 21px;
+      }
+      header img {
+        height: 24px !important;
+        width: 24px !important;
+      }
       .dashboard-title {
         font-size: 25px;
         line-height: 31px;
@@ -603,6 +622,14 @@
       }
       .weather-card .weather-icon {
         display: none;
+      }
+      .calendar-card {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .calendar-card #calendarGrid,
+      .calendar-card .weekday-grid {
+        gap: 3px;
       }
     }
   </style>
@@ -638,8 +665,8 @@
     </div>
 
     <div class="mt-auto px-margin-mobile">
-      <button class="btn-primary w-full py-3.5 text-label-md font-bold">
-        Book a Court
+      <button class="btn-primary w-full py-3.5 text-label-md font-bold" type="button" data-add-schedule>
+        일정 추가
       </button>
     </div>
   </nav>
@@ -655,12 +682,12 @@
       </label>
       <div class="flex items-center gap-2 sm:hidden">
         <img class="h-7 w-7 shrink-0 object-contain" src="assets/logo.png" alt="" aria-hidden="true">
-        <span class="font-headline-md text-headline-md font-bold text-primary">아직도 성장중</span>
+        <span class="font-headline-md text-headline-md font-bold leading-tight text-primary">아직도 성장중</span>
       </div>
     </div>
     <div class="relative flex items-center gap-sm">
       <!-- 모바일 단축 코트 예약 버튼 (sports_tennis) -->
-      <button class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-200 hover:bg-primary-container/20 md:hidden" data-add-schedule title="Book a Court">
+      <button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-200 hover:bg-primary-container/20 md:hidden" data-add-schedule title="일정 추가" aria-label="일정 추가">
         <span class="material-symbols-outlined font-bold" data-icon="sports_tennis">sports_tennis</span>
       </button>
       <button class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
@@ -704,20 +731,22 @@
       </div>
 
       <div class="space-y-gutter">
+          <section id="quickOverview" class="grid grid-cols-1 gap-3 md:grid-cols-3"></section>
+
           <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
               <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May 2026</h3>
               <div class="flex items-center gap-1">
-                <button class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-colors hover:bg-primary-container hover:text-on-primary-container" type="button" data-add-schedule aria-label="일정 추가">
+                <button class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-colors hover:bg-primary-container hover:text-on-primary-container" type="button" data-add-schedule aria-label="일정 추가">
                   <span class="material-symbols-outlined text-[18px]">add</span>
                 </button>
-                <button class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-colors hover:bg-sky-600" type="button" data-add-event aria-label="다른 일정 추가">
+                <button class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-colors hover:bg-sky-600" type="button" data-add-event aria-label="다른 일정 추가">
                   <span class="material-symbols-outlined text-[18px]">event</span>
                 </button>
-                <button id="prevMonth" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="이전 달">
+                <button id="prevMonth" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="이전 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
-                <button id="nextMonth" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="다음 달">
+                <button id="nextMonth" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="다음 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                 </button>
               </div>
@@ -749,6 +778,9 @@
         <div class="flex flex-col gap-2 sm:flex-row">
           <button class="btn-primary justify-center px-4 py-2 text-sm font-bold" type="button" data-add-schedule>
             <span class="material-symbols-outlined text-[18px]">add</span> 일정 추가
+          </button>
+          <button id="scheduleWindowToggle" class="btn-outline justify-center px-4 py-2 text-sm font-bold" type="button">
+            지난 일정 보기
           </button>
           <select id="placeFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
           <select id="personFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
@@ -983,17 +1015,18 @@
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
-    const SCHEDULE_OVERRIDES_KEY = "tennis.scheduleOverrides";
-    const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
-    const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
-    const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
+        const SCHEDULE_OVERRIDES_KEY = "tennis.scheduleOverrides";
+        const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
+        const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
+        const ALLOW_REMOTE_WRITES = SUPABASE_CONFIG.allowRemoteWrites === true;
+        const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
     const MATCH_CAPACITY = 16;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
       ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
       : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
-    const state = { query: "", place: "all", person: "all", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+        const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -1198,11 +1231,12 @@
         location: row.location,
         canonicalName: row.canonical_name
       }));
-      dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
-      dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
-      dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
-      rebuildDataIndexes();
-    }
+          dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
+          dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
+          dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
+          if (!ALLOW_REMOTE_WRITES) applyClientLocalData();
+          rebuildDataIndexes();
+        }
 
     function loadLocalSchedules() {
       try {
@@ -1302,8 +1336,8 @@
       localStorage.setItem(EVENT_OVERRIDES_KEY, JSON.stringify(rows));
     }
 
-    function syncStoredLocalData(deletedIds = loadDeletedScheduleIds()) {
-      if (supabaseClient) return;
+        function syncStoredLocalData(deletedIds = loadDeletedScheduleIds()) {
+          if (supabaseClient) return;
       const scheduleOverrides = loadScheduleOverrides();
       const eventOverrides = loadEventOverrides();
       dataStore.schedules = [
@@ -1321,8 +1355,30 @@
       dataStore.discussions = [
         ...fileDiscussions,
         ...loadLocalDiscussions()
-      ];
-    }
+          ];
+        }
+
+        function applyClientLocalData() {
+          const deletedIds = loadDeletedScheduleIds();
+          const scheduleOverrides = loadScheduleOverrides();
+          const eventOverrides = loadEventOverrides();
+          dataStore.schedules = [
+            ...dataStore.schedules
+              .filter(schedule => !deletedIds.includes(String(schedule.id)))
+              .map(schedule => ({ ...schedule, ...(scheduleOverrides[String(schedule.id)] || {}) })),
+            ...loadLocalSchedules()
+          ];
+          dataStore.events = [
+            ...dataStore.events
+              .map(event => ({ ...event, ...(eventOverrides[String(event.id)] || {}) }))
+              .filter(event => !event.deleted),
+            ...loadLocalEvents()
+          ];
+          dataStore.discussions = [
+            ...dataStore.discussions,
+            ...loadLocalDiscussions()
+          ];
+        }
 
     function rebuildDataIndexes() {
       const memberById = new Map(dataStore.members.map(member => [member.id, member]));
@@ -1527,11 +1583,26 @@
       return hour >= 6 && hour <= 18 ? "daytime" : "nighttime";
     }
 
-    function isMySchedule(item) {
-      return item.attendees.includes(MY_NAME);
-    }
+        function isMySchedule(item) {
+          return item.attendees.includes(MY_NAME);
+        }
 
-    function isYonseiSchedule(item) {
+        function myMemberId() {
+          return members.find(member => member.name === MY_NAME)?.id || "";
+        }
+
+        function nextScheduleFrom(dateValue = todayIso) {
+          return schedules.find(schedule => schedule.date >= dateValue);
+        }
+
+        function todayRows() {
+          return [
+            ...(byDate[todayIso] || []).map(item => ({ type: "schedule", item })),
+            ...(eventsByDate[todayIso] || []).map(item => ({ type: "event", item }))
+          ].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
+        }
+
+        function isYonseiSchedule(item) {
       return item.courtId === "court-yonsei-tennis" || item.place === "연세 테니스장";
     }
 
@@ -1556,9 +1627,9 @@
           </div>
           <h4 class="text-sm font-bold text-on-surface tracking-tight">${title}</h4>
           <p class="mt-1.5 text-xs font-semibold text-on-surface-variant leading-relaxed max-w-[280px]">${message}</p>
-          <button class="btn-outline mt-5 px-5 py-2 text-xs font-bold shadow-sm" type="button" onclick="switchView('courts')">
-            ${icon("calendar_today", "text-[14px]")} 새로운 코트 예약하기
-          </button>
+              <button class="btn-outline mt-5 px-5 py-2 text-xs font-bold shadow-sm" type="button" data-add-schedule>
+                ${icon("calendar_today", "text-[14px]")} 일정 추가
+              </button>
         </div>
       `;
     }
@@ -1890,10 +1961,11 @@
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
       if (!item) return;
       document.querySelector("#detailCrumbTitle").textContent = "Match Details";
-      const capacity = MATCH_CAPACITY;
-      const attendeeCount = item.attendees.length;
-      const spotsLeft = Math.max(0, capacity - attendeeCount);
-      const visibleEmptySlots = attendeeCount < 4
+          const capacity = MATCH_CAPACITY;
+          const attendeeCount = item.attendees.length;
+          const spotsLeft = Math.max(0, capacity - attendeeCount);
+          const myAttending = isMySchedule(item);
+          const visibleEmptySlots = attendeeCount < 4
         ? Math.min(spotsLeft, 4 - attendeeCount)
         : Math.min(spotsLeft, 1);
 
@@ -2009,15 +2081,15 @@
           <aside class="flex flex-col gap-gutter lg:col-span-4">
             <!-- Join Action Card -->
             <article class="rounded-xl border-t-4 border-secondary bg-surface-container-lowest p-6 shadow-ambient border border-outline-variant/10">
-              <h3 class="mb-2 font-headline-md text-headline-md text-on-surface font-bold text-lg">${spotsLeft ? "Join this Match" : "Match Full"}</h3>
-              <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${spotsLeft ? "NTRP 등급 요건을 충족하셨습니다. 매치 참석 신청을 해보세요!" : "이 매치는 현재 모집 완료되었습니다. 대기자 명단에 등록할 수 있습니다."}</p>
+                  <h3 class="mb-2 font-headline-md text-headline-md text-on-surface font-bold text-lg">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
+                  <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다. 일정이 겹치면 바로 취소할 수 있어요." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
 
-              <button class="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary-container py-4 text-sm font-bold text-on-secondary-container shadow hover:bg-secondary transition-all">
-                ${icon("sports_tennis")} ${spotsLeft ? "Join Match" : "Waitlist"}
-              </button>
-              <button class="w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5">
-                Contact Organizer
-              </button>
+                  <button class="${myAttending ? "bg-error-container text-on-error-container hover:bg-error-container/80" : "bg-secondary-container text-on-secondary-container hover:bg-secondary"} mb-4 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-sm font-bold shadow transition-all disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
+                    ${icon(myAttending ? "person_remove" : "sports_tennis")} ${myAttending ? "내 참석 취소" : spotsLeft ? "내 이름으로 참석" : "마감됨"}
+                  </button>
+                  <button class="w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5" type="button" data-contact-organizer>
+                    댓글로 문의
+                  </button>
             </article>
 
             <!-- Weather/Conditions Card -->
@@ -2108,42 +2180,53 @@
       `;
     }
 
-    function renderUpcoming() {
-      const quickOverview = document.querySelector("#quickOverview");
-      if (!quickOverview) return;
-      const next = upcoming[0];
-      const regular = schedules.filter(s => s.regular).length;
+        function renderUpcoming() {
+          const quickOverview = document.querySelector("#quickOverview");
+          if (!quickOverview) return;
+          const todayItems = todayRows();
+          const next = nextScheduleFrom();
+          const nextMine = schedules.find(schedule => schedule.date >= todayIso && isMySchedule(schedule));
+          const hasTodayTennis = todayItems.some(row => row.type === "schedule");
+          const hasTodayConflict = todayItems.some(row => row.type === "event");
+          const remoteModeLabel = supabaseClient && !ALLOW_REMOTE_WRITES ? "공개 링크: 내 기기에만 저장" : "원격 저장 활성";
 
-      const watermarkSvg = `
-        <svg class="card-watermark w-28 h-28 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="9" r="5" />
-          <path d="M12.5 12.5 19 19" />
-          <path d="m14 16.5 2.5-2.5" />
-          <circle cx="16.5" cy="5.5" r="1.2" />
-        </svg>
-      `;
+          const nextSummary = next
+            ? `${dateLabel(next)} · ${scheduleTimeRangeLabel(next)}`
+            : "예정된 테니스 일정 없음";
+          const nextMineSummary = nextMine
+            ? `${dateLabel(nextMine)} · ${scheduleTimeRangeLabel(nextMine)}`
+            : "내 참석 예정 없음";
+          const todayStatus = todayItems.length
+            ? `${hasTodayTennis ? "테니스 있음" : "테니스 없음"}${hasTodayConflict ? " · 다른 일정 있음" : ""}`
+            : "오늘 등록된 일정 없음";
 
-      quickOverview.innerHTML = `
-        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary to-[#004d44] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          ${watermarkSvg}
-          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Next Match</p>
-          <p class="mt-2 font-headline-md text-xl font-black tracking-tight">${dateLabel(next)}</p>
-          <p class="mt-1 text-xs font-semibold opacity-90">${timeStart(next)} · ${next.place}</p>
-        </div>
-        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-tertiary to-[#732715] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          ${watermarkSvg}
-          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Upcoming Events</p>
-          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight tabular-nums">${upcoming.length}</p>
-          <p class="mt-1 text-xs font-medium opacity-90">오늘 이후 예정된 일정</p>
-        </div>
-        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#778d0a] to-[#556500] p-5 text-white specular-card shadow-ambient transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-          ${watermarkSvg}
-          <p class="text-xs font-bold uppercase tracking-widest opacity-75">Regular Meetings</p>
-          <p class="mt-1.5 font-display text-3xl font-extrabold tracking-tight tabular-nums">${regular}</p>
-          <p class="mt-1 text-xs font-medium opacity-90">등록된 클럽 정기 모임</p>
-        </div>
-      `;
-    }
+          quickOverview.innerHTML = `
+            <button class="rounded-xl border border-primary/20 bg-surface-container-lowest p-4 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-black uppercase tracking-wider text-primary">다음 테니스</span>
+                ${icon(next ? "chevron_right" : "add", "text-[18px] text-primary")}
+              </div>
+              <p class="mt-2 text-lg font-black leading-snug text-on-surface">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
+              <p class="mt-1 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
+            </button>
+            <button class="rounded-xl border ${nextMine ? "border-primary/30 bg-primary/10" : "border-outline-variant/30 bg-surface-container-lowest"} p-4 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5" type="button" ${nextMine ? `data-detail-id="${nextMine.id}"` : "data-view-link=\"schedule\""}>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-black uppercase tracking-wider text-primary">내 참석</span>
+                ${icon(nextMine ? "check_circle" : "person_search", `text-[18px] ${nextMine ? "text-primary" : "text-on-surface-variant"}`)}
+              </div>
+              <p class="mt-2 text-lg font-black leading-snug text-on-surface">${nextMine ? escapeHTML(nextMine.place) : "아직 없음"}</p>
+              <p class="mt-1 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextMineSummary)}</p>
+            </button>
+            <div class="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 shadow-ambient">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-black uppercase tracking-wider text-primary">오늘 판단</span>
+                ${icon(hasTodayConflict ? "event_busy" : "event_available", `text-[18px] ${hasTodayConflict ? "text-tertiary" : "text-primary"}`)}
+              </div>
+              <p class="mt-2 text-lg font-black leading-snug text-on-surface">${todayStatus}</p>
+              <p class="mt-1 text-xs font-semibold leading-relaxed text-on-surface-variant">${remoteModeLabel}</p>
+            </div>
+          `;
+        }
 
     function matches(item) {
       const q = state.query.toLowerCase();
@@ -2167,13 +2250,23 @@
       document.querySelector("#personFilter").value = people.includes(state.person) ? state.person : "all";
     }
 
-    function renderSchedule() {
-      const filteredSchedules = schedules.filter(matches).map(item => ({ type: "schedule", item }));
-      const filteredEvents = calendarEvents.filter(matchesEvent).map(item => ({ type: "event", item }));
-      const filtered = [...filteredSchedules, ...filteredEvents].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
-      const groups = filtered.reduce((acc, row) => ((acc[row.item.date] ||= []).push(row), acc), {});
-      // Stitch bridge: Schedule grouped-list HTML markup starts here.
-      document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, rows]) => `
+        function renderSchedule() {
+          const windowButton = document.querySelector("#scheduleWindowToggle");
+          if (windowButton) {
+            windowButton.textContent = state.scheduleWindow === "upcoming" ? "지난 일정 보기" : "오늘 이후만 보기";
+            windowButton.setAttribute("aria-pressed", String(state.scheduleWindow !== "upcoming"));
+          }
+          const inScheduleWindow = item => state.scheduleWindow !== "upcoming" || item.date >= todayIso;
+          const filteredSchedules = schedules.filter(item => inScheduleWindow(item) && matches(item)).map(item => ({ type: "schedule", item }));
+          const filteredEvents = calendarEvents.filter(item => inScheduleWindow(item) && matchesEvent(item)).map(item => ({ type: "event", item }));
+          const filtered = [...filteredSchedules, ...filteredEvents].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
+          const groups = filtered.reduce((acc, row) => ((acc[row.item.date] ||= []).push(row), acc), {});
+          const emptyTitle = state.scheduleWindow === "upcoming" ? "오늘 이후 일정이 없습니다" : "조건에 맞는 경기가 없습니다";
+          const emptyMessage = state.scheduleWindow === "upcoming"
+            ? "지난 일정이 필요하면 필터를 전환하거나 새 일정을 추가하세요."
+            : "다른 검색어를 입력하시거나, 구장/참석자 필터를 조절해 보세요.";
+          // Stitch bridge: Schedule grouped-list HTML markup starts here.
+          document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, rows]) => `
         <section class="rounded-xl bg-surface-container-low p-5 shadow-ambient border border-outline-variant/10">
           <div class="mb-4 flex items-center justify-between">
             <h3 class="font-display text-xl font-bold text-on-surface">${dateLabel(rows[0].item)}</h3>
@@ -2184,8 +2277,8 @@
             .map(row => row.type === "event" ? calendarEventRow(row.item) : scheduleRow(row.item))
             .join("")}</div>
         </section>
-      `).join("") || emptyStateHTML("조건에 맞는 경기가 없습니다 🔍", "다른 검색어를 입력하시거나, 구장/참석자 필터를 조절해 새로운 매치를 탐색해 보세요.");
-    }
+          `).join("") || emptyStateHTML(emptyTitle, emptyMessage);
+        }
 
     function renderCourts() {
       // Stitch bridge: Courts grid HTML markup starts here.
@@ -2512,9 +2605,10 @@
       }, true);
     }
 
-    function dateButtonFromEvent(event) {
-      const directButton = event.target.closest("[data-date]");
-      if (directButton) return directButton;
+        function dateButtonFromEvent(event) {
+          if (!event.target.closest(".calendar-card")) return null;
+          const directButton = event.target.closest("[data-date]");
+          if (directButton) return directButton;
 
       const hitButton = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-date]");
       if (hitButton) return hitButton;
@@ -2597,8 +2691,8 @@
       refreshViews();
     }
 
-    async function addSchedule(schedule) {
-      if (supabaseClient) {
+        async function addSchedule(schedule) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { data, error } = await supabaseClient
           .from("schedules")
           .insert(toSupabaseSchedule(schedule))
@@ -2617,11 +2711,11 @@
       refreshViews();
     }
 
-    async function updateSchedule(scheduleId, updates) {
+        async function updateSchedule(scheduleId, updates) {
       const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
       if (!rawSchedule) return;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { error } = await supabaseClient
           .from("schedules")
           .update(toSupabaseSchedule({ ...rawSchedule, ...updates }))
@@ -2648,10 +2742,10 @@
       refreshViews();
     }
 
-    async function addEvent(event) {
+        async function addEvent(event) {
       let storedEvent = event;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { data, error } = await supabaseClient
           .from("events")
           .insert(toSupabaseEvent(event))
@@ -2673,11 +2767,11 @@
       refreshViews();
     }
 
-    async function updateEvent(eventId, updates) {
+        async function updateEvent(eventId, updates) {
       const rawEvent = dataStore.events.find(item => String(item.id) === String(eventId));
       if (!rawEvent) return;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { data, error } = await supabaseClient
           .from("events")
           .update(toSupabaseEvent({ ...rawEvent, ...updates }))
@@ -2713,12 +2807,12 @@
       return (schedule.attendees || []).map(memberIdForName).filter(Boolean);
     }
 
-    async function persistScheduleAttendees(scheduleId, attendeeIds) {
+        async function persistScheduleAttendees(scheduleId, attendeeIds) {
       const normalizedIds = [...new Set(attendeeIds.filter(Boolean).map(String))];
       const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
       if (!rawSchedule) return;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { error } = await supabaseClient
           .from("schedules")
           .update({ attendee_ids: normalizedIds })
@@ -2769,16 +2863,35 @@
       document.body.style.overflow = "";
     }
 
-    async function addAttendee(memberId) {
-      const schedule = findScheduleById(state.selectedId);
-      if (!schedule || !memberId) return;
-      const attendeeIds = attendeeIdsForSchedule(schedule);
-      if (attendeeIds.includes(memberId)) return;
-      await persistScheduleAttendees(schedule.id, [...attendeeIds, memberId]);
-    }
+        async function addAttendee(memberId) {
+          const schedule = findScheduleById(state.selectedId);
+          if (!schedule || !memberId) return;
+          const attendeeIds = attendeeIdsForSchedule(schedule);
+          if (attendeeIds.includes(memberId)) return;
+          await persistScheduleAttendees(schedule.id, [...attendeeIds, memberId]);
+        }
 
-    async function removeAttendee(memberId) {
-      const schedule = findScheduleById(state.selectedId);
+        async function joinCurrentSchedule() {
+          const memberId = myMemberId();
+          if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
+          await addAttendee(memberId);
+        }
+
+        async function leaveCurrentSchedule() {
+          const memberId = myMemberId();
+          if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
+          await removeAttendee(memberId);
+        }
+
+        function focusDiscussionComposer() {
+          const input = document.querySelector("[data-discussion-input]");
+          if (!input) return;
+          input.scrollIntoView({ behavior: "smooth", block: "center" });
+          input.focus();
+        }
+
+        async function removeAttendee(memberId) {
+          const schedule = findScheduleById(state.selectedId);
       if (!schedule || !memberId) return;
       const member = members.find(item => item.id === memberId);
       if (!member) return;
@@ -2786,7 +2899,7 @@
       await persistScheduleAttendees(schedule.id, attendeeIdsForSchedule(schedule).filter(id => id !== memberId));
     }
 
-    async function addDiscussionMessage(message) {
+        async function addDiscussionMessage(message) {
       const schedule = findScheduleById(state.selectedId);
       const author = members.find(member => member.name === MY_NAME) || members[0];
       const trimmed = message.trim();
@@ -2801,7 +2914,7 @@
         source: "local"
       };
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { data, error } = await supabaseClient
           .from("discussions")
           .insert(toSupabaseDiscussion(discussion))
@@ -2818,12 +2931,12 @@
       refreshViews();
     }
 
-    async function deleteSchedule(id) {
+        async function deleteSchedule(id) {
       const schedule = findScheduleById(id);
       if (!schedule) return;
       if (!confirm(`${schedule.title} 일정을 삭제할까요?`)) return;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { error } = await supabaseClient
           .from("schedules")
           .delete()
@@ -2843,12 +2956,12 @@
       switchView("schedule");
     }
 
-    async function deleteEvent(id) {
+        async function deleteEvent(id) {
       const event = findEventById(id);
       if (!event) return;
       if (!confirm(`${event.title} 일정을 삭제할까요?`)) return;
 
-      if (supabaseClient) {
+          if (supabaseClient && ALLOW_REMOTE_WRITES) {
         const { error } = await supabaseClient
           .from("events")
           .delete()
@@ -2998,11 +3111,29 @@
         return;
       }
 
-      const removeAttendeeButton = event.target.closest("[data-remove-attendee]");
-      if (removeAttendeeButton) {
-        removeAttendee(removeAttendeeButton.dataset.removeAttendee).catch(error => alert(error.message));
-        return;
-      }
+          const removeAttendeeButton = event.target.closest("[data-remove-attendee]");
+          if (removeAttendeeButton) {
+            removeAttendee(removeAttendeeButton.dataset.removeAttendee).catch(error => alert(error.message));
+            return;
+          }
+
+          const joinCurrentButton = event.target.closest("[data-join-current]");
+          if (joinCurrentButton) {
+            joinCurrentSchedule().catch(error => alert(error.message));
+            return;
+          }
+
+          const leaveCurrentButton = event.target.closest("[data-leave-current]");
+          if (leaveCurrentButton) {
+            leaveCurrentSchedule().catch(error => alert(error.message));
+            return;
+          }
+
+          const contactOrganizerButton = event.target.closest("[data-contact-organizer]");
+          if (contactOrganizerButton) {
+            focusDiscussionComposer();
+            return;
+          }
 
       const sendDiscussionButton = event.target.closest("[data-send-discussion]");
       if (sendDiscussionButton) {
@@ -3057,8 +3188,12 @@
       switchView("schedule");
     });
     document.querySelector("#placeFilter").addEventListener("change", event => { state.place = event.target.value; renderSchedule(); });
-    document.querySelector("#personFilter").addEventListener("change", event => { state.person = event.target.value; renderSchedule(); });
-    document.querySelector("#memberMonthFilter").addEventListener("change", event => {
+        document.querySelector("#personFilter").addEventListener("change", event => { state.person = event.target.value; renderSchedule(); });
+        document.querySelector("#scheduleWindowToggle").addEventListener("click", () => {
+          state.scheduleWindow = state.scheduleWindow === "upcoming" ? "all" : "upcoming";
+          renderSchedule();
+        });
+        document.querySelector("#memberMonthFilter").addEventListener("change", event => {
       state.memberMonth = event.target.value;
       renderMembers();
     });

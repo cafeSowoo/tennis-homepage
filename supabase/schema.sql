@@ -73,12 +73,7 @@ create policy "public read schedules" on public.schedules for select using (true
 create policy "public read events" on public.events for select using (true);
 create policy "public read discussions" on public.discussions for select using (true);
 
--- Personal preview mode: anon writes are convenient but should be replaced
--- with authenticated admin-only policies before sharing the URL with members.
-create policy "preview write schedules" on public.schedules for all using (true) with check (true);
-create policy "preview write events" on public.events for all using (true) with check (true);
-create policy "preview write discussions" on public.discussions for all using (true) with check (true);
-
 grant usage on schema public to anon, authenticated;
 grant select on public.members, public.courts, public.schedules, public.events, public.discussions to anon, authenticated;
-grant insert, update, delete on public.schedules, public.events, public.discussions to anon, authenticated;
+revoke insert, update, delete on public.schedules, public.events, public.discussions from anon;
+grant insert, update, delete on public.schedules, public.events, public.discussions to authenticated;
