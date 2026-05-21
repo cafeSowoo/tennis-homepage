@@ -703,6 +703,9 @@
                 <button class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-colors hover:bg-primary-container hover:text-on-primary-container" type="button" data-add-schedule aria-label="일정 추가">
                   <span class="material-symbols-outlined text-[18px]">add</span>
                 </button>
+                <button class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition-colors hover:bg-sky-600" type="button" data-add-event aria-label="다른 일정 추가">
+                  <span class="material-symbols-outlined text-[18px]">event</span>
+                </button>
                 <button id="prevMonth" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="이전 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
@@ -871,6 +874,70 @@
     </div>
   </section>
 
+  <section id="addEventSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
+    <button id="addEventBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="다른 일정 추가 닫기"></button>
+    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-2xl bg-surface-container-lowest p-5 shadow-float md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:p-6">
+      <div class="mb-5 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-sky-600">Calendar Event</p>
+          <h3 class="mt-1 font-display text-xl font-bold text-on-surface">다른 일정 추가</h3>
+        </div>
+        <button id="closeAddEvent" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form id="addEventForm" class="space-y-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+            날짜
+            <input id="addEventDate" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="date" type="date" required>
+          </label>
+          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+            분류
+            <select id="addEventCategory" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="category" required>
+              <option value="personal">개인</option>
+              <option value="work">업무</option>
+              <option value="travel">이동</option>
+              <option value="family">가족</option>
+              <option value="other">기타</option>
+            </select>
+          </label>
+          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+            시작
+            <input id="addEventStart" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="startTime" type="time">
+          </label>
+          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+            종료
+            <input id="addEventEnd" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="endTime" type="time">
+          </label>
+        </div>
+
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          제목
+          <input id="addEventTitle" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="title" placeholder="예: 병원 예약, 가족 저녁, 출장" type="text" required>
+        </label>
+
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          장소
+          <input id="addEventLocation" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="location" placeholder="선택 사항" type="text">
+        </label>
+
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          메모
+          <textarea id="addEventNote" class="w-full resize-none rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="note" placeholder="선택 사항" rows="3"></textarea>
+        </label>
+
+        <div class="flex gap-2">
+          <button class="btn-outline flex-1 justify-center py-3 text-sm font-bold" type="button" id="cancelAddEvent">취소</button>
+          <button class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-sky-600" type="submit">
+            <span class="material-symbols-outlined text-[18px]">event_available</span> 추가
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
   <section id="attendeeSheet" class="fixed inset-0 z-[85] hidden" aria-hidden="true">
     <button id="attendeeBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="참석자 추가 닫기"></button>
     <div class="absolute inset-x-0 bottom-0 rounded-t-2xl bg-surface-container-lowest p-5 shadow-float md:left-1/2 md:top-1/2 md:bottom-auto md:w-full md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:p-6">
@@ -903,6 +970,7 @@
   <script>
     const MY_NAME = "김지석";
     const LOCAL_SCHEDULES_KEY = "tennis.localSchedules";
+    const LOCAL_EVENTS_KEY = "tennis.localEvents";
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
@@ -1101,6 +1169,20 @@
       localStorage.setItem(LOCAL_SCHEDULES_KEY, JSON.stringify(rows));
     }
 
+    function loadLocalEvents() {
+      try {
+        const rows = JSON.parse(localStorage.getItem(LOCAL_EVENTS_KEY) || "[]");
+        return Array.isArray(rows) ? rows : [];
+      } catch (error) {
+        console.warn("Local events could not be read.", error);
+        return [];
+      }
+    }
+
+    function saveLocalEvents(rows) {
+      localStorage.setItem(LOCAL_EVENTS_KEY, JSON.stringify(rows));
+    }
+
     function loadLocalDiscussions() {
       try {
         const rows = JSON.parse(localStorage.getItem(LOCAL_DISCUSSIONS_KEY) || "[]");
@@ -1149,7 +1231,10 @@
         ...fileSchedules.filter(schedule => !deletedIds.includes(String(schedule.id))),
         ...loadLocalSchedules()
       ];
-      dataStore.events = fileEvents;
+      dataStore.events = [
+        ...fileEvents,
+        ...loadLocalEvents()
+      ];
       dataStore.discussions = [
         ...fileDiscussions,
         ...loadLocalDiscussions()
@@ -2140,6 +2225,25 @@
       document.body.style.overflow = "";
     }
 
+    function openAddEvent(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth()) {
+      const sheet = document.querySelector("#addEventSheet");
+      const form = document.querySelector("#addEventForm");
+      form.reset();
+      document.querySelector("#addEventDate").value = dateValue;
+      document.querySelector("#addEventCategory").value = "personal";
+      sheet.classList.remove("hidden");
+      sheet.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      document.querySelector("#addEventTitle").focus();
+    }
+
+    function closeAddEvent() {
+      const sheet = document.querySelector("#addEventSheet");
+      sheet.classList.add("hidden");
+      sheet.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
     function changeCalendarMonth(delta) {
       state.currentMonth = addMonths(state.currentMonth, delta);
       if (state.selectedDate && !state.selectedDate.startsWith(state.currentMonth)) {
@@ -2159,7 +2263,7 @@
       card.addEventListener("pointerdown", event => {
         if (!isMobileCalendar()) return;
         if (event.button !== undefined && event.button !== 0) return;
-        if (event.target.closest("#prevMonth, #nextMonth, [data-add-schedule]")) return;
+        if (event.target.closest("#prevMonth, #nextMonth, [data-add-schedule], [data-add-event]")) return;
 
         calendarDrag = {
           pointerId: event.pointerId,
@@ -2239,6 +2343,29 @@
       };
     }
 
+    function createLocalEvent(form) {
+      const formData = new FormData(form);
+      const date = formData.get("date");
+      const startTime = formData.get("startTime");
+      const endTime = formData.get("endTime");
+      if (startTime && endTime && startTime >= endTime) {
+        throw new Error("종료 시간은 시작 시간보다 늦어야 합니다.");
+      }
+
+      return {
+        id: `local-event-${Date.now()}`,
+        date,
+        title: formData.get("title").trim(),
+        category: formData.get("category") || "personal",
+        startTime: startTime || undefined,
+        endTime: endTime || undefined,
+        location: formData.get("location").trim() || undefined,
+        note: formData.get("note").trim() || undefined,
+        source: "local",
+        createdAt: new Date().toISOString()
+      };
+    }
+
     function addLocalSchedule(schedule) {
       const localSchedules = loadLocalSchedules();
       localSchedules.push(schedule);
@@ -2267,6 +2394,16 @@
       state.selectedId = schedule.id;
       state.selectedDate = schedule.date;
       state.currentMonth = schedule.date.slice(0, 7);
+      refreshViews();
+    }
+
+    function addEvent(event) {
+      const localEvents = loadLocalEvents();
+      localEvents.push(event);
+      saveLocalEvents(localEvents);
+      dataStore.events.push(event);
+      state.selectedDate = event.date;
+      state.currentMonth = event.date.slice(0, 7);
       refreshViews();
     }
 
@@ -2491,6 +2628,12 @@
         return;
       }
 
+      const addEventButton = event.target.closest("[data-add-event]");
+      if (addEventButton) {
+        openAddEvent();
+        return;
+      }
+
       const deleteButton = event.target.closest("[data-delete-schedule]");
       if (deleteButton) {
         deleteSchedule(state.selectedId).catch(error => alert(error.message));
@@ -2566,12 +2709,17 @@
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
+    document.querySelector("#closeAddEvent").addEventListener("click", closeAddEvent);
+    document.querySelector("#cancelAddEvent").addEventListener("click", closeAddEvent);
+    document.querySelector("#addEventBackdrop").addEventListener("click", closeAddEvent);
     document.querySelector("#closeAttendeeSheet").addEventListener("click", closeAttendeeSheet);
     document.querySelector("#cancelAttendeeAdd").addEventListener("click", closeAttendeeSheet);
     document.querySelector("#attendeeBackdrop").addEventListener("click", closeAttendeeSheet);
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && !document.querySelector("#attendeeSheet").classList.contains("hidden")) {
         closeAttendeeSheet();
+      } else if (event.key === "Escape" && !document.querySelector("#addEventSheet").classList.contains("hidden")) {
+        closeAddEvent();
       } else if (event.key === "Escape" && !document.querySelector("#addScheduleSheet").classList.contains("hidden")) {
         closeAddSchedule();
       }
@@ -2582,6 +2730,15 @@
         await addSchedule(createLocalSchedule(event.currentTarget));
         closeAddSchedule();
         switchView("detail");
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+    document.querySelector("#addEventForm").addEventListener("submit", event => {
+      event.preventDefault();
+      try {
+        addEvent(createLocalEvent(event.currentTarget));
+        closeAddEvent();
       } catch (error) {
         alert(error.message);
       }
