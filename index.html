@@ -2505,6 +2505,22 @@
       }, true);
     }
 
+    function dateButtonFromEvent(event) {
+      const directButton = event.target.closest("[data-date]");
+      if (directButton) return directButton;
+
+      const hitButton = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-date]");
+      if (hitButton) return hitButton;
+
+      return [...document.querySelectorAll("[data-date]")].find(button => {
+        const rect = button.getBoundingClientRect();
+        return event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+      });
+    }
+
     function createLocalSchedule(form) {
       const formData = new FormData(form);
       const date = formData.get("date");
@@ -3017,7 +3033,7 @@
         switchView("detail");
         return;
       }
-      const dateButton = event.target.closest("[data-date]");
+      const dateButton = dateButtonFromEvent(event);
       if (dateButton) {
         state.selectedDate = dateButton.dataset.date;
         renderCalendar();
