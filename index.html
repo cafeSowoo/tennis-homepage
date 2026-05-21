@@ -234,20 +234,20 @@
       box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
     }
     .pulse-dot.dot-event-personal {
-      background-color: #0ea5e9;
-      box-shadow: 0 0 6px rgba(14, 165, 233, 0.55);
+      background-color: #f43f5e;
+      box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
     }
     .pulse-dot.dot-event-work {
-      background-color: #8b5cf6;
-      box-shadow: 0 0 6px rgba(139, 92, 246, 0.55);
+      background-color: #f43f5e;
+      box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
     }
     .pulse-dot.dot-event-family {
       background-color: #f43f5e;
       box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
     }
     .pulse-dot.dot-event-other {
-      background-color: #64748b;
-      box-shadow: 0 0 6px rgba(100, 116, 139, 0.55);
+      background-color: #f43f5e;
+      box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
     }
     .pulse-dot.my-schedule-dot {
       width: 8px;
@@ -1490,6 +1490,12 @@
       return toTwentyFourHourLabel(timeStart(item));
     }
 
+    function scheduleTimeRangeLabel(item) {
+      const start = toTwentyFourHourLabel(timeStart(item));
+      const end = toTwentyFourHourLabel(timeEnd(item));
+      return end ? `${start} ~ ${end}` : start;
+    }
+
     function dayNameFromDate(dateValue) {
       return ["일","월","화","수","목","금","토"][new Date(`${dateValue}T00:00:00`).getDay()];
     }
@@ -1559,11 +1565,11 @@
 
     function calendarEventCategory(event) {
       const categories = {
-        personal: { label: "개인", icon: "event", chip: "border border-sky-300 bg-sky-50 text-sky-800", dot: "dot-event-personal" },
-        work: { label: "업무", icon: "business_center", chip: "border border-violet-300 bg-violet-50 text-violet-800", dot: "dot-event-work" },
+        personal: { label: "개인", icon: "event", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-personal" },
+        work: { label: "업무", icon: "business_center", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-work" },
         bookclub: { label: "독서모임", icon: "menu_book", chip: "border border-amber-300 bg-amber-50 text-amber-800", dot: "dot-bookclub" },
         family: { label: "가족", icon: "home", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-family" },
-        other: { label: "기타", icon: "event_note", chip: "border border-slate-300 bg-slate-50 text-slate-700", dot: "dot-event-other" }
+        other: { label: "기타", icon: "event_note", chip: "border border-rose-300 bg-rose-50 text-rose-800", dot: "dot-event-other" }
       };
       return categories[event.category] || categories.other;
     }
@@ -1789,10 +1795,10 @@
               <div class="min-w-0">
                 <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
                 <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
-                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
                 </p>
-                <p class="mt-1.5 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs font-semibold text-on-surface-variant">
-                  ${icon("group", "text-[14px] shrink-0")} ${attendeeListHTML}
+                <p class="mt-1.5 flex min-w-0 items-center gap-1 text-xs font-semibold text-on-surface-variant">
+                  ${icon("group", "text-[14px] shrink-0")} <span class="min-w-0 truncate">${attendeeListHTML}</span>
                 </p>
               </div>
             </div>
@@ -1807,11 +1813,11 @@
       }
 
       return item.attendees.map((name, index) => {
-        const suffix = index < item.attendees.length - 1 ? "," : "";
+        const suffix = index < item.attendees.length - 1 ? ", " : "";
         if (name === MY_NAME) {
-          return `<span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 font-black text-primary">${escapeHTML(name)}${suffix}</span>`;
+          return `<span class="font-black text-primary">${escapeHTML(name)}</span>${suffix}`;
         }
-        return `<span>${escapeHTML(name)}${suffix}</span>`;
+        return `<span>${escapeHTML(name)}</span>${suffix}`;
       }).join("");
     }
 
