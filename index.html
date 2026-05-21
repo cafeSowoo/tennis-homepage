@@ -641,6 +641,11 @@
       -ms-overflow-style: none;  /* IE and Edge */
       scrollbar-width: none;  /* Firefox */
     }
+    @media (max-width: 767px) {
+      .dashboard-overview + .calendar-card {
+        margin-top: 12px !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
@@ -736,7 +741,7 @@
       </div>
 
       <div class="space-y-gutter">
-          <section id="quickOverview" class="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-3 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-3 md:pb-0"></section>
+          <section id="quickOverview" class="dashboard-overview flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-3 md:pb-0"></section>
 
           <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
@@ -775,23 +780,22 @@
     </section>
 
     <section id="schedule" class="view">
-      <div class="mb-lg flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div class="mb-4 flex flex-col gap-4 md:mb-lg md:flex-row md:items-end md:justify-between">
         <div>
           <h2 class="font-display text-3xl font-bold">Schedule</h2>
-          <p class="mt-2 text-sm text-on-surface-variant">날짜별 일정과 참석자를 한 번에 확인합니다.</p>
         </div>
-        <div class="flex flex-col gap-2 sm:flex-row">
-          <button class="btn-primary justify-center px-4 py-2 text-sm font-bold" type="button" data-add-schedule>
+        <div class="grid grid-cols-2 gap-2 md:flex md:flex-row">
+          <button class="btn-primary min-w-0 justify-center px-3 py-2 text-sm font-bold md:px-4" type="button" data-add-schedule>
             <span class="material-symbols-outlined text-[18px]">add</span> 일정 추가
           </button>
-          <button id="scheduleWindowToggle" class="btn-outline justify-center px-4 py-2 text-sm font-bold" type="button">
+          <button id="scheduleWindowToggle" class="btn-outline min-w-0 justify-center px-3 py-2 text-sm font-bold md:px-4" type="button">
             지난 일정 보기
           </button>
-          <select id="placeFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
-          <select id="personFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
+          <select id="placeFilter" class="min-w-0 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
+          <select id="personFilter" class="min-w-0 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
         </div>
       </div>
-      <div id="scheduleGroups" class="space-y-gutter"></div>
+      <div id="scheduleGroups" class="space-y-4 md:space-y-gutter"></div>
     </section>
 
     <section id="detail" class="view">
@@ -812,18 +816,16 @@
     </section>
 
     <section id="courts" class="view">
-      <div class="mb-lg">
+      <div class="mb-4 md:mb-lg">
         <h2 class="font-display text-3xl font-bold">Court Reservations</h2>
-        <p class="mt-2 text-sm text-on-surface-variant">장소별 예약 밀도와 다음 일정을 Stitch 코트 화면 형태로 정리했습니다.</p>
       </div>
       <div id="courtCards" class="grid grid-cols-1 gap-gutter xl:grid-cols-2"></div>
     </section>
 
     <section id="members" class="view">
-      <div class="mb-lg flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div class="mb-4 flex flex-col gap-4 md:mb-lg md:flex-row md:items-center md:justify-between">
         <div>
           <h2 class="font-display text-3xl font-bold">Members Directory</h2>
-          <p class="mt-2 text-sm text-on-surface-variant">참석 횟수 기준으로 멤버별 참여 현황을 봅니다.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <select id="memberMonthFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" aria-label="멤버 랭킹 집계 기간"></select>
@@ -831,7 +833,6 @@
           <button class="member-sort rounded-full bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" data-sort="name">이름순</button>
         </div>
       </div>
-      <div id="memberPeriodSummary" class="mb-gutter rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 text-sm font-semibold text-on-surface-variant shadow-ambient"></div>
       <div id="memberGrid" class="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
     </section>
   </main>
@@ -2372,8 +2373,7 @@
 
     function renderMemberMonthFilter() {
       const select = document.querySelector("#memberMonthFilter");
-      const summary = document.querySelector("#memberPeriodSummary");
-      if (!select || !summary) return;
+      if (!select) return;
 
       const months = memberMonthOptions();
       if (state.memberMonth !== "all" && !months.includes(state.memberMonth)) {
@@ -2385,18 +2385,13 @@
         ...months.map(month => `<option value="${month}">${monthLabelKo(month)} 누적</option>`)
       ].join("");
       select.value = state.memberMonth;
-
-      const periodSchedules = activeMemberSchedules();
-      const periodLabel = state.memberMonth === "all" ? "전체 누적" : `${monthLabelKo(state.memberMonth)} 누적`;
-      summary.textContent = `${periodLabel} 기준 · 일정 ${periodSchedules.length}개 · 참석 기록 ${periodSchedules.reduce((total, schedule) => total + schedule.attendees.length, 0)}건`;
     }
 
     function memberStats() {
       const periodSchedules = activeMemberSchedules();
       return people.map(name => {
         const items = periodSchedules.filter(s => s.attendees.includes(name));
-        const regular = items.filter(s => s.regular).length;
-        return { name, count: items.length, regular, latest: items[items.length - 1] };
+        return { name, count: items.length, latest: items[items.length - 1] };
       }).sort((a,b) => state.memberSort === "name" ? a.name.localeCompare(b.name, "ko") : b.count - a.count || a.name.localeCompare(b.name, "ko"));
     }
 
@@ -2448,18 +2443,8 @@
                 <div class="text-xs font-semibold uppercase text-on-surface-variant">Matches</div>
                 <div class="font-headline-md text-xl font-black text-primary">${m.count}</div>
               </div>
-              <div class="flex min-h-12 items-center justify-between rounded-lg bg-surface-container-low px-3">
-                <div class="text-xs font-semibold uppercase text-on-surface-variant">Regular</div>
-                <div class="font-headline-md text-xl font-black text-secondary">${m.regular}</div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
               <button class="btn-outline min-h-10 px-3 text-sm font-bold">
                 ${icon("chat", "text-[14px]")} Message
-              </button>
-              <button class="btn-primary min-h-10 px-3 text-sm font-bold">
-                ${icon("sports_tennis", "text-[14px]")} Challenge
               </button>
             </div>
           </article>
