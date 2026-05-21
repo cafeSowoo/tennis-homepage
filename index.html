@@ -1776,51 +1776,43 @@
               : "bg-secondary-container text-secondary";
 
       const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
-      const attendeeText = item.attendees.length ? item.attendees.join(", ") : "참석자 없음";
-      const tagListHTML = scheduleTagHTML(item);
+      const attendeeListHTML = scheduleAttendeesHTML(item);
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
         <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
           <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
-            <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-              <div class="flex min-w-0 items-center gap-4">
-                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
-                  ${icon(iconName)}
-                </div>
-                <div class="min-w-0">
-                  <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
-                  <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
-                    ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
-                  </p>
-                  <p class="mt-1.5 truncate text-xs font-semibold text-on-surface-variant flex items-center gap-1">
-                    ${icon("group", "text-[14px]")} ${attendeeText}
-                  </p>
-                </div>
+            <div class="flex min-w-0 items-center gap-4">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
+                ${icon(iconName)}
               </div>
-              ${tagListHTML ? `<div class="flex shrink-0 flex-wrap justify-end gap-1.5 sm:max-w-[180px]">${tagListHTML}</div>` : ""}
+              <div class="min-w-0">
+                <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
+                <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${item.time}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
+                </p>
+                <p class="mt-1.5 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs font-semibold text-on-surface-variant">
+                  ${icon("group", "text-[14px] shrink-0")} ${attendeeListHTML}
+                </p>
+              </div>
             </div>
           </button>
         </article>
       `;
     }
 
-    function scheduleTags(item) {
-      // Schedule card tags are additive and ordered: 참가 → 정기모임 → 마감 → 로컬.
-      return [
-        item.attendees.includes(MY_NAME) && { label: "참가", className: "border border-primary/30 bg-primary/10 text-primary" },
-        item.regular && { label: "정기모임", className: "border border-tertiary-container bg-tertiary-container text-on-tertiary-container" },
-        item.closed && { label: "마감", className: "border border-error/20 bg-error-container text-on-error-container" },
-        item.source === "local" && { label: "로컬", className: "border border-indigo-300 bg-indigo-50 text-indigo-700" }
-      ].filter(Boolean);
-    }
+    function scheduleAttendeesHTML(item) {
+      if (!item.attendees.length) {
+        return `<span>참석자 없음</span>`;
+      }
 
-    function scheduleTagHTML(item) {
-      return scheduleTags(item).map(tag => `
-        <span class="inline-flex w-fit items-center whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-black leading-none shadow-sm ${tag.className}">
-          ${tag.label}
-        </span>
-      `).join("");
+      return item.attendees.map((name, index) => {
+        const suffix = index < item.attendees.length - 1 ? "," : "";
+        if (name === MY_NAME) {
+          return `<span class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 font-black text-primary">${escapeHTML(name)}${suffix}</span>`;
+        }
+        return `<span>${escapeHTML(name)}${suffix}</span>`;
+      }).join("");
     }
 
     function initials(name) {
