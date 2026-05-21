@@ -1755,7 +1755,7 @@
       panel.classList.remove("hidden");
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
-        ? `<div class="space-y-5">${tennisHTML}${eventHTML}</div>`
+        ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
     }
 
