@@ -131,7 +131,16 @@
     }
 
     * { box-sizing: border-box; }
-    html { scrollbar-gutter: stable; }
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
     body { font-family: Inter, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: #191c1d; background: #f8f9fa; letter-spacing: 0; overflow-x: hidden; }
 
     /* 구글 머티리얼 심볼 최적화 */
