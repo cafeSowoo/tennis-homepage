@@ -754,11 +754,12 @@
         <div class="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
           <button class="transition hover:text-primary" data-view-link="schedule">Schedule</button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
-          <span class="text-on-surface">Match Details</span>
+          <span id="detailCrumbTitle" class="text-on-surface">Match Details</span>
         </div>
         <div class="flex gap-3">
           <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary"><span class="material-symbols-outlined">share</span></button>
-          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-error-container hover:text-on-error-container" type="button" data-delete-schedule aria-label="일정 삭제"><span class="material-symbols-outlined">delete</span></button>
+          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary" type="button" data-edit-current aria-label="일정 수정"><span class="material-symbols-outlined">edit</span></button>
+          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-error-container hover:text-on-error-container" type="button" data-delete-current aria-label="일정 삭제"><span class="material-symbols-outlined">delete</span></button>
           <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
         </div>
       </div>
@@ -816,7 +817,7 @@
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
           <p class="text-xs font-bold uppercase tracking-widest text-primary">Local Schedule</p>
-          <h3 class="mt-1 font-display text-xl font-bold text-on-surface">일정 추가</h3>
+          <h3 id="addScheduleSheetTitle" class="mt-1 font-display text-xl font-bold text-on-surface">일정 추가</h3>
         </div>
         <button id="closeAddSchedule" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
           <span class="material-symbols-outlined text-[20px]">close</span>
@@ -866,7 +867,7 @@
 
         <div class="flex gap-2">
           <button class="btn-outline flex-1 justify-center py-3 text-sm font-bold" type="button" id="cancelAddSchedule">취소</button>
-          <button class="btn-primary flex-1 justify-center py-3 text-sm font-bold" type="submit">
+          <button id="addScheduleSubmit" class="btn-primary flex-1 justify-center py-3 text-sm font-bold" type="submit">
             <span class="material-symbols-outlined text-[18px]">add_circle</span> 추가
           </button>
         </div>
@@ -880,7 +881,7 @@
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
           <p class="text-xs font-bold uppercase tracking-widest text-sky-600">Calendar Event</p>
-          <h3 class="mt-1 font-display text-xl font-bold text-on-surface">다른 일정 추가</h3>
+          <h3 id="addEventSheetTitle" class="mt-1 font-display text-xl font-bold text-on-surface">다른 일정 추가</h3>
         </div>
         <button id="closeAddEvent" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
           <span class="material-symbols-outlined text-[20px]">close</span>
@@ -930,7 +931,7 @@
 
         <div class="flex gap-2">
           <button class="btn-outline flex-1 justify-center py-3 text-sm font-bold" type="button" id="cancelAddEvent">취소</button>
-          <button class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-sky-600" type="submit">
+          <button id="addEventSubmit" class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-sky-600" type="submit">
             <span class="material-symbols-outlined text-[18px]">event_available</span> 추가
           </button>
         </div>
@@ -974,6 +975,8 @@
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
+    const SCHEDULE_OVERRIDES_KEY = "tennis.scheduleOverrides";
+    const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
     const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
     const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
@@ -981,7 +984,7 @@
       : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
-    const state = { query: "", place: "all", person: "all", memberSort: "count", memberMonth: "all", selectedId: 0, selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+    const state = { query: "", place: "all", person: "all", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -999,6 +1002,10 @@
     let fileDiscussions = [];
     let calendarDrag = null;
     let suppressCalendarClick = false;
+    let scheduleFormMode = "create";
+    let eventFormMode = "create";
+    let editingScheduleId = "";
+    let editingEventId = "";
 
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
 
@@ -1225,14 +1232,48 @@
       localStorage.setItem(ATTENDEE_OVERRIDES_KEY, JSON.stringify(rows));
     }
 
+    function loadScheduleOverrides() {
+      try {
+        const rows = JSON.parse(localStorage.getItem(SCHEDULE_OVERRIDES_KEY) || "{}");
+        return rows && typeof rows === "object" && !Array.isArray(rows) ? rows : {};
+      } catch (error) {
+        console.warn("Schedule overrides could not be read.", error);
+        return {};
+      }
+    }
+
+    function saveScheduleOverrides(rows) {
+      localStorage.setItem(SCHEDULE_OVERRIDES_KEY, JSON.stringify(rows));
+    }
+
+    function loadEventOverrides() {
+      try {
+        const rows = JSON.parse(localStorage.getItem(EVENT_OVERRIDES_KEY) || "{}");
+        return rows && typeof rows === "object" && !Array.isArray(rows) ? rows : {};
+      } catch (error) {
+        console.warn("Event overrides could not be read.", error);
+        return {};
+      }
+    }
+
+    function saveEventOverrides(rows) {
+      localStorage.setItem(EVENT_OVERRIDES_KEY, JSON.stringify(rows));
+    }
+
     function syncStoredLocalData(deletedIds = loadDeletedScheduleIds()) {
       if (supabaseClient) return;
+      const scheduleOverrides = loadScheduleOverrides();
+      const eventOverrides = loadEventOverrides();
       dataStore.schedules = [
-        ...fileSchedules.filter(schedule => !deletedIds.includes(String(schedule.id))),
+        ...fileSchedules
+          .filter(schedule => !deletedIds.includes(String(schedule.id)))
+          .map(schedule => ({ ...schedule, ...(scheduleOverrides[String(schedule.id)] || {}) })),
         ...loadLocalSchedules()
       ];
       dataStore.events = [
-        ...fileEvents,
+        ...fileEvents
+          .map(event => ({ ...event, ...(eventOverrides[String(event.id)] || {}) }))
+          .filter(event => !event.deleted),
         ...loadLocalEvents()
       ];
       dataStore.discussions = [
@@ -1270,7 +1311,7 @@
         ...event,
         id: event.id ?? `event-${index}`,
         category: event.category || "other",
-        source: "event"
+        source: event.source || "event"
       })).sort(compareCalendarItemsByTime);
 
       people = unique(members.map(member => member.name));
@@ -1288,7 +1329,15 @@
       renderSchedule();
       renderCourts();
       renderMembers();
-      renderDetail(findScheduleById(state.selectedId));
+      renderCurrentDetail();
+    }
+
+    function renderCurrentDetail() {
+      if (state.detailType === "event") {
+        renderEventDetail(findEventById(state.selectedEventId));
+      } else {
+        renderDetail(findScheduleById(state.selectedId));
+      }
     }
 
     function renderDashboard() {
@@ -1299,6 +1348,14 @@
 
     function findScheduleById(id) {
       return schedules.find(schedule => String(schedule.id) === String(id)) || schedules[0];
+    }
+
+    function findEventById(id) {
+      return calendarEvents.find(event => String(event.id) === String(id)) || calendarEvents[0];
+    }
+
+    function currentDetailItem() {
+      return state.detailType === "event" ? findEventById(state.selectedEventId) : findScheduleById(state.selectedId);
     }
 
     function dateLabel(item) {
@@ -1490,19 +1547,21 @@
       const location = event.location ? ` @ ${escapeHTML(event.location)}` : "";
       const note = event.note ? `<p class="mt-1 text-xs font-semibold text-on-surface-variant">${escapeHTML(event.note)}</p>` : "";
       return `
-        <article class="rounded-xl border border-outline-variant bg-surface-bright p-4">
-          <div class="flex min-w-0 items-center gap-4">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${category.chip} shadow-sm">
-              ${icon(category.icon)}
+        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <button class="schedule-card-button block w-full p-4" type="button" data-event-detail-id="${event.id}" aria-label="${escapeHTML(event.title)} 상세 보기">
+            <div class="flex min-w-0 items-center gap-4">
+              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${category.chip} shadow-sm">
+                ${icon(category.icon)}
+              </div>
+              <div class="min-w-0 text-left">
+                <h4 class="truncate font-label-md text-label-md font-bold text-on-surface">${escapeHTML(event.title)}</h4>
+                <p class="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-on-surface-variant">
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${eventTimeLabel(event)}</span>${location}
+                </p>
+                ${note}
+              </div>
             </div>
-            <div class="min-w-0">
-              <h4 class="truncate font-label-md text-label-md font-bold text-on-surface">${escapeHTML(event.title)}</h4>
-              <p class="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-on-surface-variant">
-                ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${eventTimeLabel(event)}</span>${location}
-              </p>
-              ${note}
-            </div>
-          </div>
+          </button>
         </article>
       `;
     }
@@ -1788,6 +1847,8 @@
     }
 
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
+      if (!item) return;
+      document.querySelector("#detailCrumbTitle").textContent = "Match Details";
       const capacity = Math.max(4, item.attendees.length);
       const spotsLeft = Math.max(0, capacity - item.attendees.length);
 
@@ -1938,6 +1999,70 @@
       `;
     }
 
+    function renderEventDetail(event = findEventById(state.selectedEventId)) {
+      if (!event) return;
+      document.querySelector("#detailCrumbTitle").textContent = "Event Details";
+      const category = calendarEventCategory(event);
+      const location = event.location || "장소 미정";
+      const note = event.note || "세부 메모가 아직 없습니다.";
+
+      document.querySelector("#detailContent").innerHTML = `
+        <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12">
+          <div class="flex flex-col gap-gutter lg:col-span-8">
+            <article class="overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest shadow-ambient">
+              <div class="relative flex h-56 w-full items-center justify-center overflow-hidden bg-surface-container-high">
+                <div class="flex flex-col items-center gap-3 text-on-surface-variant">
+                  ${icon(category.icon, "text-[42px]")}
+                  <span class="text-sm font-bold">이미지 없음</span>
+                </div>
+                <div class="absolute bottom-4 left-6 flex flex-wrap items-center gap-3">
+                  <span class="rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider shadow-sm ${category.chip}">${category.label}</span>
+                  <span class="rounded-full border border-white/40 bg-white/35 px-3.5 py-1 text-xs font-bold text-on-surface backdrop-blur-md shadow-sm">Other Event</span>
+                </div>
+              </div>
+
+              <div class="p-6 md:p-8">
+                <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+                  <div class="space-y-2">
+                    <h2 class="font-headline-lg text-headline-lg-mobile font-black leading-tight tracking-tight text-on-surface md:text-headline-lg">${escapeHTML(event.title)}</h2>
+                    <p class="mt-3 flex items-center gap-2 text-base font-medium text-on-surface-variant">
+                      ${icon("location_on", "text-[20px] text-sky-600")} ${escapeHTML(location)}
+                    </p>
+                  </div>
+
+                  <div class="min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
+                    <div class="mb-1 text-xs font-bold uppercase tracking-widest text-sky-600">Date & Time</div>
+                    <div class="font-headline-md text-lg font-black text-on-surface">${dateLabel(event)}</div>
+                    <div class="mt-1.5 text-sm font-semibold text-on-surface-variant">${eventTimeLabel(event)}</div>
+                  </div>
+                </div>
+
+                <hr class="my-8 border-outline-variant/30">
+
+                <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low p-5">
+                  <h3 class="mb-2 text-sm font-black uppercase tracking-wider text-on-surface">Details</h3>
+                  <p class="whitespace-pre-wrap text-sm font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(note)}</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <aside class="flex flex-col gap-gutter lg:col-span-4">
+            <article class="rounded-xl border border-outline-variant/10 border-t-4 border-sky-500 bg-surface-container-lowest p-6 shadow-ambient">
+              <h3 class="mb-2 text-lg font-bold text-on-surface">Calendar Event</h3>
+              <p class="mb-6 text-sm font-medium leading-relaxed text-on-surface-variant">테니스 일정과 함께 달력에서 확인하는 별도 일정입니다.</p>
+              <button class="mb-3 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 py-3.5 text-sm font-bold text-white shadow transition-colors hover:bg-sky-600" type="button" data-edit-current>
+                ${icon("edit")} 수정
+              </button>
+              <button class="w-full rounded-lg border border-error bg-transparent py-3.5 text-sm font-bold text-error transition hover:bg-error-container" type="button" data-delete-current>
+                삭제
+              </button>
+            </article>
+          </aside>
+        </div>
+      `;
+    }
+
     function renderUpcoming() {
       const quickOverview = document.querySelector("#quickOverview");
       if (!quickOverview) return;
@@ -1983,6 +2108,13 @@
         (state.person === "all" || item.attendees.includes(state.person));
     }
 
+    function matchesEvent(item) {
+      const q = state.query.toLowerCase();
+      const category = calendarEventCategory(item);
+      const text = [item.title, item.location, item.note, eventTimeLabel(item), dateLabel(item), category.label].filter(Boolean).join(" ").toLowerCase();
+      return (!q || text.includes(q)) && state.place === "all" && state.person === "all";
+    }
+
     function renderFilters() {
       document.querySelector("#placeFilter").innerHTML = `<option value="all">전체 코트</option>` + places.map(p => `<option value="${p}">${p}</option>`).join("");
       document.querySelector("#personFilter").innerHTML = `<option value="all">전체 참석자</option>` + people.map(p => `<option value="${p}">${p}</option>`).join("");
@@ -1991,16 +2123,21 @@
     }
 
     function renderSchedule() {
-      const filtered = schedules.filter(matches).sort(compareSchedulesByTime);
-      const groups = filtered.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
+      const filteredSchedules = schedules.filter(matches).map(item => ({ type: "schedule", item }));
+      const filteredEvents = calendarEvents.filter(matchesEvent).map(item => ({ type: "event", item }));
+      const filtered = [...filteredSchedules, ...filteredEvents].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
+      const groups = filtered.reduce((acc, row) => ((acc[row.item.date] ||= []).push(row), acc), {});
       // Stitch bridge: Schedule grouped-list HTML markup starts here.
-      document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, items]) => `
+      document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, rows]) => `
         <section class="rounded-xl bg-surface-container-low p-5 shadow-ambient border border-outline-variant/10">
           <div class="mb-4 flex items-center justify-between">
-            <h3 class="font-display text-xl font-bold text-on-surface">${dateLabel(items[0])}</h3>
-            <span class="rounded-full bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-primary border border-outline-variant/20 shadow-sm">${items.length}개 일정 · 참석 ${items.reduce((n, s) => n + s.attendees.length, 0)}명</span>
+            <h3 class="font-display text-xl font-bold text-on-surface">${dateLabel(rows[0].item)}</h3>
+            <span class="rounded-full bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-primary border border-outline-variant/20 shadow-sm">${rows.length}개 일정 · 참석 ${rows.reduce((n, row) => n + (row.type === "schedule" ? row.item.attendees.length : 0), 0)}명</span>
           </div>
-          <div class="space-y-3">${[...items].sort(compareSchedulesByTime).map(item => scheduleRow(item)).join("")}</div>
+          <div class="space-y-3">${[...rows]
+            .sort((a, b) => compareCalendarItemsByTime(a.item, b.item))
+            .map(row => row.type === "event" ? calendarEventRow(row.item) : scheduleRow(row.item))
+            .join("")}</div>
         </section>
       `).join("") || emptyStateHTML("조건에 맞는 경기가 없습니다 🔍", "다른 검색어를 입력하시거나, 구장/참석자 필터를 조절해 새로운 매치를 탐색해 보세요.");
     }
@@ -2198,20 +2335,29 @@
       `).join("");
     }
 
-    function openAddSchedule(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth()) {
+    function openAddSchedule(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth(), schedule = null) {
+      scheduleFormMode = schedule ? "edit" : "create";
+      editingScheduleId = schedule ? String(schedule.id) : "";
       const sheet = document.querySelector("#addScheduleSheet");
       const form = document.querySelector("#addScheduleForm");
       form.reset();
-      document.querySelector("#addScheduleDate").value = dateValue;
-      document.querySelector("#addScheduleStart").value = "20:00";
-      document.querySelector("#addScheduleEnd").value = "22:00";
+      document.querySelector("#addScheduleSheetTitle").textContent = schedule ? "일정 수정" : "일정 추가";
+      document.querySelector("#addScheduleSubmit").innerHTML = `<span class="material-symbols-outlined text-[18px]">${schedule ? "save" : "add_circle"}</span> ${schedule ? "저장" : "추가"}`;
+      document.querySelector("#addScheduleDate").value = schedule?.date || dateValue;
+      document.querySelector("#addScheduleStart").value = schedule ? toTwentyFourHourLabel(timeStart(schedule)) : "20:00";
+      document.querySelector("#addScheduleEnd").value = schedule ? toTwentyFourHourLabel(timeEnd(schedule)) : "22:00";
       const firstCourt = courts[0]?.id || "";
-      document.querySelector("#addScheduleCourt").value = firstCourt;
+      document.querySelector("#addScheduleCourt").value = schedule?.courtId || firstCourt;
+      document.querySelector("#addScheduleTitle").value = schedule?.title || "";
+      form.querySelector('input[name="regular"]').checked = Boolean(schedule?.regular);
+      form.querySelector('input[name="closed"]').checked = Boolean(schedule?.closed);
+      const selectedAttendeeIds = schedule ? attendeeIdsForSchedule(schedule) : [];
       const myMember = members.find(member => member.name === MY_NAME);
-      if (myMember) {
-        const checkbox = form.querySelector(`input[name="attendeeIds"][value="${myMember.id}"]`);
+      if (!schedule && myMember) selectedAttendeeIds.push(myMember.id);
+      selectedAttendeeIds.forEach(memberId => {
+        const checkbox = form.querySelector(`input[name="attendeeIds"][value="${memberId}"]`);
         if (checkbox) checkbox.checked = true;
-      }
+      });
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -2223,14 +2369,25 @@
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      scheduleFormMode = "create";
+      editingScheduleId = "";
     }
 
-    function openAddEvent(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth()) {
+    function openAddEvent(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth(), event = null) {
+      eventFormMode = event ? "edit" : "create";
+      editingEventId = event ? String(event.id) : "";
       const sheet = document.querySelector("#addEventSheet");
       const form = document.querySelector("#addEventForm");
       form.reset();
-      document.querySelector("#addEventDate").value = dateValue;
-      document.querySelector("#addEventCategory").value = "personal";
+      document.querySelector("#addEventSheetTitle").textContent = event ? "다른 일정 수정" : "다른 일정 추가";
+      document.querySelector("#addEventSubmit").innerHTML = `<span class="material-symbols-outlined text-[18px]">${event ? "save" : "event_available"}</span> ${event ? "저장" : "추가"}`;
+      document.querySelector("#addEventDate").value = event?.date || dateValue;
+      document.querySelector("#addEventCategory").value = event?.category || "personal";
+      document.querySelector("#addEventStart").value = event?.startTime || "";
+      document.querySelector("#addEventEnd").value = event?.endTime || "";
+      document.querySelector("#addEventTitle").value = event?.title || "";
+      document.querySelector("#addEventLocation").value = event?.location || "";
+      document.querySelector("#addEventNote").value = event?.note || "";
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -2242,6 +2399,8 @@
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      eventFormMode = "create";
+      editingEventId = "";
     }
 
     function changeCalendarMonth(delta) {
@@ -2397,6 +2556,37 @@
       refreshViews();
     }
 
+    async function updateSchedule(scheduleId, updates) {
+      const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
+      if (!rawSchedule) return;
+
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from("schedules")
+          .update(toSupabaseSchedule({ ...rawSchedule, ...updates }))
+          .eq("id", String(scheduleId));
+        if (error) throw error;
+      } else if (rawSchedule.source === "local") {
+        saveLocalSchedules(loadLocalSchedules().map(item =>
+          String(item.id) === String(scheduleId) ? { ...item, ...updates } : item
+        ));
+      } else {
+        const overrides = loadScheduleOverrides();
+        overrides[String(scheduleId)] = {
+          ...(overrides[String(scheduleId)] || {}),
+          ...updates
+        };
+        saveScheduleOverrides(overrides);
+      }
+
+      Object.assign(rawSchedule, updates);
+      state.selectedId = scheduleId;
+      state.detailType = "schedule";
+      state.selectedDate = updates.date || rawSchedule.date;
+      state.currentMonth = state.selectedDate.slice(0, 7);
+      refreshViews();
+    }
+
     function addEvent(event) {
       const localEvents = loadLocalEvents();
       localEvents.push(event);
@@ -2404,6 +2594,31 @@
       dataStore.events.push(event);
       state.selectedDate = event.date;
       state.currentMonth = event.date.slice(0, 7);
+      refreshViews();
+    }
+
+    function updateEvent(eventId, updates) {
+      const rawEvent = dataStore.events.find(item => String(item.id) === String(eventId));
+      if (!rawEvent) return;
+
+      if (rawEvent.source === "local") {
+        saveLocalEvents(loadLocalEvents().map(item =>
+          String(item.id) === String(eventId) ? { ...item, ...updates } : item
+        ));
+      } else {
+        const overrides = loadEventOverrides();
+        overrides[String(eventId)] = {
+          ...(overrides[String(eventId)] || {}),
+          ...updates
+        };
+        saveEventOverrides(overrides);
+      }
+
+      Object.assign(rawEvent, updates);
+      state.selectedEventId = eventId;
+      state.detailType = "event";
+      state.selectedDate = updates.date || rawEvent.date;
+      state.currentMonth = state.selectedDate.slice(0, 7);
       refreshViews();
     }
 
@@ -2543,6 +2758,46 @@
       switchView("schedule");
     }
 
+    function deleteEvent(id) {
+      const event = findEventById(id);
+      if (!event) return;
+      if (!confirm(`${event.title} 일정을 삭제할까요?`)) return;
+
+      if (event.source === "local") {
+        saveLocalEvents(loadLocalEvents().filter(item => String(item.id) !== String(event.id)));
+      } else {
+        const overrides = loadEventOverrides();
+        overrides[String(event.id)] = {
+          ...(overrides[String(event.id)] || {}),
+          deleted: true
+        };
+        saveEventOverrides(overrides);
+      }
+
+      dataStore.events = dataStore.events.filter(item => String(item.id) !== String(event.id));
+      state.selectedDate = event.date;
+      state.selectedEventId = "";
+      state.detailType = "schedule";
+      refreshViews();
+      switchView("schedule");
+    }
+
+    function deleteCurrentDetail() {
+      if (state.detailType === "event") {
+        deleteEvent(state.selectedEventId);
+      } else {
+        deleteSchedule(state.selectedId).catch(error => alert(error.message));
+      }
+    }
+
+    function editCurrentDetail() {
+      if (state.detailType === "event") {
+        openAddEvent(undefined, findEventById(state.selectedEventId));
+      } else {
+        openAddSchedule(undefined, findScheduleById(state.selectedId));
+      }
+    }
+
     function switchView(view) {
       const renderRequest = ++viewRenderRequest;
 
@@ -2634,9 +2889,15 @@
         return;
       }
 
-      const deleteButton = event.target.closest("[data-delete-schedule]");
+      const editButton = event.target.closest("[data-edit-current]");
+      if (editButton) {
+        editCurrentDetail();
+        return;
+      }
+
+      const deleteButton = event.target.closest("[data-delete-current]");
       if (deleteButton) {
-        deleteSchedule(state.selectedId).catch(error => alert(error.message));
+        deleteCurrentDetail();
         return;
       }
 
@@ -2675,7 +2936,16 @@
       const detailButton = event.target.closest("[data-detail-id]");
       if (detailButton) {
         state.selectedId = detailButton.dataset.detailId;
-        renderDetail(findScheduleById(state.selectedId));
+        state.detailType = "schedule";
+        renderCurrentDetail();
+        switchView("detail");
+        return;
+      }
+      const eventDetailButton = event.target.closest("[data-event-detail-id]");
+      if (eventDetailButton) {
+        state.selectedEventId = eventDetailButton.dataset.eventDetailId;
+        state.detailType = "event";
+        renderEventDetail(findEventById(state.selectedEventId));
         switchView("detail");
         return;
       }
@@ -2727,9 +2997,15 @@
     document.querySelector("#addScheduleForm").addEventListener("submit", async event => {
       event.preventDefault();
       try {
-        await addSchedule(createLocalSchedule(event.currentTarget));
+        const schedule = createLocalSchedule(event.currentTarget);
+        if (scheduleFormMode === "edit" && editingScheduleId) {
+          const { id, source, createdAt, ...updates } = schedule;
+          await updateSchedule(editingScheduleId, updates);
+        } else {
+          await addSchedule(schedule);
+          switchView("detail");
+        }
         closeAddSchedule();
-        switchView("detail");
       } catch (error) {
         alert(error.message);
       }
@@ -2737,8 +3013,16 @@
     document.querySelector("#addEventForm").addEventListener("submit", event => {
       event.preventDefault();
       try {
-        addEvent(createLocalEvent(event.currentTarget));
+        const calendarEvent = createLocalEvent(event.currentTarget);
+        const mode = eventFormMode;
+        const eventId = editingEventId;
         closeAddEvent();
+        if (mode === "edit" && eventId) {
+          const { id, source, createdAt, ...updates } = calendarEvent;
+          updateEvent(eventId, updates);
+        } else {
+          addEvent(calendarEvent);
+        }
       } catch (error) {
         alert(error.message);
       }
