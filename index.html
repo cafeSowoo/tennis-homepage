@@ -175,6 +175,17 @@
       transform: translateY(0) scale(1);
     }
 
+    /* 선택된 날짜 일정 패널 프리미엄 애니메이션 */
+    #selectedDatePanel {
+      opacity: 0;
+      transform: translateY(12px) scale(0.995);
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #selectedDatePanel.active-animate {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     /* 캘린더 인터랙션 클래스 고도화 */
     .calendar-day {
       transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -646,6 +657,81 @@
         margin-top: 12px !important;
       }
     }
+
+    /* View Transitions API Custom Animations (Apple-style spring curve) */
+    ::view-transition-old(root) {
+      animation: 260ms cubic-bezier(0.16, 1, 0.3, 1) both fade-out,
+                 260ms cubic-bezier(0.16, 1, 0.3, 1) both scale-down;
+    }
+    ::view-transition-new(root) {
+      animation: 300ms cubic-bezier(0.16, 1, 0.3, 1) both fade-in,
+                 300ms cubic-bezier(0.16, 1, 0.3, 1) both scale-up;
+    }
+
+    @keyframes fade-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes scale-down {
+      from { transform: scale(1); }
+      to { transform: scale(0.985); }
+    }
+    @keyframes scale-up {
+      from { transform: scale(1.015); }
+      to { transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-group(*),
+      ::view-transition-old(*),
+      ::view-transition-new(*) {
+        animation: none !important;
+      }
+    }
+
+    /* Avatar Rank Overlay Badge */
+    .avatar-rank-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    /* Sticky bottom bar for detail sheet */
+    @media (max-width: 767px) {
+      .sticky-detail-bar {
+        position: fixed;
+        bottom: calc(4rem + env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        background: rgba(248, 249, 250, 0.92);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(188, 201, 198, 0.3);
+        border-bottom: 1px solid rgba(188, 201, 198, 0.3);
+        padding: 12px 16px;
+        z-index: 45;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+      }
+      /* Adjust main padding bottom to not get blocked by sticky bar */
+      .has-sticky-bar {
+        padding-bottom: calc(5.5rem + 80px + env(safe-area-inset-bottom)) !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
@@ -746,7 +832,7 @@
 
           <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
-              <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May 2026</h3>
+              <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May. 2026</h3>
               <div class="flex items-center gap-1">
                 <!-- 통합 일정 추가 버튼 및 드롭다운 -->
                 <div class="relative inline-block">
@@ -775,7 +861,9 @@
             <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-on-surface-variant">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
-            <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+            <div id="calendarGridWrapper" class="relative overflow-hidden">
+              <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+            </div>
           </section>
 
           <section id="selectedDatePanel" class="hidden rounded-xl bg-surface-container-lowest p-md shadow-ambient">
@@ -844,7 +932,7 @@
           <button class="member-sort rounded-full bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" data-sort="name">이름순</button>
         </div>
       </div>
-      <div id="memberGrid" class="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
+      <div id="memberGrid" class="grid grid-cols-2 gap-3 sm:gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
     </section>
   </main>
 
@@ -1482,10 +1570,7 @@
 
     function monthLabel(monthValue) {
       const [year, month] = monthValue.split("-").map(Number);
-      return new Date(year, month - 1, 1).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric"
-      });
+      return `${new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "short" })}. ${year}`;
     }
 
     function monthLabelKo(monthValue) {
@@ -1604,6 +1689,58 @@
         function isMySchedule(item) {
           return item.attendees.includes(MY_NAME);
         }
+
+        function getScheduleOverlapAlerts(date, startTime, endTime, excludeId) {
+          if (!startTime || !endTime) return [];
+          const startMin = timeToMinutes(startTime);
+          const endMin = timeToMinutes(endTime);
+          const alerts = [];
+
+          // Check other schedules I'm attending
+          const dateSchedules = byDate[date] || [];
+          for (const s of dateSchedules) {
+            if (String(s.id) === String(excludeId)) continue;
+            if (!s.attendees.includes(MY_NAME)) continue;
+            const sStartStr = toTwentyFourHourLabel(timeStart(s));
+            const sEndStr = toTwentyFourHourLabel(timeEnd(s));
+            if (!sStartStr || !sEndStr) continue;
+            const sStart = timeToMinutes(sStartStr);
+            const sEnd = timeToMinutes(sEndStr);
+            if (startMin < sEnd && endMin > sStart) {
+              alerts.push({
+                type: "schedule",
+                title: s.title || `${s.place} 테니스`,
+                time: `${sStartStr} ~ ${sEndStr}`,
+                item: s
+              });
+            }
+          }
+
+          // Check personal/work/other calendar events
+          const dateEvents = eventsByDate[date] || [];
+          for (const e of dateEvents) {
+            if (String(e.id) === String(excludeId)) continue;
+            if (!e.startTime || !e.endTime) continue;
+            const eStart = timeToMinutes(e.startTime);
+            const eEnd = timeToMinutes(e.endTime);
+            if (startMin < eEnd && endMin > eStart) {
+              alerts.push({
+                type: "event",
+                title: e.title || "개인 일정",
+                time: `${e.startTime} ~ ${e.endTime}`,
+                item: e
+              });
+            }
+          }
+
+          return alerts;
+        }
+
+        function timeToMinutes(timeStr) {
+          const [h, m] = timeStr.split(":").map(Number);
+          return h * 60 + m;
+        }
+
 
         function myMemberId() {
           return members.find(member => member.name === MY_NAME)?.id || "";
@@ -1830,8 +1967,12 @@
       const panel = document.querySelector("#selectedDatePanel");
       if (!state.selectedDate) {
         panel.classList.add("hidden");
+        panel.classList.remove("active-animate");
         return;
       }
+
+      const wasHidden = panel.classList.contains("hidden");
+
       const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
       const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
       const sample = items[0] || eventItems[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
@@ -1847,11 +1988,26 @@
             ${eventItems.map(calendarEventRow).join("")}
           </div>`
         : "";
-      panel.classList.remove("hidden");
+
+      if (!wasHidden) {
+        // 이미 노출된 상태에서 날짜 변경 시, 트랜지션 없이 즉시 초기 상태로 리셋
+        panel.style.transition = "none";
+        panel.classList.remove("active-animate");
+        panel.offsetHeight; // Reflow
+        panel.style.transition = "";
+      } else {
+        panel.classList.remove("hidden");
+        panel.classList.remove("active-animate");
+      }
+
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
         ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
+
+      setTimeout(() => {
+        panel.classList.add("active-animate");
+      }, 20);
     }
 
     function scheduleRow(item, variant = "") {
@@ -1979,13 +2135,29 @@
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
       if (!item) return;
       document.querySelector("#detailCrumbTitle").textContent = "Match Details";
-          const capacity = MATCH_CAPACITY;
-          const attendeeCount = item.attendees.length;
-          const spotsLeft = Math.max(0, capacity - attendeeCount);
-          const myAttending = isMySchedule(item);
-          const visibleEmptySlots = attendeeCount < 4
+      const capacity = MATCH_CAPACITY;
+      const attendeeCount = item.attendees.length;
+      const spotsLeft = Math.max(0, capacity - attendeeCount);
+      const myAttending = isMySchedule(item);
+      const visibleEmptySlots = attendeeCount < 4
         ? Math.min(spotsLeft, 4 - attendeeCount)
         : Math.min(spotsLeft, 1);
+
+      // Conflict detection logic
+      const start24 = toTwentyFourHourLabel(timeStart(item));
+      const end24 = toTwentyFourHourLabel(timeEnd(item));
+      const conflicts = getScheduleOverlapAlerts(item.date, start24, end24, item.id);
+      const conflictBanners = conflicts.map(conflict => `
+        <div class="mt-4 flex items-start gap-3 rounded-xl border border-tertiary/20 bg-tertiary-fixed/30 p-3.5 text-on-tertiary-container animate-fade-in">
+          <span class="material-symbols-outlined text-[18px] text-tertiary shrink-0">warning</span>
+          <div class="space-y-0.5">
+            <p class="text-xs font-black text-tertiary leading-normal">일정 중복 감지</p>
+            <p class="text-xs font-bold text-on-surface-variant leading-normal">
+              같은 날 <strong>${escapeHTML(conflict.title)} (${escapeHTML(conflict.time)})</strong> 일정과 겹칩니다.
+            </p>
+          </div>
+        </div>
+      `).join("");
 
       // Stitch bridge: Detail player card markup starts here.
       const playerCards = item.attendees.map((name, index) => {
@@ -1999,29 +2171,29 @@
         if (name.includes("재") || name.includes("민")) ntrp = "NTRP 3.8";
 
         return `
-          <div class="group flex items-center gap-4 rounded-xl border border-outline-variant/60 bg-surface-bright p-4 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
+          <div class="group flex items-center gap-2 sm:gap-3 rounded-xl border border-outline-variant/60 bg-surface-bright p-2.5 sm:p-3.5 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
+            <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
             <div class="min-w-0 flex-1">
-              <div class="text-sm font-bold text-on-surface flex items-center gap-1.5">
-                ${name}
-                ${isOrganizer ? `<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">Organizer</span>` : ""}
+              <div class="text-xs sm:text-sm font-bold text-on-surface flex items-center flex-wrap gap-1 leading-tight">
+                <span class="truncate">${name}</span>
+                ${isOrganizer ? `<span class="bg-primary/10 text-primary text-[8px] sm:text-[10px] px-1 py-0.5 rounded font-bold shrink-0">Org</span>` : ""}
               </div>
-              <div class="mt-1 text-xs font-semibold text-primary flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                ${ntrp} · 참석 확정
+              <div class="mt-0.5 text-[10px] sm:text-xs font-semibold text-primary flex items-center gap-1 leading-none">
+                <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-primary animate-pulse"></span>
+                <span class="truncate">${ntrp}</span>
               </div>
             </div>
-            <button class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant opacity-100 transition hover:bg-error-container hover:text-on-error-container md:opacity-0 md:group-hover:opacity-100" type="button" data-remove-attendee="${memberId}" aria-label="${name} 참석자 제거">
-              <span class="material-symbols-outlined text-[18px]">close</span>
+            <button class="inline-flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant opacity-100 transition hover:bg-error-container hover:text-on-error-container md:opacity-0 md:group-hover:opacity-100" type="button" data-remove-attendee="${memberId}" aria-label="${name} 참석자 제거">
+              <span class="material-symbols-outlined text-[16px] sm:text-[18px]">close</span>
             </button>
           </div>
         `;
       }).join("");
 
       const emptySlots = Array.from({ length: visibleEmptySlots }, () => `
-        <button class="flex min-h-[82px] items-center justify-center gap-3 rounded-xl border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50 p-4 text-left transition-colors hover:border-primary hover:bg-surface-container-high/40 focus:outline-none focus:ring-2 focus:ring-primary" type="button" data-add-attendee>
-          <span class="material-symbols-outlined text-outline">person_add</span>
-          <span class="text-sm font-bold text-outline">Available Slot</span>
+        <button class="flex min-h-[52px] sm:min-h-[66px] items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant/50 bg-surface-container-low/50 p-2.5 sm:p-3 text-left transition-colors hover:border-primary hover:bg-surface-container-high/40 focus:outline-none focus:ring-2 focus:ring-primary" type="button" data-add-attendee>
+          <span class="material-symbols-outlined text-outline text-[18px] sm:text-[20px]">person_add</span>
+          <span class="text-xs sm:text-sm font-bold text-outline">Available</span>
         </button>
       `).join("");
 
@@ -2032,40 +2204,54 @@
           <div class="flex flex-col gap-gutter lg:col-span-8">
             <!-- Hero Info Card -->
             <article class="overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-ambient">
-              <div class="relative h-56 w-full overflow-hidden bg-surface-dim">
+              <div class="relative h-32 md:h-56 w-full overflow-hidden bg-surface-dim">
                 <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-4 left-6 flex flex-wrap items-center gap-3">
-                  <span class="rounded-full bg-secondary-container px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
-                  <span class="rounded-full border border-white/30 bg-white/20 px-3.5 py-1 text-xs font-bold text-white backdrop-blur-md shadow-sm">NTRP 3.5 - 4.5</span>
+                <div class="absolute bottom-3 left-4 md:bottom-4 md:left-6 flex flex-wrap items-center gap-2 md:gap-3">
+                  <span class="rounded-full bg-secondary-container px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
+                  <span class="rounded-full border border-white/30 bg-white/20 px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold text-white backdrop-blur-md shadow-sm">NTRP 3.5 - 4.5</span>
                 </div>
               </div>
 
-              <div class="p-6 md:p-8">
-                <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-                  <div class="space-y-2">
+              <div class="p-4 md:p-8">
+                <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                  <div class="space-y-1 md:space-y-2 w-full md:w-auto">
                     <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-black leading-tight tracking-tight">${item.title}</h2>
-                    <p class="mt-3 flex items-center gap-2 text-base text-on-surface-variant font-medium">
-                      ${icon("location_on", "text-[20px] text-primary")} ${item.place}
+                    <p class="mt-1 md:mt-3 flex items-center gap-2 text-sm md:text-base text-on-surface-variant font-medium">
+                      ${icon("location_on", "text-[18px] md:text-[20px] text-primary")} ${item.place}
                     </p>
+
+                    <!-- Mobile Date/Time Metadata (inline) -->
+                    <div class="flex flex-col gap-1.5 text-xs font-semibold text-on-surface-variant md:hidden mt-3 pt-3 border-t border-outline-variant/20">
+                      <div class="flex items-center gap-2">
+                        ${icon("calendar_today", "text-[16px] text-primary")} ${dateLabel(item)}
+                      </div>
+                      <div class="flex items-center gap-2">
+                        ${icon("schedule", "text-[16px] text-primary")} ${timeStart(item)} - ${timeEnd(item)}
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
+                  <!-- Desktop Date & Time Card -->
+                  <div class="hidden md:block min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
                     <div class="mb-1 text-xs font-bold uppercase tracking-widest text-primary">Date & Time</div>
                     <div class="font-headline-md text-headline-md text-on-surface font-black text-lg">${dateLabel(item)}</div>
                     <div class="mt-1.5 text-sm font-semibold text-on-surface-variant">${timeStart(item)} - ${timeEnd(item)}</div>
                   </div>
                 </div>
 
-                <hr class="my-8 border-outline-variant/30">
+                <!-- Overlap Alert Banners -->
+                ${conflictBanners}
+
+                <hr class="my-6 md:my-8 border-outline-variant/30">
 
                 <!-- Players Grid -->
                 <div>
-                  <div class="mb-6 flex items-center justify-between gap-4">
-                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg">Players (${attendeeCount}/${capacity})</h3>
-                    <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-container/30" : "bg-primary-fixed text-on-primary-fixed border border-primary-container/30"} px-3 py-1 text-xs font-bold shadow-sm">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
+                  <div class="mb-4 md:mb-6 flex items-center justify-between gap-4">
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-base md:text-lg">Players (${attendeeCount}/${capacity})</h3>
+                    <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-container/30" : "bg-primary-fixed text-on-primary-fixed border border-primary-container/30"} px-2.5 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-bold shadow-sm">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
                   </div>
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div class="grid grid-cols-2 gap-2 sm:gap-4">
                     ${playerCards || ""}
                     ${emptySlots || ""}
                   </div>
@@ -2074,21 +2260,21 @@
             </article>
 
             <!-- Comments/Discussion Card -->
-            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient md:p-8">
-              <h3 class="mb-6 font-headline-md text-headline-md text-on-surface font-bold text-lg flex items-center gap-2">
-                ${icon("forum", "text-[20px] text-primary")} Match Discussion
+            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-8 shadow-ambient">
+              <h3 class="mb-4 md:mb-6 font-headline-md text-headline-md text-on-surface font-bold text-base md:text-lg flex items-center gap-2">
+                ${icon("forum", "text-[18px] md:text-[20px] text-primary")} Match Discussion
               </h3>
 
               ${renderDiscussionMessages(item)}
 
-              <div class="flex items-start gap-4">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(MY_NAME)}">
+              <div class="flex items-start gap-3 md:gap-4">
+                <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(MY_NAME)}">
                   ${initials(MY_NAME)}
                 </div>
                 <div class="relative w-full">
-                  <textarea class="w-full resize-none rounded-xl border border-outline-variant bg-surface p-4 pr-14 text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" data-discussion-input placeholder="Leave a message for the players..." rows="3"></textarea>
-                  <button class="absolute bottom-3.5 right-3.5 rounded-full p-2.5 bg-primary text-on-primary shadow hover:bg-primary-container hover:text-on-primary-container transition-all" type="button" data-send-discussion>
-                    ${icon("send", "text-[16px]")}
+                  <textarea class="w-full resize-none rounded-xl border border-outline-variant bg-surface p-3 pr-12 text-xs sm:text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" data-discussion-input placeholder="Leave a message for the players..." rows="2"></textarea>
+                  <button class="absolute bottom-2 right-2 rounded-full p-2 bg-primary text-on-primary shadow hover:bg-primary-container hover:text-on-primary-container transition-all" type="button" data-send-discussion>
+                    ${icon("send", "text-[14px] sm:text-[16px]")}
                   </button>
                 </div>
               </div>
@@ -2098,16 +2284,32 @@
           <!-- Right Column: Join Action & Conditions -->
           <aside class="flex flex-col gap-gutter lg:col-span-4">
             <!-- Join Action Card -->
-            <article class="rounded-xl border-t-4 border-secondary bg-surface-container-lowest p-6 shadow-ambient border border-outline-variant/10">
-                  <h3 class="mb-2 font-headline-md text-headline-md text-on-surface font-bold text-lg">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
-                  <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다. 일정이 겹치면 바로 취소할 수 있어요." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
+            <article class="sticky-detail-bar md:rounded-xl md:border-t-4 md:border-secondary md:bg-surface-container-lowest md:p-6 md:shadow-ambient md:border md:border-outline-variant/10">
+                  <!-- Desktop-only Header Info -->
+                  <div class="hidden md:block">
+                    <h3 class="mb-2 font-headline-md text-on-surface font-bold text-lg">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
+                    <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다. 일정이 겹치면 바로 취소할 수 있어요." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
+                  </div>
 
-                  <button class="${myAttending ? "bg-error-container text-on-error-container hover:bg-error-container/80" : "bg-secondary-container text-on-secondary-container hover:bg-secondary"} mb-4 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-sm font-bold shadow transition-all disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
-                    ${icon(myAttending ? "person_remove" : "sports_tennis")} ${myAttending ? "내 참석 취소" : spotsLeft ? "내 이름으로 참석" : "마감됨"}
-                  </button>
-                  <button class="w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5" type="button" data-contact-organizer>
-                    댓글로 문의
-                  </button>
+                  <!-- Container for buttons & mobile-layout -->
+                  <div class="flex flex-row md:flex-col items-center justify-between gap-4 md:gap-0 w-full">
+                    <!-- Mobile-only quick info (on the left side) -->
+                    <div class="md:hidden flex flex-col justify-center">
+                      <span class="text-[10px] font-black uppercase tracking-widest text-primary leading-none">${myAttending ? "Status" : "Match"}</span>
+                      <span class="text-sm font-black text-on-surface leading-tight mt-0.5">${myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-1 md:w-full items-center gap-2 md:flex-col justify-end">
+                      <button class="${myAttending ? "bg-error-container text-on-error-container hover:bg-error-container/80" : "bg-secondary-container text-on-secondary-container hover:bg-secondary"} flex w-full md:w-full items-center justify-center gap-2 rounded-lg py-3 md:py-4 text-xs sm:text-sm font-bold shadow transition-all disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
+                        ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px] sm:text-[18px]")}
+                        <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
+                      </button>
+                      <button class="hidden md:block w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5" type="button" data-contact-organizer>
+                        댓글로 문의
+                      </button>
+                    </div>
+                  </div>
             </article>
 
             <!-- Weather/Conditions Card -->
@@ -2141,57 +2343,101 @@
       const location = event.location || "장소 미정";
       const note = event.note || "세부 메모가 아직 없습니다.";
 
+      // Conflict detection logic
+      const conflicts = getScheduleOverlapAlerts(event.date, event.startTime, event.endTime, event.id);
+      const conflictBanners = conflicts.map(conflict => `
+        <div class="mt-4 flex items-start gap-3 rounded-xl border border-tertiary/20 bg-tertiary-fixed/30 p-3.5 text-on-tertiary-container animate-fade-in">
+          <span class="material-symbols-outlined text-[18px] text-tertiary shrink-0">warning</span>
+          <div class="space-y-0.5">
+            <p class="text-xs font-black text-tertiary leading-normal">일정 중복 감지</p>
+            <p class="text-xs font-bold text-on-surface-variant leading-normal">
+              같은 날 <strong>${escapeHTML(conflict.title)} (${escapeHTML(conflict.time)})</strong> 일정과 겹칩니다.
+            </p>
+          </div>
+        </div>
+      `).join("");
+
       document.querySelector("#detailContent").innerHTML = `
         <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12">
           <div class="flex flex-col gap-gutter lg:col-span-8">
             <article class="overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest shadow-ambient">
-              <div class="relative flex h-56 w-full items-center justify-center overflow-hidden bg-surface-container-high">
-                <div class="flex flex-col items-center gap-3 text-on-surface-variant">
-                  ${icon(category.icon, "text-[42px]")}
-                  <span class="text-sm font-bold">이미지 없음</span>
+              <div class="relative h-32 md:h-56 w-full overflow-hidden bg-surface-container-high flex items-center justify-center">
+                <div class="flex flex-col items-center gap-1 md:gap-3 text-on-surface-variant">
+                  ${icon(category.icon, "text-[32px] md:text-[42px]")}
+                  <span class="text-xs md:text-sm font-bold">이미지 없음</span>
                 </div>
-                <div class="absolute bottom-4 left-6 flex flex-wrap items-center gap-3">
-                  <span class="rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider shadow-sm ${category.chip}">${category.label}</span>
-                  <span class="rounded-full border border-white/40 bg-white/35 px-3.5 py-1 text-xs font-bold text-on-surface backdrop-blur-md shadow-sm">Other Event</span>
+                <div class="absolute bottom-3 left-4 md:bottom-4 md:left-6 flex flex-wrap items-center gap-2 md:gap-3">
+                  <span class="rounded-full px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm ${category.chip}">${category.label}</span>
+                  <span class="rounded-full border border-white/40 bg-white/35 px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold text-on-surface backdrop-blur-md shadow-sm">Other Event</span>
                 </div>
               </div>
 
-              <div class="p-6 md:p-8">
-                <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-                  <div class="space-y-2">
+              <div class="p-4 md:p-8">
+                <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                  <div class="space-y-1 md:space-y-2 w-full md:w-auto">
                     <h2 class="font-headline-lg text-headline-lg-mobile font-black leading-tight tracking-tight text-on-surface md:text-headline-lg">${escapeHTML(event.title)}</h2>
-                    <p class="mt-3 flex items-center gap-2 text-base font-medium text-on-surface-variant">
-                      ${icon("location_on", "text-[20px] text-sky-600")} ${escapeHTML(location)}
+                    <p class="mt-1 md:mt-3 flex items-center gap-2 text-sm md:text-base font-medium text-on-surface-variant">
+                      ${icon("location_on", "text-[18px] md:text-[20px] text-sky-600")} ${escapeHTML(location)}
                     </p>
+
+                    <!-- Mobile Date/Time Metadata (inline) -->
+                    <div class="flex flex-col gap-1.5 text-xs font-semibold text-on-surface-variant md:hidden mt-3 pt-3 border-t border-outline-variant/20">
+                      <div class="flex items-center gap-2">
+                        ${icon("calendar_today", "text-[16px] text-sky-600")} ${dateLabel(event)}
+                      </div>
+                      <div class="flex items-center gap-2">
+                        ${icon("schedule", "text-[16px] text-sky-600")} ${eventTimeLabel(event)}
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
+                  <!-- Desktop Date & Time Card -->
+                  <div class="hidden md:block min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
                     <div class="mb-1 text-xs font-bold uppercase tracking-widest text-sky-600">Date & Time</div>
                     <div class="font-headline-md text-lg font-black text-on-surface">${dateLabel(event)}</div>
                     <div class="mt-1.5 text-sm font-semibold text-on-surface-variant">${eventTimeLabel(event)}</div>
                   </div>
                 </div>
 
-                <hr class="my-8 border-outline-variant/30">
+                <!-- Overlap Alert Banners -->
+                ${conflictBanners}
 
-                <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low p-5">
-                  <h3 class="mb-2 text-sm font-black uppercase tracking-wider text-on-surface">Details</h3>
-                  <p class="whitespace-pre-wrap text-sm font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(note)}</p>
+                <hr class="my-6 md:my-8 border-outline-variant/30">
+
+                <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low p-4 md:p-5">
+                  <h3 class="mb-2 text-xs md:text-sm font-black uppercase tracking-wider text-on-surface">Details</h3>
+                  <p class="whitespace-pre-wrap text-xs md:text-sm font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(note)}</p>
                 </div>
               </div>
             </article>
           </div>
 
           <aside class="flex flex-col gap-gutter lg:col-span-4">
-            <article class="rounded-xl border border-outline-variant/10 border-t-4 border-sky-500 bg-surface-container-lowest p-6 shadow-ambient">
-              <h3 class="mb-2 text-lg font-bold text-on-surface">Calendar Event</h3>
-              <p class="mb-6 text-sm font-medium leading-relaxed text-on-surface-variant">테니스 일정과 함께 달력에서 확인하는 별도 일정입니다.</p>
-              <button class="mb-3 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 py-3.5 text-sm font-bold text-white shadow transition-colors hover:bg-sky-600" type="button" data-edit-current>
-                ${icon("edit")} 수정
-              </button>
-              <button class="w-full rounded-lg border border-error bg-transparent py-3.5 text-sm font-bold text-error transition hover:bg-error-container" type="button" data-delete-current>
-                삭제
-              </button>
+            <article class="sticky-detail-bar md:rounded-xl md:border md:border-outline-variant/10 md:border-t-4 md:border-sky-500 md:bg-surface-container-lowest md:p-6 md:shadow-ambient">
+              <!-- Desktop-only Header Info -->
+              <div class="hidden md:block">
+                <h3 class="mb-2 text-lg font-bold text-on-surface">Calendar Event</h3>
+                <p class="mb-6 text-sm font-medium leading-relaxed text-on-surface-variant">테니스 일정과 함께 달력에서 확인하는 별도 일정입니다.</p>
+              </div>
+
+              <!-- Container for buttons & mobile-layout -->
+              <div class="flex flex-row md:flex-col items-center justify-between gap-4 md:gap-0 w-full">
+                <!-- Mobile-only quick info (on the left side) -->
+                <div class="md:hidden flex flex-col justify-center">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-sky-600 leading-none">Event</span>
+                  <span class="text-sm font-black text-on-surface leading-tight mt-0.5">개인 일정</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-1 md:w-full items-center gap-2 md:flex-col justify-end">
+                  <button class="flex w-full md:w-full items-center justify-center gap-1.5 rounded-lg bg-sky-500 py-2.5 md:py-3.5 text-xs sm:text-sm font-bold text-white shadow transition-colors hover:bg-sky-600" type="button" data-edit-current>
+                    ${icon("edit", "text-[16px] sm:text-[18px]")} <span>수정</span>
+                  </button>
+                  <button class="w-full rounded-lg border border-error bg-transparent py-2.5 md:py-3.5 text-xs sm:text-sm font-bold text-error transition hover:bg-error-container" type="button" data-delete-current>
+                    <span>삭제</span>
+                  </button>
+                </div>
+              </div>
             </article>
           </aside>
         </div>
@@ -2311,46 +2557,46 @@
 
         return `
           <article class="card-premium flex flex-col overflow-hidden bg-surface-container-lowest rounded-xl">
-            <div class="h-44 w-full relative overflow-hidden bg-surface-dim">
+            <div class="h-24 md:h-44 w-full relative overflow-hidden bg-surface-dim">
               <img src="${image}" alt="${place}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
-              <div class="absolute top-3 right-3">
-                <span class="badge-blur px-3 py-1.5 rounded-full font-label-sm text-label-sm text-on-surface flex items-center gap-1.5 font-bold shadow-sm">
-                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <div class="absolute top-2 right-2 md:top-3 md:right-3">
+                <span class="badge-blur px-2 py-1 md:px-3 md:py-1.5 rounded-full font-label-sm text-[10px] md:text-label-sm text-on-surface flex items-center gap-1 md:gap-1.5 font-bold shadow-sm">
+                  <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-pulse"></span>
                   ${items.length} Bookings
                 </span>
               </div>
             </div>
 
-            <div class="p-6 flex flex-col flex-1">
-              <div class="flex justify-between items-start mb-3 gap-2">
+            <div class="p-4 md:p-6 flex flex-col flex-1">
+              <div class="flex justify-between items-start mb-2 md:mb-3 gap-2">
                 <div>
-                  <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg leading-snug">${place}</h3>
-                  <p class="font-body-md text-sm text-on-surface-variant flex items-center gap-1.5 mt-1 font-medium">
-                    ${icon("location_on", "text-[16px] text-primary")} ${subLocation}
+                  <h3 class="font-headline-md text-on-surface font-bold text-base md:text-lg leading-snug">${place}</h3>
+                  <p class="font-body-md text-xs md:text-sm text-on-surface-variant flex items-center gap-1 mt-0.5 md:mt-1 font-medium">
+                    ${icon("location_on", "text-[14px] md:text-[16px] text-primary")} ${subLocation}
                   </p>
                 </div>
-                <span class="bg-primary/10 text-primary px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider shrink-0">${courtType}</span>
+                <span class="bg-primary/10 text-primary px-2 py-0.5 md:px-2.5 md:py-1 rounded-md text-[10px] md:text-xs font-bold uppercase tracking-wider shrink-0">${courtType}</span>
               </div>
 
-              <div class="mt-4 mb-5 flex-1">
-                <p class="font-label-sm text-label-sm text-on-surface-variant mb-2 font-bold uppercase tracking-wider">Next Available</p>
+              <div class="mt-2.5 md:mt-4 mb-3 md:mb-5 flex-1">
+                <p class="font-label-sm text-[10px] md:text-label-sm text-on-surface-variant mb-1 md:mb-2 font-bold uppercase tracking-wider">Next Available</p>
                 <div class="flex gap-2 flex-wrap">
                   ${next
-                    ? `<button class="btn-outline px-3.5 py-1.5 text-xs font-bold" data-detail-id="${next.id}">
-                        ${icon("event_available", "text-[14px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
+                    ? `<button class="btn-outline px-2.5 py-1 md:px-3.5 md:py-1.5 text-[10px] md:text-xs font-bold" data-detail-id="${next.id}">
+                        ${icon("event_available", "text-[12px] md:text-[14px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
                        </button>`
                     : `<span class="text-xs text-on-surface-variant font-semibold">예정된 일정이 없습니다.</span>`}
                 </div>
               </div>
 
-              <hr class="border-outline-variant/30 mb-4" />
+              <hr class="border-outline-variant/30 mb-3 md:mb-4" />
 
-              <p class="font-label-sm text-label-sm text-on-surface-variant mb-2.5 font-bold uppercase tracking-wider">All Slots (${items.length})</p>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+              <p class="font-label-sm text-[10px] md:text-label-sm text-on-surface-variant mb-1.5 md:mb-2.5 font-bold uppercase tracking-wider">All Slots (${items.length})</p>
+              <div class="flex overflow-x-auto scrollbar-none gap-2 md:grid md:grid-cols-3 text-center text-xs font-bold pb-1">
                 ${items.slice(0, 6).map(s => `
-                  <div class="rounded-lg bg-surface-container-low p-2.5 border border-outline-variant/10 hover:border-primary/20 hover:bg-surface-container-high transition-colors cursor-pointer" data-detail-id="${s.id}">
-                    <p class="text-primary font-bold text-[11px]">${dateLabel(s).replace("5월 ", "5/").split(" (")[0]}</p>
-                    <p class="mt-1 text-on-surface-variant text-[10px]">${s.attendees.length}명 참여</p>
+                  <div class="shrink-0 w-[85px] md:w-auto rounded-lg bg-surface-container-low p-2 md:p-2.5 border border-outline-variant/10 hover:border-primary/20 hover:bg-surface-container-high transition-colors cursor-pointer" data-detail-id="${s.id}">
+                    <p class="text-primary font-bold text-[10px] md:text-[11px]">${dateLabel(s).replace("5월 ", "5/").replace("6월 ", "6/").split(" (")[0]}</p>
+                    <p class="mt-0.5 md:mt-1 text-on-surface-variant text-[9px] md:text-[10px]">${s.attendees.length}명 참여</p>
                   </div>
                 `).join("")}
               </div>
@@ -2435,22 +2681,45 @@
         }
 
         return `
-          <article class="card-premium flex flex-col gap-3 rounded-xl bg-surface-container-lowest p-4">
-            <div class="flex items-start gap-4">
-              <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
-                ${initial}
+          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4">
+            <div class="flex items-start gap-2.5 sm:gap-4">
+              <div class="relative shrink-0">
+                <div class="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full text-xl sm:text-2xl font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
+                  ${initial}
+                </div>
+                ${rank === 1 ? `
+                  <div class="avatar-rank-badge bg-amber-500 text-white">🥇</div>
+                ` : rank === 2 ? `
+                  <div class="avatar-rank-badge bg-slate-400 text-white">🥈</div>
+                ` : rank === 3 ? `
+                  <div class="avatar-rank-badge bg-amber-700 text-white">🥉</div>
+                ` : `
+                  <div class="avatar-rank-badge bg-surface-container-high text-on-surface-variant text-[9px] font-bold">${rank}</div>
+                `}
               </div>
               <div class="min-w-0 flex-1 pt-0.5">
-                <div class="flex min-w-0 flex-wrap items-center gap-2">
-                  <h3 class="font-headline-md text-lg font-black leading-tight text-on-surface">${m.name}</h3>
-                  <span class="rounded-full bg-secondary-container px-2.5 py-1 text-[11px] font-black leading-none text-on-secondary-container">NTRP ${ntrp}</span>
-                  ${badgeHtml}
+                <div class="flex min-w-0 flex-col gap-0.5 sm:gap-1">
+                  <div class="flex items-center gap-1 flex-wrap">
+                    <h3 class="font-headline-md text-sm sm:text-lg font-black leading-tight text-on-surface">${m.name}</h3>
+                    <span class="rounded-full bg-secondary-container px-1.5 py-0.5 text-[9px] sm:text-[11px] font-black leading-none text-on-secondary-container">NTRP ${ntrp}</span>
+                  </div>
+                  <div class="hidden sm:inline-flex mt-1">
+                    ${badgeHtml}
+                  </div>
+                  <!-- Mobile only matches and last active info -->
+                  <div class="block sm:hidden text-[10px] font-semibold text-on-surface-variant space-y-0.5">
+                    <p class="text-primary font-bold flex items-center gap-0.5">
+                      ${icon("sports_tennis", "text-[12px]")} ${m.count} Matches
+                    </p>
+                    <p class="text-[9px]">최근: ${lastActiveDate}</p>
+                  </div>
+                  <p class="hidden sm:block mt-1.5 text-xs font-semibold text-on-surface-variant">최근 참석: ${lastActiveDate}</p>
                 </div>
-                <p class="mt-1.5 text-xs font-semibold text-on-surface-variant">최근 참석: ${lastActiveDate}</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Desktop only actions -->
+            <div class="hidden sm:grid grid-cols-2 gap-3 mt-auto">
               <div class="flex min-h-12 items-center justify-between rounded-lg bg-surface-container-low px-3">
                 <div class="text-xs font-semibold uppercase text-on-surface-variant">Matches</div>
                 <div class="font-headline-md text-xl font-black text-primary">${m.count}</div>
@@ -2545,12 +2814,79 @@
     }
 
     function changeCalendarMonth(delta) {
+      const grid = document.querySelector("#calendarGrid");
+      const wrapper = document.querySelector("#calendarGridWrapper");
+
+      if (!grid || !wrapper) {
+        state.currentMonth = addMonths(state.currentMonth, delta);
+        if (state.selectedDate && !state.selectedDate.startsWith(state.currentMonth)) {
+          state.selectedDate = "";
+          renderSelectedDate();
+        }
+        renderCalendar();
+        return;
+      }
+
+      // 복제 전에 이전 달력의 실제 높이를 측정합니다.
+      const oldHeight = grid.offsetHeight;
+      const clone = grid.cloneNode(true);
+      clone.removeAttribute("id");
+      clone.id = "calendarGridClone";
+
+      // 복제된 달력을 이전 화면과 똑같은 자리에 absolute로 배치합니다.
+      clone.style.position = "absolute";
+      clone.style.top = "0";
+      clone.style.left = "0";
+      clone.style.width = "100%";
+      clone.style.height = oldHeight + "px";
+      clone.style.pointerEvents = "none"; // 트랜지션 중인 이전 달력 클릭 방지
+      clone.style.transition = "transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease";
+      clone.style.zIndex = "10";
+
+      wrapper.appendChild(clone);
+
+      // 높이 애니메이션을 위해 래퍼의 높이를 임시 고정합니다.
+      wrapper.style.height = oldHeight + "px";
+      wrapper.style.transition = "height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)";
+
+      // 상태를 업데이트하고 실제 달력 컨테이너를 새로운 월 정보로 갱신합니다.
       state.currentMonth = addMonths(state.currentMonth, delta);
       if (state.selectedDate && !state.selectedDate.startsWith(state.currentMonth)) {
         state.selectedDate = "";
         renderSelectedDate();
       }
       renderCalendar();
+
+      // 갱신된 새 달력의 높이를 측정합니다.
+      const newHeight = grid.offsetHeight;
+
+      // 새 달력의 트랜지션을 임시로 끄고 화면 바깥(오른쪽 혹은 왼쪽)에 대기시킵니다.
+      grid.style.transition = "none";
+      grid.style.transform = `translateX(${delta > 0 ? '100%' : '-100%'})`;
+      grid.style.opacity = "0";
+
+      // 브라우저 렌더링 동기화를 위해 리플로우를 유도합니다.
+      grid.offsetHeight;
+
+      // 래퍼 높이를 전환하고, 그리드와 복제본의 슬라이딩 트랜지션을 시작합니다.
+      wrapper.style.height = newHeight + "px";
+
+      grid.style.transition = "transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease";
+      grid.style.transform = "translateX(0)";
+      grid.style.opacity = "1";
+
+      clone.style.transform = `translateX(${delta > 0 ? '-100%' : '100%'})`;
+      clone.style.opacity = "0";
+
+      // 애니메이션 완료 후 임시 복제본을 삭제하고 인라인 스타일을 정리합니다.
+      setTimeout(() => {
+        clone.remove();
+        grid.style.transition = "";
+        grid.style.transform = "";
+        grid.style.opacity = "";
+        wrapper.style.height = "";
+        wrapper.style.transition = "";
+      }, 300);
     }
 
     function setupCalendarSwipe() {
@@ -3007,80 +3343,104 @@
 
     function switchView(view) {
       const renderRequest = ++viewRenderRequest;
-
-      // 1. Magnetized Nav Indicator Sliding Motion (Desktop #sideNav only)
       const targetView = view === "detail" ? "schedule" : view;
-      const activeBtnDesktop = document.querySelector(`#sideNav .nav-item[data-view="${targetView}"]`);
-      const indicator = document.querySelector("#navIndicator");
-      if (activeBtnDesktop && indicator && window.innerWidth >= 768) {
-        indicator.style.top = `${activeBtnDesktop.offsetTop}px`;
-        indicator.style.height = `${activeBtnDesktop.offsetHeight}px`;
-        indicator.style.width = `${activeBtnDesktop.offsetWidth}px`;
-      }
 
-      // 2. Active Tab Text State (Both desktop sideNav & mobile bottomNav)
-      document.querySelectorAll(".nav-item").forEach(el => {
-        el.classList.toggle("active", el.dataset.view === targetView);
-      });
-
-      // 3. Trigger Skeleton Loading Screen (0.2s duration for extreme responsiveness)
-      if (view === "dashboard") {
-        syncStoredLocalData();
-        rebuildDataIndexes();
-        renderDashboard();
-      } else if (view === "schedule") {
-        document.querySelector("#scheduleGroups").innerHTML = `
-          <div class="rounded-xl bg-surface-container-low p-6 space-y-4 skeleton-shine opacity-50 min-h-[300px] border border-outline-variant/10">
-            <div class="h-6 w-1/4 bg-on-surface-variant/20 rounded"></div>
-            <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
-            <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
-          </div>
-        `;
-        setTimeout(() => {
-          if (renderRequest === viewRenderRequest) renderSchedule();
-        }, 200);
-      } else if (view === "courts") {
-        document.querySelector("#courtCards").innerHTML = Array(3).fill(`
-          <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 space-y-4 skeleton-shine opacity-50">
-            <div class="h-44 w-full bg-on-surface-variant/15 rounded-lg"></div>
-            <div class="h-6 w-2/3 bg-on-surface-variant/10 rounded"></div>
-            <div class="h-4 w-1/2 bg-on-surface-variant/10 rounded"></div>
-          </div>
-        `).join("");
-        setTimeout(() => {
-          if (renderRequest === viewRenderRequest) renderCourts();
-        }, 200);
-      } else if (view === "members") {
-        document.querySelector("#memberGrid").innerHTML = Array(4).fill(`
-          <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 flex flex-col items-center space-y-4 skeleton-shine opacity-50">
-            <div class="w-20 h-20 rounded-full bg-on-surface-variant/15"></div>
-            <div class="h-6 w-1/2 bg-on-surface-variant/10 rounded"></div>
-            <div class="h-4 w-1/3 bg-on-surface-variant/10 rounded"></div>
-            <div class="h-10 w-full bg-on-surface-variant/10 rounded-lg"></div>
-          </div>
-        `).join("");
-        setTimeout(() => {
-          if (renderRequest === viewRenderRequest) renderMembers();
-        }, 200);
-      }
-
-      // 4. Elastic Tab Fade-Slide Transition
-      document.querySelectorAll(".view").forEach(el => {
-        if (el.id === view) {
-          el.style.display = "block";
-          // Trigger browser layout reflow to register style changes
-          el.offsetHeight;
-          el.classList.add("active");
-          // Apply animation class after short paint timeout
-          setTimeout(() => el.classList.add("active-animate"), 20);
-        } else {
-          el.classList.remove("active", "active-animate");
-          el.style.display = "none";
+      const updateDOM = () => {
+        // 1. Magnetized Nav Indicator Sliding Motion (Desktop #sideNav only)
+        const activeBtnDesktop = document.querySelector(`#sideNav .nav-item[data-view="${targetView}"]`);
+        const indicator = document.querySelector("#navIndicator");
+        if (activeBtnDesktop && indicator && window.innerWidth >= 768) {
+          indicator.style.top = `${activeBtnDesktop.offsetTop}px`;
+          indicator.style.height = `${activeBtnDesktop.offsetHeight}px`;
+          indicator.style.width = `${activeBtnDesktop.offsetWidth}px`;
         }
-      });
 
-      document.body.classList.remove("mobile-nav-open");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+        // 2. Active Tab Text State (Both desktop sideNav & mobile bottomNav)
+        document.querySelectorAll(".nav-item").forEach(el => {
+          el.classList.toggle("active", el.dataset.view === targetView);
+        });
+
+        // 3. Render Views
+        if (view === "dashboard") {
+          syncStoredLocalData();
+          rebuildDataIndexes();
+          renderDashboard();
+        } else if (view === "schedule") {
+          if (document.startViewTransition) {
+            renderSchedule();
+          } else {
+            document.querySelector("#scheduleGroups").innerHTML = `
+              <div class="rounded-xl bg-surface-container-low p-6 space-y-4 skeleton-shine opacity-50 min-h-[300px] border border-outline-variant/10">
+                <div class="h-6 w-1/4 bg-on-surface-variant/20 rounded"></div>
+                <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
+                <div class="h-20 bg-on-surface-variant/10 rounded-lg"></div>
+              </div>
+            `;
+            setTimeout(() => {
+              if (renderRequest === viewRenderRequest) renderSchedule();
+            }, 200);
+          }
+        } else if (view === "courts") {
+          if (document.startViewTransition) {
+            renderCourts();
+          } else {
+            document.querySelector("#courtCards").innerHTML = Array(3).fill(`
+              <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 space-y-4 skeleton-shine opacity-50">
+                <div class="h-44 w-full bg-on-surface-variant/15 rounded-lg"></div>
+                <div class="h-6 w-2/3 bg-on-surface-variant/10 rounded"></div>
+                <div class="h-4 w-1/2 bg-on-surface-variant/10 rounded"></div>
+              </div>
+            `).join("");
+            setTimeout(() => {
+              if (renderRequest === viewRenderRequest) renderCourts();
+            }, 200);
+          }
+        } else if (view === "members") {
+          if (document.startViewTransition) {
+            renderMembers();
+          } else {
+            document.querySelector("#memberGrid").innerHTML = Array(4).fill(`
+              <div class="rounded-xl bg-surface-container-lowest p-6 border border-outline-variant/15 flex flex-col items-center space-y-4 skeleton-shine opacity-50">
+                <div class="w-20 h-20 rounded-full bg-on-surface-variant/15"></div>
+                <div class="h-6 w-1/2 bg-on-surface-variant/10 rounded"></div>
+                <div class="h-4 w-1/3 bg-on-surface-variant/10 rounded"></div>
+                <div class="h-10 w-full bg-on-surface-variant/10 rounded-lg"></div>
+              </div>
+            `).join("");
+            setTimeout(() => {
+              if (renderRequest === viewRenderRequest) renderMembers();
+            }, 200);
+          }
+        } else if (view === "detail") {
+          renderCurrentDetail();
+        }
+
+        // 4. Elastic Tab Fade-Slide Transition
+        document.querySelectorAll(".view").forEach(el => {
+          if (el.id === view) {
+            el.style.display = "block";
+            el.offsetHeight;
+            el.classList.add("active");
+            setTimeout(() => el.classList.add("active-animate"), 20);
+          } else {
+            el.classList.remove("active", "active-animate");
+            el.style.display = "none";
+          }
+        });
+
+        // Set body class for padding styling on mobile if sticky bar is active in detail view
+        const isDetail = view === "detail";
+        document.body.classList.toggle("has-sticky-bar", isDetail);
+
+        document.body.classList.remove("mobile-nav-open");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      if (!document.startViewTransition) {
+        updateDOM();
+      } else {
+        document.startViewTransition(() => updateDOM());
+      }
     }
 
     function toggleCalendarAddMenu(show) {
@@ -3201,7 +3561,6 @@
       if (detailButton) {
         state.selectedId = detailButton.dataset.detailId;
         state.detailType = "schedule";
-        renderCurrentDetail();
         switchView("detail");
         return;
       }
@@ -3209,7 +3568,6 @@
       if (eventDetailButton) {
         state.selectedEventId = eventDetailButton.dataset.eventDetailId;
         state.detailType = "event";
-        renderEventDetail(findEventById(state.selectedEventId));
         switchView("detail");
         return;
       }
