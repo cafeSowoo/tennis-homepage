@@ -851,7 +851,7 @@
       </div>
 
       <div class="space-y-gutter">
-          <section id="quickOverview" class="dashboard-overview flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-3 md:pb-0"></section>
+          <section id="quickOverview" class="dashboard-overview relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-visible md:pb-0"></section>
 
           <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
@@ -2470,49 +2470,54 @@
         function renderUpcoming() {
           const quickOverview = document.querySelector("#quickOverview");
           if (!quickOverview) return;
-          const todayItems = todayRows();
           const next = nextScheduleFrom();
-          const nextMine = schedules.find(schedule => schedule.date >= todayIso && isMySchedule(schedule));
-          const hasTodayTennis = todayItems.some(row => row.type === "schedule");
-          const hasTodayConflict = todayItems.some(row => row.type === "event");
-          const remoteModeLabel = supabaseClient && !ALLOW_REMOTE_WRITES ? "공개 링크: 내 기기에만 저장" : "원격 저장 활성";
-
+          const myUpcoming = schedules.filter(schedule => schedule.date >= todayIso && isMySchedule(schedule));
           const nextSummary = next
             ? `${dateLabel(next)} · ${scheduleTimeRangeLabel(next)}`
             : "예정된 테니스 일정 없음";
-          const nextMineSummary = nextMine
-            ? `${dateLabel(nextMine)} · ${scheduleTimeRangeLabel(nextMine)}`
-            : "내 참석 예정 없음";
-          const todayStatus = todayItems.length
-            ? `${hasTodayTennis ? "테니스 있음" : "테니스 없음"}${hasTodayConflict ? " · 다른 일정 있음" : ""}`
-            : "오늘 등록된 일정 없음";
+          const cards = [
+            `
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-xs font-black uppercase tracking-wider text-primary">Next</span>
+                  ${icon(next ? "chevron_right" : "add", "text-[18px] text-primary")}
+                </div>
+                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
+                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
+              </button>
+            `,
+            ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-detail-id="${schedule.id}">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
+                  ${icon("check_circle", "text-[18px] text-primary")}
+                </div>
+                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${escapeHTML(schedule.place)}</p>
+                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
+              </button>
+            `) : [`
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-view-link="schedule">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-xs font-black uppercase tracking-wider text-primary">My</span>
+                  ${icon("person_search", "text-[18px] text-on-surface-variant")}
+                </div>
+                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">아직 없음</p>
+                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">내 참석 예정 없음</p>
+              </button>
+            `])
+          ].join("");
 
           quickOverview.innerHTML = `
-            <button class="w-[62vw] shrink-0 snap-center md:w-auto md:shrink md:snap-align-none rounded-xl border border-primary/20 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:p-4" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-xs font-black uppercase tracking-wider text-primary">Next</span>
-                ${icon(next ? "chevron_right" : "add", "text-[18px] text-primary")}
-              </div>
-              <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
-              <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
+            <button class="hidden md:absolute md:-left-12 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/70 md:bg-surface-container-lowest md:text-on-surface-variant md:shadow-ambient md:transition md:hover:bg-surface-container-high md:hover:text-primary" type="button" data-overview-scroll="-1" aria-label="이전 내 일정">
+              ${icon("chevron_left", "text-[18px]")}
             </button>
-            <button class="w-[62vw] shrink-0 snap-center md:w-auto md:shrink md:snap-align-none rounded-xl border ${nextMine ? "border-primary/30 bg-primary/10" : "border-outline-variant/30 bg-surface-container-lowest"} p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:p-4" type="button" ${nextMine ? `data-detail-id="${nextMine.id}"` : "data-view-link=\"schedule\""}>
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-xs font-black uppercase tracking-wider text-primary">My</span>
-                ${icon(nextMine ? "check_circle" : "person_search", `text-[18px] ${nextMine ? "text-primary" : "text-on-surface-variant"}`)}
-              </div>
-              <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${nextMine ? escapeHTML(nextMine.place) : "아직 없음"}</p>
-              <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextMineSummary)}</p>
-            </button>
-            <div class="w-[62vw] shrink-0 snap-center md:w-auto md:shrink md:snap-align-none rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3 shadow-ambient md:p-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-xs font-black uppercase tracking-wider text-primary">Today</span>
-                ${icon(hasTodayConflict ? "event_busy" : "event_available", `text-[18px] ${hasTodayConflict ? "text-tertiary" : "text-primary"}`)}
-              </div>
-              <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${todayStatus}</p>
-              <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${remoteModeLabel}</p>
+            <div class="flex min-w-0 gap-3 overflow-x-auto scroll-smooth scrollbar-none md:w-full md:snap-x md:snap-mandatory" data-overview-track>
+              ${cards}
+              <div class="w-margin-mobile shrink-0 md:hidden" aria-hidden="true"></div>
             </div>
-            <div class="w-margin-mobile shrink-0 md:hidden" aria-hidden="true"></div>
+            <button class="hidden md:absolute md:-right-12 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/70 md:bg-surface-container-lowest md:text-on-surface-variant md:shadow-ambient md:transition md:hover:bg-surface-container-high md:hover:text-primary" type="button" data-overview-scroll="1" aria-label="다음 내 일정">
+              ${icon("chevron_right", "text-[18px]")}
+            </button>
           `;
         }
 
@@ -3588,6 +3593,13 @@
         state.selectedEventId = eventDetailButton.dataset.eventDetailId;
         state.detailType = "event";
         switchView("detail");
+        return;
+      }
+      const overviewScrollButton = event.target.closest("[data-overview-scroll]");
+      if (overviewScrollButton) {
+        const track = document.querySelector("[data-overview-track]");
+        const direction = Number(overviewScrollButton.dataset.overviewScroll || 1);
+        track?.scrollBy({ left: direction * 240, behavior: "smooth" });
         return;
       }
       const dateButton = dateButtonFromEvent(event);
