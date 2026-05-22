@@ -1158,6 +1158,7 @@
 
   <script>
     const MY_NAME = "김지석";
+    const MALE_MEMBER_NAMES = new Set(["조형철", "김지석", "한인호", "김태환", "이상백", "민문기", "박창언"]);
     const LOCAL_SCHEDULES_KEY = "tennis.localSchedules";
     const LOCAL_EVENTS_KEY = "tennis.localEvents";
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
@@ -2058,6 +2059,7 @@
       const isDatePanel = variant === "datePanel";
       const isBookClub = isBookClubSchedule(item);
       const isYonsei = isYonseiSchedule(item);
+      const isMine = item.attendees.includes(MY_NAME);
 
       const iconClass = isBookClub
         ? "border border-amber-300 bg-amber-50 text-amber-800"
@@ -2071,10 +2073,13 @@
 
       const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
       const attendeeListHTML = scheduleAttendeesHTML(item);
+      const cardClass = isMine
+        ? "border-2 border-primary/70 bg-primary/5 shadow-[0_0_0_1px_rgba(0,104,93,0.08)]"
+        : "border border-outline-variant bg-surface-bright";
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
-        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+        <article class="rounded-xl ${cardClass} transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
           <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
               <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
@@ -2101,11 +2106,16 @@
       }
 
       return item.attendees.map((name, index) => {
-        const suffix = index < item.attendees.length - 1 ? ", " : "";
+        const suffix = index < item.attendees.length - 1
+          ? `<span class="text-on-surface-variant/60">, </span>`
+          : "";
         if (name === MY_NAME) {
           return `<span class="font-black text-primary">${escapeHTML(name)}</span>${suffix}`;
         }
-        return `<span>${escapeHTML(name)}</span>${suffix}`;
+        const genderClass = MALE_MEMBER_NAMES.has(name)
+          ? "font-bold text-sky-700"
+          : "font-bold text-rose-700";
+        return `<span class="${genderClass}">${escapeHTML(name)}</span>${suffix}`;
       }).join("");
     }
 
@@ -2156,14 +2166,15 @@
         <div class="mb-8 space-y-6">
           ${rows.map(row => {
             const author = memberNameForId(row.memberId);
+            const authorMemberId = memberIdForName(author);
             return `
               <div class="flex gap-4 items-start">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white shadow-sm ${getAvatarClassForMember(author)}">
+                <div class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm font-black text-white shadow-sm transition hover:scale-105 ${getAvatarClassForMember(author)}" data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기">
                   ${initials(author)}
                 </div>
                 <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4 border border-outline-variant/10 shadow-sm">
                   <div class="mb-1.5 flex items-baseline justify-between gap-3">
-                    <span class="text-sm font-bold text-on-surface">${escapeHTML(author)}</span>
+                    <span class="cursor-pointer text-sm font-bold text-on-surface transition hover:text-primary" data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기">${escapeHTML(author)}</span>
                     <span class="shrink-0 text-xs text-on-surface-variant font-medium">${escapeHTML(row.displayTime || discussionTimeLabel(row.createdAt))}</span>
                   </div>
                   <p class="whitespace-pre-wrap text-sm text-on-surface-variant leading-relaxed">${escapeHTML(row.message)}</p>
@@ -2208,7 +2219,7 @@
         const memberId = memberIdForName(name);
 
         return `
-          <div class="group flex items-center gap-2 sm:gap-3 rounded-xl border border-outline-variant/60 bg-surface-bright p-2.5 sm:p-3.5 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
+          <div class="group flex cursor-pointer items-center gap-2 sm:gap-3 rounded-xl border border-outline-variant/60 bg-surface-bright p-2.5 sm:p-3.5 transition-all duration-200 hover:border-primary/50 hover:shadow-sm" data-member-id="${memberId}" role="button" tabindex="0" aria-label="${escapeHTML(name)} 프로필 보기">
             <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
             <div class="min-w-0 flex-1">
               <div class="text-xs sm:text-sm font-bold text-on-surface flex items-center flex-wrap gap-1 leading-tight">
@@ -2712,6 +2723,38 @@
       }).sort((a,b) => state.memberSort === "name" ? a.name.localeCompare(b.name, "ko") : b.count - a.count || a.name.localeCompare(b.name, "ko"));
     }
 
+    function memberGenderChipHTML(name) {
+      if (name === MY_NAME) {
+        return `<span class="inline-flex shrink-0 items-center rounded-full border border-primary/20 bg-primary/10 px-1.5 py-0.5 text-[9px] font-black leading-none text-primary sm:text-[10px]">나</span>`;
+      }
+      if (MALE_MEMBER_NAMES.has(name)) {
+        return `<span class="inline-flex shrink-0 items-center rounded-full border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[9px] font-black leading-none text-sky-700 sm:text-[10px]">남</span>`;
+      }
+      return `<span class="inline-flex shrink-0 items-center rounded-full border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-[9px] font-black leading-none text-rose-700 sm:text-[10px]">여</span>`;
+    }
+
+    function memberGenderCardClass(name) {
+      if (name === MY_NAME) {
+        return "border-primary/25 bg-primary/5 hover:border-primary/35";
+      }
+      if (MALE_MEMBER_NAMES.has(name)) {
+        return "border-sky-200/70 bg-sky-50/60 hover:border-sky-300/80";
+      }
+      return "border-rose-200/70 bg-rose-50/60 hover:border-rose-300/80";
+    }
+
+    function memberGenderTextClass(name) {
+      if (name === MY_NAME) return "text-primary";
+      return MALE_MEMBER_NAMES.has(name) ? "text-sky-700" : "text-rose-700";
+    }
+
+    function memberGenderStatusClass(name) {
+      if (name === MY_NAME) return "border border-primary/20 bg-primary/10 text-primary";
+      return MALE_MEMBER_NAMES.has(name)
+        ? "border border-sky-200 bg-sky-50 text-sky-700"
+        : "border border-rose-200 bg-rose-50 text-rose-700";
+    }
+
     function renderMembers() {
       renderMemberMonthFilter();
       // Stitch bridge: Members directory HTML markup starts here.
@@ -2719,8 +2762,9 @@
         const initial = m.name.slice(0, 1);
         const rank = idx + 1;
         const memberId = memberIdForName(m.name) || m.name;
+        const genderCardClass = memberGenderCardClass(m.name);
         return `
-          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4 cursor-pointer transition hover:-translate-y-0.5 hover:shadow-ambient duration-300" data-member-id="${memberId}">
+          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl ${genderCardClass} p-3 sm:p-4 cursor-pointer transition hover:-translate-y-0.5 hover:shadow-ambient duration-300" data-member-id="${memberId}">
             <div class="flex items-start gap-2.5 sm:gap-4">
               <div class="relative shrink-0">
                 <div class="member-avatar flex items-center justify-center rounded-full font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
@@ -2730,7 +2774,8 @@
               <div class="min-w-0 flex-1 pt-0.5">
                 <div class="flex min-w-0 flex-col gap-0.5 sm:gap-1">
                   <div class="flex items-center gap-1 flex-wrap">
-                    <h3 class="font-headline-md text-sm sm:text-lg font-black leading-tight text-on-surface">${m.name}</h3>
+                    <h3 class="font-headline-md text-sm sm:text-lg font-black leading-tight text-on-surface">${escapeHTML(m.name)}</h3>
+                    ${memberGenderChipHTML(m.name)}
                   </div>
                   <!-- Mobile only matches and last active info -->
                   <div class="block sm:hidden text-[10px] font-semibold text-on-surface-variant space-y-0.5">
@@ -2795,6 +2840,9 @@
       const initial = name.slice(0, 1);
       const rank = overallRank;
       const avatarClass = getAvatarClassForMember(name, rank);
+      const genderTextClass = memberGenderTextClass(name);
+      const genderStatusClass = memberGenderStatusClass(name);
+      const genderProfileCardClass = memberGenderCardClass(name).replaceAll("hover:", "");
 
       // Set breadcrumb name and focus it
       const crumb = document.querySelector("#memberDetailCrumbTitle");
@@ -2808,7 +2856,7 @@
         <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12 animate-fade-in">
           <!-- Profile Card -->
           <div class="lg:col-span-4 flex flex-col gap-gutter">
-            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient">
+            <article class="rounded-xl border ${genderProfileCardClass} p-6 shadow-ambient">
               <div class="flex flex-col items-center text-center">
                 <div class="relative mb-4">
                   <div class="w-24 h-24 rounded-full flex items-center justify-center font-black text-white text-4xl shadow-md ${avatarClass}">
@@ -2818,8 +2866,8 @@
                     ${icon("verified", "text-[18px]")}
                   </div>
                 </div>
-                <h2 class="font-headline-lg text-2xl font-black text-on-surface mb-1">${escapeHTML(name)}</h2>
-                <span class="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-bold uppercase tracking-wider mb-6">
+                <h2 class="font-headline-lg text-2xl font-black ${genderTextClass} mb-1">${escapeHTML(name)}</h2>
+                <span class="rounded-full ${genderStatusClass} px-3 py-1 text-xs font-bold uppercase tracking-wider mb-6">
                   ${status.toUpperCase()} MEMBER
                 </span>
 
@@ -3857,6 +3905,12 @@
     document.addEventListener("keydown", event => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && event.target.matches("[data-discussion-input]")) {
         addDiscussionMessage(event.target.value).catch(error => alert(error.message));
+      }
+      const memberTarget = event.target.closest("[data-member-id]");
+      if (memberTarget && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        state.selectedMemberId = memberTarget.dataset.memberId;
+        switchView("member-detail");
       }
     });
     document.querySelectorAll(".member-sort").forEach(btn => btn.addEventListener("click", () => {
