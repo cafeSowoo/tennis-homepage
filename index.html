@@ -755,6 +755,14 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
       }
     }
+
+    /* Dashboard Overview Scroll Buttons hover visibility */
+    @media (min-width: 768px) {
+      #quickOverview:hover [data-overview-scroll].can-scroll {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
@@ -851,7 +859,7 @@
       </div>
 
       <div class="space-y-gutter">
-          <section id="quickOverview" class="dashboard-overview relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-visible md:pb-0"></section>
+          <section id="quickOverview" class="dashboard-overview group relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-hidden md:pb-0"></section>
 
           <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
             <div class="mb-md flex items-center justify-between">
@@ -2478,47 +2486,79 @@
           const cards = [
             `
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
-                <div class="flex items-center justify-between gap-3">
-                  <span class="text-xs font-black uppercase tracking-wider text-primary">Next</span>
+                <div class="flex items-center justify-end">
                   ${icon(next ? "chevron_right" : "add", "text-[18px] text-primary")}
                 </div>
-                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
+                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">Next</span>
+                  <span class="min-w-0 truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</span>
+                </p>
                 <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
               </button>
             `,
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-detail-id="${schedule.id}">
-                <div class="flex items-center justify-between gap-3">
-                  <span class="text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
+                <div class="flex items-center justify-end">
                   ${icon("check_circle", "text-[18px] text-primary")}
                 </div>
-                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">${escapeHTML(schedule.place)}</p>
+                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
+                  <span class="min-w-0 truncate">${escapeHTML(schedule.place)}</span>
+                </p>
                 <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
             `) : [`
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-view-link="schedule">
-                <div class="flex items-center justify-between gap-3">
-                  <span class="text-xs font-black uppercase tracking-wider text-primary">My</span>
+                <div class="flex items-center justify-end">
                   ${icon("person_search", "text-[18px] text-on-surface-variant")}
                 </div>
-                <p class="mt-1.5 text-base font-black leading-snug text-on-surface md:text-lg">아직 없음</p>
+                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">My</span>
+                  <span class="min-w-0 truncate">아직 없음</span>
+                </p>
                 <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">내 참석 예정 없음</p>
               </button>
             `])
           ].join("");
 
           quickOverview.innerHTML = `
-            <button class="hidden md:absolute md:-left-12 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/70 md:bg-surface-container-lowest md:text-on-surface-variant md:shadow-ambient md:transition md:hover:bg-surface-container-high md:hover:text-primary" type="button" data-overview-scroll="-1" aria-label="이전 내 일정">
+            <button class="hidden md:absolute md:left-3 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/40 md:bg-surface-container-lowest/85 md:backdrop-blur-md md:text-on-surface-variant md:shadow-float md:opacity-0 md:pointer-events-none md:transition-all md:duration-200 md:hover:bg-surface-container-high md:hover:text-primary md:hover:scale-105" type="button" data-overview-scroll="-1" aria-label="이전 내 일정">
               ${icon("chevron_left", "text-[18px]")}
             </button>
             <div class="flex min-w-0 gap-3 overflow-x-auto scroll-smooth scrollbar-none md:w-full md:snap-x md:snap-mandatory" data-overview-track>
               ${cards}
               <div class="w-margin-mobile shrink-0 md:hidden" aria-hidden="true"></div>
             </div>
-            <button class="hidden md:absolute md:-right-12 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/70 md:bg-surface-container-lowest md:text-on-surface-variant md:shadow-ambient md:transition md:hover:bg-surface-container-high md:hover:text-primary" type="button" data-overview-scroll="1" aria-label="다음 내 일정">
+            <button class="hidden md:absolute md:right-3 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/40 md:bg-surface-container-lowest/85 md:backdrop-blur-md md:text-on-surface-variant md:shadow-float md:opacity-0 md:pointer-events-none md:transition-all md:duration-200 md:hover:bg-surface-container-high md:hover:text-primary md:hover:scale-105" type="button" data-overview-scroll="1" aria-label="다음 내 일정">
               ${icon("chevron_right", "text-[18px]")}
             </button>
           `;
+
+          // Setup scroll checking and visibility toggling
+          setTimeout(() => {
+            const track = quickOverview.querySelector("[data-overview-track]");
+            const leftBtn = quickOverview.querySelector("[data-overview-scroll='-1']");
+            const rightBtn = quickOverview.querySelector("[data-overview-scroll='1']");
+            if (!track || !leftBtn || !rightBtn) return;
+
+            const updateScrollButtons = () => {
+              const scrollLeft = track.scrollLeft;
+              const scrollWidth = track.scrollWidth;
+              const clientWidth = track.clientWidth;
+
+              const canScrollLeft = scrollLeft > 5;
+              const canScrollRight = scrollWidth - clientWidth - scrollLeft > 5;
+
+              leftBtn.classList.toggle("can-scroll", canScrollLeft);
+              rightBtn.classList.toggle("can-scroll", canScrollRight);
+            };
+
+            updateScrollButtons();
+            track.addEventListener("scroll", updateScrollButtons, { passive: true });
+
+            const resizeObserver = new ResizeObserver(updateScrollButtons);
+            resizeObserver.observe(track);
+          }, 50);
         }
 
     function matches(item) {
@@ -3563,7 +3603,7 @@
       if (overviewScrollButton) {
         const track = document.querySelector("[data-overview-track]");
         const direction = Number(overviewScrollButton.dataset.overviewScroll || 1);
-        track?.scrollBy({ left: direction * 240, behavior: "smooth" });
+        track?.scrollBy({ left: direction * 480, behavior: "smooth" });
         return;
       }
       const dateButton = dateButtonFromEvent(event);
