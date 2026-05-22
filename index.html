@@ -1532,7 +1532,7 @@
     function rebuildDataIndexes() {
       const memberById = new Map(dataStore.members.map(member => [member.id, member]));
       const courtById = new Map(dataStore.courts.map(court => [court.id, court]));
-      const attendeeOverrides = supabaseClient ? {} : loadAttendeeOverrides();
+      const attendeeOverrides = ALLOW_REMOTE_WRITES ? {} : loadAttendeeOverrides();
 
       members = dataStore.members;
       courts = dataStore.courts;
