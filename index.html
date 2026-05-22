@@ -1664,6 +1664,9 @@
       </button>
     </div>
     <div class="relative flex items-center gap-sm">
+      <button id="scheduleReminderButton" class="app-icon-btn shrink-0" type="button" aria-label="내 일정 알림 켜기" title="내 일정 알림 켜기">
+        <span class="material-symbols-outlined text-[18px]" data-reminder-icon>notifications</span>
+      </button>
       <div id="headerProfileAvatar" class="avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex">성</div>
     </div>
   </header>
@@ -1675,9 +1678,6 @@
           <h2 class="dashboard-title app-page-title">Dashboard</h2>
           <div class="dashboard-summary-meta mt-1 flex items-center justify-between gap-3">
             <p id="dashboardSubtitle" class="dash-subtitle min-w-0 flex-1"></p>
-            <button id="scheduleReminderButton" class="app-icon-btn shrink-0" type="button" aria-label="내 일정 알림 켜기" title="내 일정 알림 켜기">
-              <span class="material-symbols-outlined text-[18px]" data-reminder-icon>notifications</span>
-            </button>
             <a class="weather-card group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
               <div class="flex items-center gap-1.5">
                 <div class="weather-icon inline-flex shrink-0 items-center justify-center">
@@ -2028,7 +2028,7 @@
         const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
         const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
         const ALLOW_REMOTE_WRITES = SUPABASE_CONFIG.allowRemoteWrites === true;
-        const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&timezone=Asia%2FSeoul";
+        const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=14&timezone=Asia%2FSeoul";
     const MATCH_CAPACITY = 16;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
       ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
@@ -2054,6 +2054,7 @@
     let fileDiscussions = [];
     let calendarDrag = null;
     let suppressCalendarClick = false;
+    let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
     let editingScheduleId = "";
@@ -2093,9 +2094,143 @@
       return { label: "날씨", icon: "partly_cloudy_day" };
     }
 
+    function forecastForSchedule(item) {
+      const hourly = weatherForecast?.hourly;
+      if (!item?.date || !hourly?.time?.length) return null;
+
+      const start = toTwentyFourHourLabel(timeStart(item));
+      const [hourText = "00"] = start.split(":");
+      const targetTime = `${item.date}T${hourText.padStart(2, "0")}:00`;
+      let index = hourly.time.indexOf(targetTime);
+
+      if (index === -1) {
+        const sameDayIndexes = hourly.time
+          .map((time, timeIndex) => time.startsWith(`${item.date}T`) ? timeIndex : -1)
+          .filter(timeIndex => timeIndex >= 0);
+        if (!sameDayIndexes.length) return null;
+
+        const targetHour = Number(hourText);
+        index = sameDayIndexes.reduce((bestIndex, timeIndex) => {
+          const bestHour = Number(hourly.time[bestIndex].slice(11, 13));
+          const currentHour = Number(hourly.time[timeIndex].slice(11, 13));
+          return Math.abs(currentHour - targetHour) < Math.abs(bestHour - targetHour)
+            ? timeIndex
+            : bestIndex;
+        }, sameDayIndexes[0]);
+      }
+
+      const temperature = Number(hourly.temperature_2m?.[index]);
+      const code = Number(hourly.weather_code?.[index]);
+      const precipitation = Number(hourly.precipitation_probability?.[index]);
+      const wind = Number(hourly.wind_speed_10m?.[index]);
+      const isDay = Number(hourly.is_day?.[index]) !== 0;
+      const details = weatherDetailsForCode(code, isDay);
+
+      return {
+        time: hourly.time[index],
+        temperature: Number.isFinite(temperature) ? Math.round(temperature) : null,
+        precipitation: Number.isFinite(precipitation) ? Math.round(precipitation) : null,
+        wind: Number.isFinite(wind) ? Math.round(wind) : null,
+        label: details.label,
+        icon: details.icon
+      };
+    }
+
+    function renderMatchWeatherCard(item) {
+      const forecast = forecastForSchedule(item);
+      if (!forecast) {
+        return `
+          <article class="app-card p-5">
+            <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Weather</h4>
+            <div class="flex items-start gap-3 rounded-xl bg-[#f5f5f7] p-3.5">
+              ${icon("cloud_off", "text-primary shrink-0")}
+              <span class="text-xs text-[#86868b] leading-normal">아직 이 일정 시간대의 예보를 표시할 수 없습니다.</span>
+            </div>
+          </article>
+        `;
+      }
+
+      const forecastDate = new Date(forecast.time);
+      const forecastLabel = `${forecastDate.toLocaleDateString("ko-KR", { month: "long", day: "numeric" })} ${String(forecastDate.getHours()).padStart(2, "0")}시 기준 예보`;
+      const precipitationLabel = forecast.precipitation === null ? "강수 정보 없음" : `강수 ${forecast.precipitation}%`;
+      const windLabel = forecast.wind === null ? "바람 정보 없음" : `바람 ${forecast.wind}km/h`;
+
+      return `
+        <article class="app-card p-5">
+          <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Weather</h4>
+
+          <div class="mb-4 flex items-center gap-4">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-primary">
+              ${icon(forecast.icon)}
+            </div>
+            <div>
+              <div class="text-lg font-semibold text-[#1d1d1f]">${forecast.temperature === null ? "--" : `${forecast.temperature}°C`} · ${forecast.label}</div>
+              <div class="text-sm text-[#86868b]">${forecastLabel}</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center gap-2 rounded-xl bg-[#f5f5f7] p-3">
+              ${icon("rainy", "text-primary shrink-0 text-[18px]")}
+              <span class="text-xs font-semibold text-[#424245]">${precipitationLabel}</span>
+            </div>
+            <div class="flex items-center gap-2 rounded-xl bg-[#f5f5f7] p-3">
+              ${icon("air", "text-primary shrink-0 text-[18px]")}
+              <span class="text-xs font-semibold text-[#424245]">${windLabel}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function dailyForecastForDate(dateValue) {
+      const daily = weatherForecast?.daily;
+      const index = daily?.time?.indexOf(dateValue) ?? -1;
+      if (index < 0) return null;
+
+      const maxTemp = Number(daily.temperature_2m_max?.[index]);
+      const minTemp = Number(daily.temperature_2m_min?.[index]);
+      const precipitation = Number(daily.precipitation_probability_max?.[index]);
+      const details = weatherDetailsForCode(Number(daily.weather_code?.[index]), true);
+
+      return {
+        maxTemp: Number.isFinite(maxTemp) ? Math.round(maxTemp) : null,
+        minTemp: Number.isFinite(minTemp) ? Math.round(minTemp) : null,
+        precipitation: Number.isFinite(precipitation) ? Math.round(precipitation) : null,
+        label: details.label,
+        icon: details.icon
+      };
+    }
+
+    function renderSelectedDateWeatherCard(dateValue) {
+      const forecast = dailyForecastForDate(dateValue);
+      if (!forecast) return "";
+
+      const date = new Date(`${dateValue}T00:00:00`);
+      const dateText = date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
+      const maxLabel = forecast.maxTemp === null ? "최고 -" : `최고 ${forecast.maxTemp}°C`;
+      const minLabel = forecast.minTemp === null ? "최저 -" : `최저 ${forecast.minTemp}°C`;
+      const precipitationLabel = forecast.precipitation === null ? "강수 정보 없음" : `강수 ${forecast.precipitation}%`;
+
+      return `
+        <article class="app-list-card p-4">
+          <div class="flex items-center gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-primary">
+              ${icon(forecast.icon, "text-[20px]")}
+            </div>
+            <div class="min-w-0 flex-1">
+              <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${forecast.label}</h4>
+              <p class="mt-1 text-sm font-medium text-[#86868b]">${maxLabel} · ${minLabel} · ${precipitationLabel}</p>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
     async function refreshWeather() {
       try {
         const weather = await fetchJSON(SONGDO_WEATHER_URL);
+        weatherForecast = weather;
         const current = weather.current || {};
         const temperature = Number(current.temperature_2m);
         const details = weatherDetailsForCode(Number(current.weather_code), current.is_day !== 0);
@@ -2106,6 +2241,12 @@
         if (tempEl && Number.isFinite(temperature)) tempEl.textContent = `${Math.round(temperature)}°C`;
         if (labelEl) labelEl.textContent = details.label;
         if (iconEl) iconEl.textContent = details.icon;
+        if (document.querySelector("#detail.active") && state.detailType === "schedule") {
+          renderCurrentDetail();
+        }
+        if (document.querySelector("#dashboard.active") && state.selectedDate) {
+          renderSelectedDate();
+        }
       } catch (error) {
         console.warn("Weather could not be updated.", error);
       }
@@ -3146,6 +3287,7 @@
             ${items.map(item => scheduleRow(item, "datePanel")).join("")}
           </div>`
         : "";
+      const selectedDateWeatherHTML = renderSelectedDateWeatherCard(state.selectedDate);
       const eventHTML = eventItems.length
         ? `<div class="space-y-3">
             <h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">다른 일정</h4>
@@ -3166,7 +3308,7 @@
 
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
-        ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
+        ? `<div class="space-y-5">${eventHTML}${tennisHTML}${selectedDateWeatherHTML ? `<div class="space-y-3"><h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">날씨</h4>${selectedDateWeatherHTML}</div>` : ""}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
 
       setTimeout(() => {
@@ -3463,24 +3605,7 @@
                   </div>
             </article>
 
-            <article class="app-card p-5">
-              <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Conditions</h4>
-
-              <div class="mb-4 flex items-center gap-4">
-                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-primary">
-                  ${icon("light_mode")}
-                </div>
-                <div>
-                  <div class="text-lg font-semibold text-[#1d1d1f]">18°C / 64°F</div>
-                  <div class="text-sm text-[#86868b]">맑음 & 운동하기 좋은 날씨</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3 rounded-xl bg-[#f5f5f7] p-3.5">
-                ${icon("info", "text-primary shrink-0")}
-                <span class="text-xs text-[#86868b] leading-normal">구장 코트 정비 및 sweep 상태가 매우 양호합니다.</span>
-              </div>
-            </article>
+            ${renderMatchWeatherCard(item)}
           </aside>
         </div>
       `;
