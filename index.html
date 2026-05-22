@@ -715,6 +715,7 @@
       scrollbar-width: none;  /* Firefox */
     }
     @media (max-width: 767px) {
+      .dashboard-overview + .calendar-section-wrapper,
       .dashboard-overview + .calendar-card {
         margin-top: 12px !important;
       }
@@ -1599,6 +1600,74 @@
       #dashboard .calendar-card {
         padding-bottom: 0.75rem;
       }
+
+      /* 모바일 일정 패널 슬라이딩 카드 오버라이드 */
+      .calendar-section-wrapper {
+        position: relative;
+        overflow: visible;
+        border-radius: 1.25rem;
+      }
+
+      #dashboard #selectedDatePanel {
+        position: absolute;
+        top: var(--panel-top, 78px);
+        left: 0 !important;
+        right: 0 !important;
+        bottom: var(--panel-bottom, 8px) !important;
+        z-index: 30;
+        background: #ffffff;
+        border-radius: 1.3125rem;
+        border: 1px solid var(--app-border);
+        margin: 0 !important;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.14);
+        display: flex;
+        flex-direction: column;
+        padding: 0.75rem 1rem 1rem !important; /* 상단 패딩 조절 */
+
+        /* 슬라이드 업 트랜지션 */
+        opacity: 0;
+        transform: translateY(102%) scale(1);
+        transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease;
+      }
+
+      #dashboard #selectedDatePanel.hidden {
+        display: none !important;
+      }
+
+      #dashboard #selectedDatePanel.active-animate {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      #dashboard #selectedDatePanel #selectedDateList {
+        flex: 1;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        padding-bottom: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+
+      #dashboard #selectedDatePanel #selectedDateList::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+
+      body.apple-ui #dashboard #selectedDatePanel {
+        left: 0 !important;
+        right: 0 !important;
+        top: var(--panel-top, 78px) !important;
+        bottom: var(--panel-bottom, 8px) !important;
+        width: auto !important;
+        height: unset !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        border-radius: 21px !important;
+      }
+
+      body.selected-date-active {
+        overflow: hidden !important;
+      }
     }
 
     #pwaInstallBanner {
@@ -1700,50 +1769,54 @@
       <div class="mt-5 space-y-5 md:space-y-6">
           <section id="quickOverview" class="dashboard-overview group relative flex overflow-x-auto snap-x snap-mandatory gap-2.5 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-hidden md:pb-0"></section>
 
-          <section class="calendar-card dash-card">
-            <div class="mb-3 flex items-center justify-between gap-3 md:mb-4">
-              <h3 id="calendarMonthTitle">May. 2026</h3>
-              <div class="flex items-center gap-1.5">
-                <div class="relative inline-block">
-                  <button id="calendarAddBtn" class="dash-icon-btn is-primary h-8 w-8" type="button" aria-label="일정 추가 및 생성" aria-controls="calendarAddMenu" aria-expanded="false" onclick="event.preventDefault(); event.stopImmediatePropagation(); window.toggleCalendarAddMenu();">
-                    <span id="calendarAddIcon" class="material-symbols-outlined text-[18px] transition-transform duration-200">add</span>
-                  </button>
-                  <div id="calendarAddMenu" class="absolute right-0 top-11 z-[70] hidden w-48 origin-top-right bg-white transition-all duration-200 ease-out transform scale-95 opacity-0">
-                    <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-schedule>
-                      <span class="material-symbols-outlined text-primary text-[18px]">sports_tennis</span>
-                      <span>테니스 매치 추가</span>
+          <div class="calendar-section-wrapper relative">
+            <section class="calendar-card dash-card">
+              <div class="mb-3 flex items-center justify-between gap-3 md:mb-4">
+                <h3 id="calendarMonthTitle">May. 2026</h3>
+                <div class="flex items-center gap-1.5">
+                  <div class="relative inline-block">
+                    <button id="calendarAddBtn" class="dash-icon-btn is-primary h-8 w-8" type="button" aria-label="일정 추가 및 생성" aria-controls="calendarAddMenu" aria-expanded="false" onclick="event.preventDefault(); event.stopImmediatePropagation(); window.toggleCalendarAddMenu();">
+                      <span id="calendarAddIcon" class="material-symbols-outlined text-[18px] transition-transform duration-200">add</span>
                     </button>
-                    <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-event>
-                      <span class="material-symbols-outlined text-[#0071e3] text-[18px]">event</span>
-                      <span>일반 일정 추가</span>
-                    </button>
+                    <div id="calendarAddMenu" class="absolute right-0 top-11 z-[70] hidden w-48 origin-top-right bg-white transition-all duration-200 ease-out transform scale-95 opacity-0">
+                      <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-schedule>
+                        <span class="material-symbols-outlined text-primary text-[18px]">sports_tennis</span>
+                        <span>테니스 매치 추가</span>
+                      </button>
+                      <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-event>
+                        <span class="material-symbols-outlined text-[#0071e3] text-[18px]">event</span>
+                        <span>일반 일정 추가</span>
+                      </button>
+                    </div>
                   </div>
+                  <button id="prevMonth" class="dash-icon-btn" type="button" aria-label="이전 달">
+                    <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                  </button>
+                  <button id="nextMonth" class="dash-icon-btn" type="button" aria-label="다음 달">
+                    <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                  </button>
                 </div>
-                <button id="prevMonth" class="dash-icon-btn" type="button" aria-label="이전 달">
-                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                </button>
-                <button id="nextMonth" class="dash-icon-btn" type="button" aria-label="다음 달">
-                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                </button>
               </div>
-            </div>
-            <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center">
-              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>
-            <div id="calendarGridWrapper" class="relative overflow-hidden">
-              <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
-            </div>
-          </section>
+              <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+              </div>
+              <div id="calendarGridWrapper" class="relative overflow-hidden">
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+              </div>
+            </section>
 
-          <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
-            <div class="mb-4 flex items-center justify-between">
-              <div>
-                <h3 id="selectedDateTitle">Selected Matches</h3>
+            <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
+              <!-- 모바일 드래그 핸들바 인디케이터 -->
+              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden"></div>
+
+              <div class="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 id="selectedDateTitle">Selected Matches</h3>
+                </div>
               </div>
-              <button type="button" data-view-link="schedule">전체 보기</button>
-            </div>
-            <div id="selectedDateList" class="space-y-3"></div>
-          </section>
+              <div id="selectedDateList" class="space-y-3"></div>
+            </section>
+          </div>
       </div>
     </section>
 
@@ -3270,13 +3343,33 @@
 
     function renderSelectedDate() {
       const panel = document.querySelector("#selectedDatePanel");
+      const isMobile = window.innerWidth < 768;
+
+      if (panel._hideTimeout) {
+        clearTimeout(panel._hideTimeout);
+        panel._hideTimeout = null;
+      }
+
       if (!state.selectedDate) {
-        panel.classList.add("hidden");
         panel.classList.remove("active-animate");
+        document.body.classList.remove("selected-date-active");
+        if (isMobile) {
+          panel._hideTimeout = setTimeout(() => {
+            panel.classList.add("hidden");
+            panel._hideTimeout = null;
+          }, 320);
+        } else {
+          panel.classList.add("hidden");
+        }
         return;
       }
 
-      const wasHidden = panel.classList.contains("hidden");
+      if (isMobile) {
+        document.body.classList.add("selected-date-active");
+      }
+
+      // active-animate가 없거나 hidden인 경우 둘 다 hidden 상태(혹은 닫히는 도중)로 간주
+      const wasHidden = panel.classList.contains("hidden") || !panel.classList.contains("active-animate");
 
       const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
       const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
@@ -3296,11 +3389,13 @@
         : "";
 
       if (!wasHidden) {
-        // 이미 노출된 상태에서 날짜 변경 시, 트랜지션 없이 즉시 초기 상태로 리셋
-        panel.style.transition = "none";
-        panel.classList.remove("active-animate");
-        panel.offsetHeight; // Reflow
-        panel.style.transition = "";
+        if (!isMobile) {
+          // 데스크톱: 이미 노출된 상태에서 날짜 변경 시, 트랜지션 없이 즉시 초기 상태로 리셋
+          panel.style.transition = "none";
+          panel.classList.remove("active-animate");
+          panel.offsetHeight; // Reflow
+          panel.style.transition = "";
+        }
       } else {
         panel.classList.remove("hidden");
         panel.classList.remove("active-animate");
@@ -3311,9 +3406,47 @@
         ? `<div class="space-y-5">${eventHTML}${tennisHTML}${selectedDateWeatherHTML ? `<div class="space-y-3"><h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">날씨</h4>${selectedDateWeatherHTML}</div>` : ""}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
 
-      setTimeout(() => {
+      updatePanelGeometry();
+
+      if (wasHidden || !isMobile) {
+        setTimeout(() => {
+          panel.classList.add("active-animate");
+        }, 20);
+      } else {
         panel.classList.add("active-animate");
-      }, 20);
+      }
+    }
+
+    function updatePanelGeometry() {
+      const panel = document.querySelector("#selectedDatePanel");
+      if (!panel || panel.classList.contains("hidden")) return;
+
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        panel.style.top = "";
+        panel.style.bottom = "";
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        const wrapper = document.querySelector(".calendar-section-wrapper");
+        const weekdayGrid = document.querySelector(".calendar-card .weekday-grid");
+        const bottomNav = document.querySelector("#bottomNav");
+
+        if (!wrapper || !weekdayGrid || !bottomNav) return;
+
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const weekdayRect = weekdayGrid.getBoundingClientRect();
+        const navRect = bottomNav.getBoundingClientRect();
+
+        // 위쪽은 달력의 요일 바로 아래쪽으로
+        const topOffset = weekdayRect.bottom - wrapperRect.top;
+        panel.style.setProperty("--panel-top", `${topOffset}px`);
+
+        // 아래쪽은 하단바의 바로 위쪽으로 (8px 여백)
+        const bottomOffset = wrapperRect.bottom - (navRect.top - 8);
+        panel.style.setProperty("--panel-bottom", `${bottomOffset}px`);
+      });
     }
 
     function scheduleRow(item) {
@@ -4335,6 +4468,7 @@
         grid.style.opacity = "";
         wrapper.style.height = "";
         wrapper.style.transition = "";
+        updatePanelGeometry();
       }, 300);
     }
 
@@ -4390,6 +4524,82 @@
         event.preventDefault();
         event.stopPropagation();
         suppressCalendarClick = false;
+      }, true);
+    }
+
+    function getAdjacentDate(dateStr, offset) {
+      const d = new Date(`${dateStr}T00:00:00`);
+      d.setDate(d.getDate() + offset);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    let panelDrag = null;
+    let suppressPanelClick = false;
+
+    function setupSelectedDatePanelSwipe() {
+      const panel = document.querySelector("#selectedDatePanel");
+      if (!panel || !window.PointerEvent) return;
+
+      const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+      const resetDrag = () => { panelDrag = null; };
+
+      panel.addEventListener("pointerdown", event => {
+        if (!isMobile()) return;
+        if (event.button !== undefined && event.button !== 0) return;
+        if (event.target.closest("button, a, input, [data-detail-id], [data-event-detail-id]")) return;
+
+        panelDrag = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          isHorizontal: false
+        };
+        panel.setPointerCapture?.(event.pointerId);
+      });
+
+      panel.addEventListener("pointermove", event => {
+        if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
+
+        const dx = event.clientX - panelDrag.startX;
+        const dy = event.clientY - panelDrag.startY;
+
+        if (Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          panelDrag.isHorizontal = true;
+          if (event.cancelable) event.preventDefault();
+        }
+      });
+
+      panel.addEventListener("pointerup", event => {
+        if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
+
+        const dx = event.clientX - panelDrag.startX;
+        const dy = event.clientY - panelDrag.startY;
+
+        const shouldSwipe = panelDrag.isHorizontal && Math.abs(dx) >= 60;
+        if (shouldSwipe && state.selectedDate) {
+          suppressPanelClick = true;
+          const offset = dx < 0 ? 1 : -1;
+          const newDate = getAdjacentDate(state.selectedDate, offset);
+
+          state.selectedDate = newDate;
+          state.currentMonth = newDate.slice(0, 7);
+          renderCalendar();
+          renderSelectedDate();
+
+          window.setTimeout(() => { suppressPanelClick = false; }, 250);
+        }
+        resetDrag();
+      });
+
+      panel.addEventListener("pointercancel", resetDrag);
+      panel.addEventListener("click", event => {
+        if (!suppressPanelClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        suppressPanelClick = false;
       }, true);
     }
 
@@ -4926,6 +5136,17 @@
     window.toggleCalendarAddMenu = toggleCalendarAddMenu;
 
     document.addEventListener("click", event => {
+      if (window.innerWidth < 768 && state.selectedDate) {
+        const panel = document.querySelector("#selectedDatePanel");
+        const clickedInsidePanel = event.target.closest("#selectedDatePanel");
+        const clickedDateBtn = dateButtonFromEvent(event);
+        if (!clickedInsidePanel && !clickedDateBtn) {
+          state.selectedDate = "";
+          renderCalendar();
+          renderSelectedDate();
+        }
+      }
+
       const menu = document.querySelector("#calendarAddMenu");
       if (menu && !menu.classList.contains("hidden")) {
         const clickedInsideMenu = event.target.closest("#calendarAddMenu");
@@ -5081,6 +5302,9 @@
     document.querySelector("#prevMonth").addEventListener("click", () => changeCalendarMonth(-1));
     document.querySelector("#nextMonth").addEventListener("click", () => changeCalendarMonth(1));
     setupCalendarSwipe();
+    setupSelectedDatePanelSwipe();
+    window.addEventListener("resize", updatePanelGeometry, { passive: true });
+    window.addEventListener("scroll", updatePanelGeometry, { passive: true });
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
