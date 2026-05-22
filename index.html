@@ -170,6 +170,24 @@
     }
     body { font-family: Inter, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; color: #191c1d; background: #f8f9fa; letter-spacing: 0; overflow-x: hidden; }
 
+    header {
+      isolation: isolate;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    #scheduleReminderButton {
+      position: relative;
+      z-index: 1;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      will-change: auto;
+    }
+
+    .selected-date-active #scheduleReminderButton {
+      transition: none;
+    }
+
     /* 구글 머티리얼 심볼 최적화 */
     .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; font-size: 22px; line-height: 1; }
     .icon-fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
@@ -1750,7 +1768,7 @@
     </div>
   </nav>
 
-  <header class="fixed left-0 right-0 top-0 z-30 flex h-[54px] items-center justify-between backdrop-blur-xl px-margin-mobile md:left-64 md:h-16 md:px-margin-desktop">
+  <header class="fixed left-0 right-0 top-0 z-[70] flex h-[54px] items-center justify-between backdrop-blur-xl px-margin-mobile md:left-64 md:h-16 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
       <button id="mobileMenu" class="app-icon-btn flex md:hidden" type="button" aria-label="메뉴">
         <span class="material-symbols-outlined" data-icon="menu">menu</span>
