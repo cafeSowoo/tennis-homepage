@@ -1,4 +1,4 @@
-const CACHE_NAME = "tennis-homepage-v1";
+const CACHE_NAME = "tennis-homepage-v2";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
@@ -33,6 +33,21 @@ self.addEventListener("fetch", event => {
 
   if (url.pathname.includes("/data/")) {
     event.respondWith(fetch(request));
+    return;
+  }
+
+  if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then(cached => cached || caches.match("./index.html")))
+    );
     return;
   }
 
