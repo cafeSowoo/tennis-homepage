@@ -946,6 +946,17 @@
       <div id="detailContent"></div>
     </section>
 
+    <section id="member-detail" class="view">
+      <div class="mb-lg flex items-center justify-between">
+        <div class="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+          <button class="transition hover:text-primary" data-view-link="members">Members</button>
+          <span class="material-symbols-outlined text-sm">chevron_right</span>
+          <span id="memberDetailCrumbTitle" class="text-on-surface">Member Profile</span>
+        </div>
+      </div>
+      <div id="memberDetailContent"></div>
+    </section>
+
     <section id="courts" class="view">
       <div class="mb-4 md:mb-lg">
         <h2 class="font-display text-3xl font-bold">Court Reservations</h2>
@@ -1163,7 +1174,7 @@
       : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
-        const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+        const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -2194,13 +2205,7 @@
       // Stitch bridge: Detail player card markup starts here.
       const playerCards = item.attendees.map((name, index) => {
         const initial = initials(name);
-        const isOrganizer = index === 0;
         const memberId = memberIdForName(name);
-
-        // dynamic visual NTRP for player details
-        let ntrp = "NTRP 3.5";
-        if (name.includes("성")) ntrp = "NTRP 4.0";
-        if (name.includes("재") || name.includes("민")) ntrp = "NTRP 3.8";
 
         return `
           <div class="group flex items-center gap-2 sm:gap-3 rounded-xl border border-outline-variant/60 bg-surface-bright p-2.5 sm:p-3.5 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
@@ -2208,11 +2213,6 @@
             <div class="min-w-0 flex-1">
               <div class="text-xs sm:text-sm font-bold text-on-surface flex items-center flex-wrap gap-1 leading-tight">
                 <span class="truncate">${name}</span>
-                ${isOrganizer ? `<span class="bg-primary/10 text-primary text-[8px] sm:text-[10px] px-1 py-0.5 rounded font-bold shrink-0">Org</span>` : ""}
-              </div>
-              <div class="mt-0.5 text-[10px] sm:text-xs font-semibold text-primary flex items-center gap-1 leading-none">
-                <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-primary animate-pulse"></span>
-                <span class="truncate">${ntrp}</span>
               </div>
             </div>
             <button class="inline-flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant opacity-100 transition hover:bg-error-container hover:text-on-error-container md:opacity-0 md:group-hover:opacity-100" type="button" data-remove-attendee="${memberId}" aria-label="${name} 참석자 제거">
@@ -2241,7 +2241,6 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <div class="absolute bottom-3 left-4 md:bottom-4 md:left-6 flex flex-wrap items-center gap-2 md:gap-3">
                   <span class="rounded-full bg-secondary-container px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
-                  <span class="rounded-full border border-white/30 bg-white/20 px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold text-white backdrop-blur-md shadow-sm">NTRP 3.5 - 4.5</span>
                 </div>
               </div>
 
@@ -2719,8 +2718,9 @@
       document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => {
         const initial = m.name.slice(0, 1);
         const rank = idx + 1;
+        const memberId = memberIdForName(m.name) || m.name;
         return `
-          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4">
+          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4 cursor-pointer transition hover:-translate-y-0.5 hover:shadow-ambient duration-300" data-member-id="${memberId}">
             <div class="flex items-start gap-2.5 sm:gap-4">
               <div class="relative shrink-0">
                 <div class="member-avatar flex items-center justify-center rounded-full font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
@@ -2748,13 +2748,165 @@
                 <div class="text-xs font-semibold uppercase text-on-surface-variant">Matches</div>
                 <div class="font-headline-md text-xl font-black text-primary">${m.count}</div>
               </div>
-              <button class="btn-outline min-h-10 px-3 text-sm font-bold">
-                ${icon("chat", "text-[14px]")} Message
+              <button class="btn-outline min-h-10 px-3 text-sm font-bold" data-member-id="${memberId}">
+                ${icon("person", "text-[14px]")} Profile
               </button>
             </div>
           </article>
         `;
       }).join("");
+    }
+
+    function renderMemberDetail() {
+      const memberId = state.selectedMemberId;
+      const member = members.find(m => String(m.id) === String(memberId)) || members.find(m => m.name === memberId);
+      if (!member) return;
+
+      const name = member.name;
+      const status = member.status || "active";
+
+      // Filter schedules where attendeeIds contains memberId OR attendees contains name
+      const memberSchedules = schedules.filter(s =>
+        (s.attendeeIds && s.attendeeIds.includes(member.id)) ||
+        (s.attendees && s.attendees.includes(name))
+      );
+      const overallCount = memberSchedules.length;
+
+      // Overall ranking
+      const allStats = people.map(pName => {
+        const pMember = members.find(m => m.name === pName);
+        const pSchedules = schedules.filter(s =>
+          (pMember && s.attendeeIds && s.attendeeIds.includes(pMember.id)) ||
+          (s.attendees && s.attendees.includes(pName))
+        );
+        return { name: pName, count: pSchedules.length };
+      }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "ko"));
+      const overallRank = allStats.findIndex(s => s.name === name) + 1;
+
+      // Active month stats
+      const currentMonth = todayIso.slice(0, 7);
+      const monthlySchedules = memberSchedules.filter(s => s.date.startsWith(currentMonth));
+      const monthlyCount = monthlySchedules.length;
+
+      // Separate into upcoming and past
+      const upcomingMatches = memberSchedules.filter(s => s.date >= todayIso).sort(compareSchedulesByTime);
+      const pastMatches = memberSchedules.filter(s => s.date < todayIso).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
+
+      const initial = name.slice(0, 1);
+      const rank = overallRank;
+      const avatarClass = getAvatarClassForMember(name, rank);
+
+      // Set breadcrumb name and focus it
+      const crumb = document.querySelector("#memberDetailCrumbTitle");
+      if (crumb) {
+        crumb.textContent = `${name} Profile`;
+        crumb.setAttribute("tabindex", "-1");
+        crumb.focus();
+      }
+
+      document.querySelector("#memberDetailContent").innerHTML = `
+        <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12 animate-fade-in">
+          <!-- Profile Card -->
+          <div class="lg:col-span-4 flex flex-col gap-gutter">
+            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient">
+              <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                  <div class="w-24 h-24 rounded-full flex items-center justify-center font-black text-white text-4xl shadow-md ${avatarClass}">
+                    ${initial}
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 rounded-full bg-primary text-white p-1.5 shadow-sm flex items-center justify-center">
+                    ${icon("verified", "text-[18px]")}
+                  </div>
+                </div>
+                <h2 class="font-headline-lg text-2xl font-black text-on-surface mb-1">${escapeHTML(name)}</h2>
+                <span class="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-bold uppercase tracking-wider mb-6">
+                  ${status.toUpperCase()} MEMBER
+                </span>
+
+                <div class="w-full space-y-3 pt-3 border-t border-outline-variant/30 text-left">
+                  <div class="flex justify-between items-center text-sm font-medium">
+                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("military_tech", "text-[18px] text-amber-500")} Club Rank</span>
+                    <span class="font-black text-on-surface">${rank}위</span>
+                  </div>
+                  <div class="flex justify-between items-center text-sm font-medium">
+                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("sports_tennis", "text-[18px] text-primary")} Total Matches</span>
+                    <span class="font-black text-on-surface">${overallCount}회</span>
+                  </div>
+                  <div class="flex justify-between items-center text-sm font-medium">
+                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("calendar_month", "text-[18px] text-sky-600")} This Month</span>
+                    <span class="font-black text-on-surface">${monthlyCount}회</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Club Motto / Info Card -->
+            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-low p-5 shadow-sm">
+              <h3 class="font-headline-md text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Club Status</h3>
+              <p class="text-xs font-semibold leading-relaxed text-on-surface-variant">
+                아직도 성장중 테니스 클럽의 활성 멤버입니다. 코트 위에서 매너 있는 플레이와 성장을 지향합니다. 🎾
+              </p>
+            </article>
+          </div>
+
+          <!-- Matches Section -->
+          <div class="lg:col-span-8 flex flex-col gap-gutter">
+            <!-- Stats Dashboard Grid -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Total Played</div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-3xl font-black text-primary">${overallCount}</span>
+                  <span class="text-xs font-semibold text-on-surface-variant">경기</span>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Attendance Rank</div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-3xl font-black text-primary">#${rank}</span>
+                  <span class="text-xs font-semibold text-on-surface-variant">위</span>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Monthly Played</div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-3xl font-black text-primary">${monthlyCount}</span>
+                  <span class="text-xs font-semibold text-on-surface-variant">경기</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Matches List Card -->
+            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient">
+              <h3 class="font-headline-md text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+                ${icon("sports_tennis", "text-[22px] text-primary")} 예정된 참석 일정 (${upcomingMatches.length})
+              </h3>
+              <div class="space-y-3 mb-8">
+                ${upcomingMatches.length > 0
+                  ? upcomingMatches.map(item => scheduleRow(item)).join("")
+                  : `<div class="text-center py-6 bg-surface-container-low/50 rounded-xl border border-dashed border-outline-variant/40">
+                       <span class="material-symbols-outlined text-[32px] text-on-surface-variant/40 mb-1">calendar_today</span>
+                       <p class="text-sm font-semibold text-on-surface-variant">예정된 일정이 없습니다.</p>
+                     </div>`
+                }
+              </div>
+
+              <h3 class="font-headline-md text-lg font-bold text-on-surface mb-4 flex items-center gap-2 pt-4 border-t border-outline-variant/20">
+                ${icon("history", "text-[22px] text-primary")} 지난 참석 일정 (${pastMatches.length})
+              </h3>
+              <div class="space-y-3 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
+                ${pastMatches.length > 0
+                  ? pastMatches.map(item => scheduleRow(item)).join("")
+                  : `<div class="text-center py-6 bg-surface-container-low/50 rounded-xl border border-dashed border-outline-variant/40">
+                       <span class="material-symbols-outlined text-[32px] text-on-surface-variant/40 mb-1">history</span>
+                       <p class="text-sm font-semibold text-on-surface-variant">지난 참석 일정이 없습니다.</p>
+                     </div>`
+                }
+              </div>
+            </article>
+          </div>
+        </div>
+      `;
     }
 
     function renderAddScheduleFormOptions() {
@@ -3367,7 +3519,9 @@
 
     function switchView(view) {
       const renderRequest = ++viewRenderRequest;
-      const targetView = view === "detail" ? "schedule" : view;
+      const targetView = (view === "detail" || view === "member-detail")
+        ? (view === "detail" ? "schedule" : "members")
+        : view;
 
       const updateDOM = () => {
         // 1. Magnetized Nav Indicator Sliding Motion (Desktop #sideNav only)
@@ -3437,6 +3591,8 @@
           }
         } else if (view === "detail") {
           renderCurrentDetail();
+        } else if (view === "member-detail") {
+          renderMemberDetail();
         }
 
         // 4. Elastic Tab Fade-Slide Transition
@@ -3589,6 +3745,12 @@
         state.selectedEventId = eventDetailButton.dataset.eventDetailId;
         state.detailType = "event";
         switchView("detail");
+        return;
+      }
+      const memberDetailButton = event.target.closest("[data-member-id]");
+      if (memberDetailButton) {
+        state.selectedMemberId = memberDetailButton.dataset.memberId;
+        switchView("member-detail");
         return;
       }
       const overviewScrollButton = event.target.closest("[data-overview-scroll]");
