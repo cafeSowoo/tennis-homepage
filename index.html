@@ -1666,13 +1666,19 @@
         flex: 1;
         overflow-y: auto;
         overscroll-behavior-y: contain;
+        overscroll-behavior-x: contain;
         padding-bottom: 1.5rem;
         -webkit-overflow-scrolling: touch;
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
+        touch-action: pan-y;
         transition: transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease;
         transform: translateX(0);
         opacity: 1;
+      }
+
+      #dashboard #selectedDatePanel #selectedDateList article {
+        touch-action: pan-y;
       }
 
       #dashboard #selectedDatePanel #selectedDateList::-webkit-scrollbar {
@@ -4659,13 +4665,29 @@
       if (!panel || !window.PointerEvent) return;
 
       const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
-      const resetDrag = () => {
+      const restoreListPosition = () => {
+        const list = document.querySelector("#selectedDateList");
+        if (!list || isPanelSwiping) return;
+
+        list.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+        list.style.transform = "translateX(0)";
+        list.style.opacity = "1";
+        window.setTimeout(() => {
+          if (!isPanelSwiping) {
+            list.style.transition = "";
+            list.style.transform = "";
+            list.style.opacity = "";
+          }
+        }, 180);
+      };
+      const resetDrag = ({ restore = false } = {}) => {
         if (panelDrag) {
           try {
             panel.releasePointerCapture(panelDrag.pointerId);
           } catch (e) {}
         }
         panelDrag = null;
+        if (restore) restoreListPosition();
       };
 
       panel.addEventListener("pointerdown", event => {
@@ -4692,7 +4714,7 @@
         if (!panelDrag.isHorizontal) {
           // If vertical scrolling is significant, cancel horizontal swipe early
           if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
-            resetDrag();
+            resetDrag({ restore: true });
             return;
           }
           if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
@@ -4724,25 +4746,14 @@
           const offset = dx < 0 ? 1 : -1;
           swipeDate(offset);
           window.setTimeout(() => { suppressPanelClick = false; }, 250);
-        } else {
+        } else if (list && !isPanelSwiping) {
           // Spring back to center
-          if (list && !isPanelSwiping) {
-            list.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
-            list.style.transform = "translateX(0)";
-            list.style.opacity = "1";
-            setTimeout(() => {
-              if (!isPanelSwiping) {
-                list.style.transition = "";
-                list.style.transform = "";
-                list.style.opacity = "";
-              }
-            }, 180);
-          }
+          restoreListPosition();
         }
         resetDrag();
       });
 
-      panel.addEventListener("pointercancel", resetDrag);
+      panel.addEventListener("pointercancel", () => resetDrag({ restore: true }));
       panel.addEventListener("click", event => {
         if (!suppressPanelClick) return;
         event.preventDefault();
