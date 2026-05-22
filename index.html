@@ -2485,7 +2485,7 @@
             : "예정된 테니스 일정 없음";
           const cards = [
             `
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">Next</span>
                   <span class="min-w-0 truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</span>
@@ -2494,7 +2494,7 @@
               </button>
             `,
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-detail-id="${schedule.id}">
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-detail-id="${schedule.id}">
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
                   <span class="min-w-0 truncate">${escapeHTML(schedule.place)}</span>
@@ -2502,7 +2502,7 @@
                 <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
             `) : [`
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-view-link="schedule">
+              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-view-link="schedule">
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">My</span>
                   <span class="min-w-0 truncate">아직 없음</span>
