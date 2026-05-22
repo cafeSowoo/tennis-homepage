@@ -172,16 +172,20 @@
 
     header {
       isolation: isolate;
-      transform: translateZ(0);
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
 
     #scheduleReminderButton {
       position: relative;
       z-index: 1;
-      transform: translateZ(0);
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
-      will-change: auto;
+      will-change: transform;
     }
 
     .selected-date-active #scheduleReminderButton {
@@ -582,6 +586,11 @@
         padding-bottom: env(safe-area-inset-bottom);
         height: calc(4rem + env(safe-area-inset-bottom));
         box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform;
       }
 
       /* 모바일 하단 탭 아이템 구조화 */
@@ -1667,7 +1676,11 @@
 
         /* 슬라이드 업 트랜지션 */
         opacity: 0;
+        -webkit-transform: translateY(102%) scale(1);
         transform: translateY(102%) scale(1);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform, opacity;
         transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease;
       }
 
@@ -1677,6 +1690,7 @@
 
       #dashboard #selectedDatePanel.active-animate {
         opacity: 1;
+        -webkit-transform: translateY(0) scale(1);
         transform: translateY(0) scale(1);
       }
 
@@ -1691,8 +1705,12 @@
         scrollbar-width: none;  /* Firefox */
         touch-action: pan-y;
         transition: transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease;
+        -webkit-transform: translateX(0);
         transform: translateX(0);
         opacity: 1;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform, opacity;
       }
 
       #dashboard #selectedDatePanel #selectedDateList article {
@@ -1857,9 +1875,9 @@
 
             <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
               <!-- 모바일 드래그 핸들바 인디케이터 -->
-              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-panel-dismiss-zone></div>
+              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden"></div>
 
-              <div class="mb-4 flex items-center justify-between" data-panel-dismiss-zone>
+              <div class="mb-4 flex items-center justify-between">
                 <div>
                   <h3 id="selectedDateTitle">Selected Matches</h3>
                 </div>
@@ -4717,10 +4735,11 @@
           } catch (e) {}
         }
         const wasVerticalDismiss = panelDrag?.isVerticalDismiss;
+        const wasHorizontal = panelDrag?.isHorizontal;
         panelDrag = null;
         if (restore) {
           if (wasVerticalDismiss) restorePanelPosition();
-          restoreListPosition();
+          if (wasHorizontal) restoreListPosition();
         }
       };
       const closePanelFromSwipe = () => {
@@ -4740,13 +4759,18 @@
         if (event.button !== undefined && event.button !== 0) return;
         if (event.target.closest("input, select, textarea")) return;
 
+        const list = panel.querySelector("#selectedDateList");
+        const startScrollTop = list ? list.scrollTop : 0;
+        const touchedList = event.target.closest("#selectedDateList");
+
         panelDrag = {
           pointerId: event.pointerId,
           startX: event.clientX,
           startY: event.clientY,
           isHorizontal: false,
           isVerticalDismiss: false,
-          canDismiss: Boolean(event.target.closest("[data-panel-dismiss-zone]"))
+          isScrollingList: false,
+          canDismiss: !touchedList || startScrollTop <= 0
         };
         panel.setPointerCapture?.(event.pointerId);
       });
@@ -4766,23 +4790,31 @@
           return;
         }
 
-        if (!panelDrag.isHorizontal) {
-          if (panelDrag.canDismiss && dy > 14 && dy > Math.abs(dx) * 1.2) {
-            panelDrag.isVerticalDismiss = true;
-            if (event.cancelable) event.preventDefault();
-            panel.style.transition = "none";
-            panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
-            panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
-            return;
-          }
+        if (panelDrag.isScrollingList) {
+          return;
+        }
 
-          // If vertical scrolling is significant, cancel horizontal swipe early
-          if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
-            resetDrag({ restore: true });
-            return;
-          }
-          if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-            panelDrag.isHorizontal = true;
+        if (!panelDrag.isHorizontal) {
+          const absDx = Math.abs(dx);
+          const absDy = Math.abs(dy);
+
+          if (absDx > 6 || absDy > 6) {
+            if (absDx > absDy * 1.2) {
+              panelDrag.isHorizontal = true;
+            } else if (absDy > absDx * 1.2) {
+              if (panelDrag.canDismiss && dy > 0) {
+                panelDrag.isVerticalDismiss = true;
+                if (event.cancelable) event.preventDefault();
+                panel.style.transition = "none";
+                panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
+                panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
+                return;
+              } else {
+                panelDrag.isScrollingList = true;
+                resetDrag({ restore: true });
+                return;
+              }
+            }
           }
         }
 
@@ -4803,7 +4835,7 @@
 
         const dx = event.clientX - panelDrag.startX;
         const dy = event.clientY - panelDrag.startY;
-        const shouldDismiss = panelDrag.isVerticalDismiss && dy >= 56;
+        const shouldDismiss = panelDrag.isVerticalDismiss && dy >= 100;
         const shouldSwipe = panelDrag.isHorizontal && Math.abs(dx) >= 60;
         const list = document.querySelector("#selectedDateList");
 
@@ -4817,7 +4849,6 @@
           swipeDate(offset);
           window.setTimeout(() => { suppressPanelClick = false; }, 250);
         } else if (list && !isPanelSwiping) {
-          // Spring back to center
           restoreListPosition();
         }
         resetDrag();
