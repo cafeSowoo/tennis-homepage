@@ -583,6 +583,7 @@
       .dashboard-summary {
         gap: 8px;
         min-width: 0;
+        margin-top: -13px;
       }
       .dashboard-title {
         font-size: 28px;
@@ -600,9 +601,14 @@
         display: none;
       }
       .calendar-card {
-        padding: 10px 8px;
+        min-height: 386px;
+        padding-bottom: 16px;
+        padding-top: 16px;
         touch-action: pan-y;
         user-select: none;
+      }
+      .calendar-card .weekday-grid {
+        margin-top: -15px;
       }
       .calendar-card .calendar-day {
         touch-action: pan-y;
@@ -803,7 +809,7 @@
     </div>
   </nav>
 
-  <header class="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-outline-variant/15 bg-surface/75 backdrop-blur-xl px-margin-mobile shadow-sm md:left-64 md:px-margin-desktop">
+  <header class="fixed left-0 right-0 top-0 z-30 flex h-[54px] items-center justify-between border-b border-outline-variant/15 bg-surface/75 backdrop-blur-xl px-margin-mobile shadow-sm md:left-64 md:h-16 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
       <button id="mobileMenu" class="hidden rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high">
         <span class="material-symbols-outlined" data-icon="menu">menu</span>
@@ -818,11 +824,6 @@
       </div>
     </div>
     <div class="relative flex items-center gap-sm">
-      <button class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
-      <button id="helpButton" class="rounded-full p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-high" type="button" aria-expanded="false" aria-controls="helpPopover"><span class="material-symbols-outlined" data-icon="help">help</span></button>
-      <div id="helpPopover" class="absolute right-10 top-12 z-50 hidden w-72 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-4 text-sm font-semibold leading-6 text-on-surface shadow-float">
-        하루에 두번 반영됩니다. 실시간으로 반영이 안될수도 있으니 카톡 일정을 참고해주세요
-      </div>
       <div id="headerProfileAvatar" class="avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex">성</div>
     </div>
   </header>
@@ -861,7 +862,7 @@
       <div class="space-y-gutter">
           <section id="quickOverview" class="dashboard-overview group relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-hidden md:pb-0"></section>
 
-          <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest p-md shadow-ambient">
+          <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest px-md py-4 shadow-ambient md:p-md">
             <div class="mb-md flex items-center justify-between">
               <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May. 2026</h3>
               <div class="flex items-center gap-1">
@@ -2485,29 +2486,29 @@
             : "예정된 테니스 일정 없음";
           const cards = [
             `
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
+              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">Next</span>
                   <span class="min-w-0 truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</span>
                 </p>
-                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
+                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
               </button>
             `,
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-detail-id="${schedule.id}">
+              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-detail-id="${schedule.id}">
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
                   <span class="min-w-0 truncate">${escapeHTML(schedule.place)}</span>
                 </p>
-                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
+                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
             `) : [`
-              <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-view-link="schedule">
+              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-view-link="schedule">
                 <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">My</span>
                   <span class="min-w-0 truncate">아직 없음</span>
                 </p>
-                <p class="mt-0.5 text-xs font-semibold leading-relaxed text-on-surface-variant">내 참석 예정 없음</p>
+                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">내 참석 예정 없음</p>
               </button>
             `])
           ].join("");
@@ -3571,9 +3572,9 @@
         helpButton.setAttribute("aria-expanded", String(willShow));
         return;
       }
-      if (!event.target.closest("#helpPopover")) {
+      if (helpPopover && !event.target.closest("#helpPopover")) {
         helpPopover.classList.add("hidden");
-        document.querySelector("#helpButton").setAttribute("aria-expanded", "false");
+        document.querySelector("#helpButton")?.setAttribute("aria-expanded", "false");
       }
 
       const detailButton = event.target.closest("[data-detail-id]");
