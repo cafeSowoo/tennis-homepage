@@ -48,6 +48,14 @@ colors:
   background: '#f8f9fa'
   on-background: '#191c1d'
   surface-variant: '#e1e3e4'
+  app-green: '#00685d'
+  app-green-hover: '#007a6c'
+  app-green-soft: 'rgba(0, 104, 93, 0.08)'
+  app-card: '#ffffff'
+  app-border: 'rgba(0, 0, 0, 0.06)'
+  app-muted: '#86868b'
+  app-fill: '#f5f5f7'
+  app-text: '#1d1d1f'
 typography:
   display-lg:
     fontFamily: Montserrat
@@ -92,12 +100,23 @@ typography:
     fontWeight: '500'
     lineHeight: 16px
     letterSpacing: 0.03em
+  app-ui:
+    fontFamily: '-apple-system, BlinkMacSystemFont, SF Pro Display, SF Pro Text, Apple SD Gothic Neo, Noto Sans KR, sans-serif'
+    pageTitle:
+      fontSize: 32px
+      fontWeight: '600'
+      letterSpacing: '-0.03em'
+    pageSubtitle:
+      fontSize: 15px
+      fontWeight: '400'
 rounded:
   sm: 0.25rem
   DEFAULT: 0.5rem
   md: 0.75rem
   lg: 1rem
   xl: 1.5rem
+  app-card: 1.25rem
+  app-list-card: 0.875rem
   full: 9999px
 spacing:
   base: 8px
@@ -115,24 +134,62 @@ spacing:
 
 The design system is built to evoke the physical energy of a premium tennis club—sun-drenched courts, crisp white lines, and the vibrant pop of a new ball. It targets club administrators, coaches, and active members, necessitating a balance between high-utility management tools and an inviting, community-focused atmosphere.
 
-The aesthetic follows a **Modern / Sporty** movement. It prioritizes clarity and "airiness" through significant whitespace, while using high-energy accent colors to drive engagement and highlight critical status updates (like court availability or match results). The UI is clean and professional, yet retains a rhythmic vitality that avoids the coldness of traditional enterprise software.
+**Current shell (2026):** The main UI uses a **light, Apple-inspired** presentation—system typography, generous whitespace, thin borders, and minimal shadow—while keeping **tennis court green (`#00685d`)** as the primary accent. Mode is **light only** (no dark theme).
+
+The aesthetic is **clean and calm first**, sporty second. High-energy secondary colors (tennis-ball yellow, clay orange) remain in the token set for calendar chips, status badges, and legacy Tailwind classes, but they are no longer the default look for page chrome or primary buttons.
+
+## Implementation map
+
+When editing UI, treat these as the source of truth:
+
+| Layer | Where | Use for |
+|-------|--------|---------|
+| **Apple UI shell** | `body.apple-ui`, `:root` `--app-*` in `index.html` | Page background, titles, cards, nav, buttons, forms |
+| **Utility classes** | `.app-page-title`, `.app-card`, `.app-list-card`, `.app-chip`, `.app-icon-btn`, `.app-segment` | New or restyled surfaces |
+| **Legacy Tailwind tokens** | `tailwind.config` colors in `index.html` + YAML `colors` above | Calendar event chips, member gender badges, some detail states |
+
+Do not reintroduce removed patterns on main surfaces: colored top borders on cards (`border-t-4`), heavy gradients on buttons, pulse animations on calendar dots, or Montserrat for page titles inside `.apple-ui`.
 
 ## Colors
 
-The palette is derived from the textures and equipment of the sport.
+### Apple UI (primary shell)
 
-*   **Deep Court Green (#2A9D8F):** Used for primary actions, navigation headers, and stable UI elements. It represents the foundation of the club.
-*   **Fresh Tennis Ball Yellow (#DFFF4F):** A high-visibility accent used for highlights, active states, and "New" indicators. Due to its brightness, it should primarily be paired with dark text for accessibility.
-*   **Clay Court Orange (#E07A5F):** A strategic highlight color used for alerts, booking conflicts, or secondary call-to-outs.
-*   **White & Neutral:** Pure white (#FFFFFF) is the primary canvas to ensure the "airy" feel. A light grey (#F8F9FA) is used for section grouping to maintain high contrast without visual clutter.
+These map to CSS variables in `index.html` (`:root`).
+
+*   **App green (`#00685d`):** Primary actions, active nav, links, today highlight on the calendar. Hover: `#007a6c`.
+*   **App text (`#1d1d1f`):** Headlines and primary body text.
+*   **App muted (`#86868b`):** Subtitles, metadata, weekday labels.
+*   **App fill (`#f5f5f7`):** Page background, icon buttons, filter chips (inactive), input-adjacent fills.
+*   **App card (`#ffffff`):** Cards, sheets, list rows.
+*   **App border (`rgba(0,0,0,0.06)`):** Card and field outlines—preferred over strong shadows.
+
+### Legacy / semantic tokens (still in code)
+
+The YAML palette and Tailwind `primary`, `secondary`, `tertiary` tokens are **unchanged** and still appear in:
+
+*   Calendar day chips and dots (match type, book club, events)
+*   Schedule row icon backgrounds
+*   Error / destructive actions (e.g. leave match, delete)
+
+*   **Primary (`#00685d`):** Same green as `--app-green`; brand anchor for both layers.
+*   **Secondary / tertiary:** Use sparingly for **semantic** color inside content, not for global chrome.
+*   **White & neutrals:** Cards stay white; page shell uses `#f5f5f7` in the Apple layer (legacy `background` token remains `#f8f9fa` in Tailwind for older classes).
 
 ## Typography
 
-This design system utilizes a dual-font approach to balance personality with readability.
+### Apple UI shell
 
-**Montserrat** is used for all headlines and display text. Its geometric, wide-set nature feels athletic and modern. **Inter** is used for all functional UI elements, body copy, and data tables. Inter’s high x-height and neutral character ensure that dense information—such as match schedules and member lists—remains legible even on smaller mobile devices.
+**System stack** (via `.apple-ui`): `-apple-system`, `SF Pro Display`, `SF Pro Text`, `Apple SD Gothic Neo`, `Noto Sans KR`.
 
-Use `label-md` for buttons and navigation items to ensure they are distinct from standard body text. For numerical data in match scores, use `headline-md` with tabular lining figures if available.
+*   **Page title** (`.app-page-title`): 32px / weight 600 / letter-spacing -0.03em
+*   **Page subtitle** (`.app-page-subtitle`): 15px / weight 400 / `--app-muted`
+*   **Body in lists and forms:** 14–16px, weight 400–600
+
+### Legacy scale (Montserrat + Inter)
+
+Montserrat / Inter scale in the YAML frontmatter remains valid for **Tailwind `font-display`, `font-headline-*`, `font-body-*`** where those classes are still used (e.g. some detail copy, tailwind config). **Do not** use Montserrat for new work inside `.apple-ui` page headers—use `.app-page-title` instead.
+
+Use tabular numerals for times and counts where possible.
 
 ## Layout & Spacing
 
@@ -142,38 +199,62 @@ To maintain the "airy" feel, the design system utilizes generous outer margins a
 - **Desktop:** 48px margins to allow the content to breathe.
 - **Mobile:** 16px margins to maximize screen real estate.
 
-Spacing between sections should typically be `lg` (40px) or `xl` (64px) to clearly define different functional areas of the management suite, such as separating "Court Bookings" from "Upcoming Events."
+Section spacing on Apple UI pages is typically `20–24px` (`space-y-5` / `space-y-6`) rather than the older large gutter-only stacks.
+
+**Mobile forms (schedule / event sheets):** Related fields sit on one row—date + court (or category), start + end; checkbox pairs (regular / closed) side by side.
 
 ## Elevation & Depth
 
-To achieve a "friendly and communal" feel, the design system avoids harsh borders in favor of **Ambient Shadows**.
+Apple UI favors **border + very light shadow** over heavy ambient shadow.
 
-Depth is communicated through three primary tiers:
-1.  **Level 0 (Base):** White (#FFFFFF) background.
-2.  **Level 1 (Cards/Containers):** Subtle, diffused shadows (0px 4px 20px rgba(0,0,0,0.05)) are used for court cards, member profiles, and dashboard widgets.
-3.  **Level 2 (Overlays/Modals):** A more pronounced shadow (0px 12px 32px rgba(0,0,0,0.12)) to lift interactive dialogs and dropdown menus above the primary interface.
+1.  **Level 0 (Base):** `--app-fill` (`#f5f5f7`).
+2.  **Level 1 (Cards):** White fill, `1px` `--app-border`, optional `0 1px 2px rgba(0,0,0,0.04)`.
+3.  **Level 2 (Sheets / menus):** White panel, `0 8px 30px rgba(0,0,0,0.08)` or similar; backdrop `rgba(0,0,0,0.35)`.
 
-Low-contrast outlines (1px solid #E9ECEF) may be used within cards to separate internal content without adding visual weight.
+Legacy `shadow-ambient` / `shadow-float` classes may still exist on older markup; prefer `.app-card` for new work.
 
 ## Shapes
 
 The shape language is defined by **Rounded** corners, reinforcing the friendly and approachable brand personality.
 
-A base radius of `0.5rem (8px)` is applied to standard buttons, input fields, and small cards. Larger containers like page headers or main dashboard cards use `1rem (16px)`. Icons should ideally feature rounded terminals to match the container style. Avoid sharp 90-degree angles to keep the interface feeling soft and modern.
+*   **App cards:** `1.25rem` (20px)
+*   **List rows / inner panels:** `0.875rem` (14px)
+*   **Buttons / chips / segments:** pill (`9999px`) or `0.625rem` on inputs
+*   **Icon buttons:** circular, 32px
+
+Avoid sharp 90-degree angles on interactive containers.
 
 ## Components
 
 ### Buttons
-Primary buttons use **Deep Court Green** with white text. Secondary buttons use a "ghost" style with a green outline or a subtle grey fill. For high-energy calls to action (e.g., "Join Tournament"), use the **Tennis Ball Yellow** with dark text.
+
+*   **Primary (`.btn-primary` under `.apple-ui`):** Flat `--app-green`, white text, weight 600—no gradient.
+*   **Outline (`.btn-outline`):** White background, `--app-border`, green label.
+*   **Icon (`.app-icon-btn`):** Grey fill circle; `.is-primary` variant for green (+) actions.
+
+High-energy yellow secondary buttons are **deprecated for chrome**; keep green as the default CTA.
 
 ### Chips & Badges
-Used for court status (e.g., "Available", "Maintenance"). Use **Clay Court Orange** for "Occupied" or "Alert" states. Use rounded-pill shapes for all chips to contrast against the more rectangular cards.
+
+*   **Filter / sort (`.app-chip`):** Pill, white + border; active state = green fill.
+*   **Semantic badges** (calendar, gender, book club): Still use legacy color tokens—do not migrate unless redesigning that component.
 
 ### Input Fields
-Fields should have a 1px light grey border that shifts to **Deep Court Green** on focus. Ensure labels are always visible above the field using `label-sm`.
+
+1px `--app-border`, white background, green focus ring (`0 0 0 3px rgba(0,104,93,0.12)`). Labels above fields, weight 500–600.
 
 ### Cards
-Cards are the primary container for the design system. They must have a white background, a Level 1 shadow, and 16px of internal padding. For "Member of the Month" or featured content, a top-border accent of **Tennis Ball Yellow** can be added.
+
+*   **`.app-card`:** Dashboard calendar, courts, member stats, detail sections.
+*   **`.app-list-card`:** Schedule rows; `.is-mine` adds soft green tint for the current user's matches.
+
+No colored top-border accents on main cards.
+
+### Navigation
+
+*   **Sidebar / header / bottom tab:** Frosted light background, thin border, active item in `--app-green`.
+*   **Brand home:** Logo / wordmark returns to Dashboard and resets calendar month + selected date.
 
 ### Lists & Tables
-To maintain high contrast for attendee lists, use zebra-striping with the neutral light grey (#F8F9FA) and ensure 16px of vertical padding per row to keep the "airy" aesthetic.
+
+Prefer white list cards with `--app-border` and comfortable vertical padding (~16px). Zebra striping is optional; default list UI is flat white rows on grey page background.

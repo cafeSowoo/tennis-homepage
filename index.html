@@ -3,8 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#00685d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="성장중">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>아직도 성장중 - 5월 테니스 일정</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -769,21 +776,764 @@
         pointer-events: auto;
       }
     }
+
+    /* ── Apple UI · global design system (light, tennis-green accent) ── */
+    :root {
+      --app-green: #00685d;
+      --app-green-hover: #007a6c;
+      --app-green-soft: rgba(0, 104, 93, 0.08);
+      --app-card: #ffffff;
+      --app-border: rgba(0, 0, 0, 0.06);
+      --app-muted: #86868b;
+      --app-fill: #f5f5f7;
+      --app-text: #1d1d1f;
+    }
+
+    .apple-ui {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      letter-spacing: -0.011em;
+    }
+
+    .apple-ui .app-page-title {
+      font-family: inherit;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--app-text);
+    }
+
+    .apple-ui .app-page-subtitle {
+      margin-top: 0.25rem;
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--app-muted);
+    }
+
+    .apple-ui .app-card {
+      border-radius: 1.25rem;
+      background: var(--app-card);
+      border: 1px solid var(--app-border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .apple-ui .app-list-card {
+      border-radius: 0.875rem;
+      border: 1px solid var(--app-border);
+      background: #fff;
+      transition: background 0.2s ease;
+    }
+
+    .apple-ui .app-list-card:hover {
+      background: #fafafa;
+    }
+
+    .apple-ui .app-list-card.is-mine {
+      border-color: rgba(0, 104, 93, 0.22);
+      background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, #fff 100%);
+    }
+
+    .apple-ui .app-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      border: none;
+      background: var(--app-fill);
+      color: var(--app-text);
+      transition: background 0.2s ease;
+    }
+
+    .apple-ui .app-icon-btn:hover { background: #e8e8ed; }
+    .apple-ui .app-icon-btn.is-primary { background: var(--app-green); color: #fff; }
+    .apple-ui .app-icon-btn.is-primary:hover { background: var(--app-green-hover); }
+
+    .apple-ui .app-segment {
+      border-radius: 9999px;
+      border: 1px solid var(--app-border);
+      background: #fff;
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--app-text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .apple-ui .app-segment:focus {
+      border-color: rgba(0, 104, 93, 0.4);
+      box-shadow: 0 0 0 3px rgba(0, 104, 93, 0.12);
+    }
+
+    .apple-ui .app-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--app-border);
+      background: #fff;
+      color: var(--app-muted);
+      transition: all 0.2s ease;
+    }
+
+    .apple-ui .app-chip.is-active {
+      background: var(--app-green);
+      border-color: var(--app-green);
+      color: #fff;
+    }
+
+    .apple-ui .app-chip:hover:not(.is-active) { background: var(--app-fill); }
+
+    .apple-ui .app-crumb {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--app-muted);
+    }
+
+    .apple-ui .app-crumb button { transition: color 0.2s ease; }
+    .apple-ui .app-crumb button:hover { color: var(--app-green); }
+    .apple-ui .app-crumb .is-current { color: var(--app-text); font-weight: 600; }
+
+    .apple-ui .btn-primary {
+      background: var(--app-green);
+      border: none;
+      box-shadow: none;
+      text-shadow: none;
+      font-weight: 600;
+    }
+
+    .apple-ui .btn-primary:hover {
+      background: var(--app-green-hover);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .apple-ui .btn-primary:active {
+      background: #005a50;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .apple-ui .btn-outline {
+      background: #fff;
+      border: 1px solid var(--app-border);
+      color: var(--app-green);
+      font-weight: 600;
+      box-shadow: none;
+    }
+
+    .apple-ui .btn-outline:hover {
+      background: var(--app-fill);
+      border-color: rgba(0, 104, 93, 0.2);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .apple-ui .btn-secondary {
+      background: var(--app-fill);
+      border: 1px solid var(--app-border);
+      color: var(--app-text);
+      box-shadow: none;
+    }
+
+    .apple-ui .btn-secondary:hover {
+      background: #e8e8ed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .apple-ui .card-premium {
+      border: 1px solid var(--app-border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .apple-ui .card-premium:hover {
+      transform: translateY(-1px);
+      border-color: rgba(0, 104, 93, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .apple-ui .avatar-tactile {
+      box-shadow: none;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      text-shadow: none;
+    }
+
+    .apple-ui .avatar-tactile::after { display: none; }
+    .apple-ui .avatar-tactile:hover { transform: scale(1.03); box-shadow: none; }
+
+    .apple-ui .brand-home {
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      text-align: left;
+      transition: opacity 0.2s ease;
+    }
+
+    .apple-ui .brand-home:hover { opacity: 0.72; }
+    .apple-ui .brand-home:focus-visible {
+      outline: 2px solid rgba(0, 104, 93, 0.35);
+      outline-offset: 3px;
+      border-radius: 0.5rem;
+    }
+
+    /* Sidebar */
+    .apple-ui #sideNav {
+      width: 15.5rem;
+      background: rgba(251, 251, 253, 0.82);
+      border-right: 1px solid var(--app-border);
+      box-shadow: none;
+    }
+
+    .apple-ui #sideNav .brand-wordmark { opacity: 0.92; }
+
+    .apple-ui #sideNav > div:first-child p {
+      font-size: 0.75rem;
+      color: var(--app-muted);
+      font-weight: 400;
+    }
+
+    .apple-ui #navIndicator {
+      background: rgba(0, 104, 93, 0.1);
+      border: none;
+      box-shadow: none;
+      border-radius: 0.625rem;
+    }
+
+    .apple-ui .nav-item {
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-radius: 0.625rem;
+    }
+
+    .apple-ui .nav-item.active {
+      color: var(--app-green) !important;
+      font-weight: 600;
+    }
+
+    .apple-ui .nav-item.active .material-symbols-outlined {
+      color: var(--app-green) !important;
+      font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+    }
+
+    /* Header */
+    .apple-ui header {
+      height: 3.25rem;
+      background: rgba(251, 251, 253, 0.78);
+      border-bottom: 1px solid var(--app-border);
+      box-shadow: none;
+    }
+
+    @media (min-width: 768px) {
+      .apple-ui header { height: 3.5rem; }
+    }
+
+    .apple-ui #globalSearch {
+      width: 15rem;
+      border: 1px solid var(--app-border);
+      background: var(--app-fill);
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+
+    .apple-ui #globalSearch:focus {
+      background: #fff;
+      border-color: rgba(0, 104, 93, 0.35);
+      box-shadow: 0 0 0 3px rgba(0, 104, 93, 0.1);
+    }
+
+    /* Bottom nav */
+    .apple-ui #bottomNav {
+      background: rgba(251, 251, 253, 0.88);
+      border-top: 1px solid var(--app-border);
+      box-shadow: none;
+    }
+
+    .apple-ui #bottomNav .nav-item span:last-child {
+      font-size: 0.625rem;
+      font-weight: 500;
+    }
+
+    .apple-ui #bottomNav .nav-item.active { color: var(--app-green) !important; }
+
+    .apple-ui #bottomNav .nav-item.active .material-symbols-outlined {
+      transform: none;
+      font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+    }
+
+    .apple-ui #bottomNav .nav-item::after { display: none; }
+
+    /* Modals / sheets */
+    .apple-ui [id$="Sheet"] > div:last-child,
+    .apple-ui [id$="Sheet"] > .absolute.inset-x-0 {
+      border: 1px solid var(--app-border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .apple-ui [id$="Sheet"] h3 {
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .apple-ui [id$="Sheet"] input,
+    .apple-ui [id$="Sheet"] select,
+    .apple-ui [id$="Sheet"] textarea {
+      border-radius: 0.625rem;
+      border: 1px solid var(--app-border);
+      background: #fff;
+      font-weight: 500;
+    }
+
+    .apple-ui [id$="Sheet"] input:focus,
+    .apple-ui [id$="Sheet"] select:focus,
+    .apple-ui [id$="Sheet"] textarea:focus {
+      border-color: rgba(0, 104, 93, 0.4);
+      box-shadow: 0 0 0 3px rgba(0, 104, 93, 0.1);
+    }
+
+    .apple-ui [id$="Sheet"] label {
+      font-weight: 500 !important;
+      color: var(--app-text);
+    }
+
+    /* ── Dashboard ── */
+    #dashboard .dashboard-summary {
+      margin-bottom: 1.25rem;
+    }
+
+    #dashboard .dashboard-title {
+      font-family: inherit;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: #1d1d1f;
+    }
+
+    #dashboard .dash-subtitle {
+      margin-top: 0.25rem;
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--app-muted);
+      letter-spacing: -0.01em;
+    }
+
+    #dashboard .weather-card {
+      max-width: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 9999px;
+      background: var(--app-fill);
+      border: 1px solid var(--app-border);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    #dashboard .weather-card:hover {
+      background: #ebebed;
+      transform: scale(1.01);
+    }
+
+    #dashboard .weather-card .weather-icon {
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      color: var(--app-green);
+    }
+
+    #dashboard .weather-card .weather-link {
+      display: none;
+    }
+
+    #dashboard .dash-overview-card {
+      flex: 0 0 auto;
+      width: min(72vw, 220px);
+      padding: 1rem 1.125rem;
+      border-radius: 1rem;
+      background: var(--app-card);
+      border: 1px solid var(--app-border);
+      box-shadow: none;
+      text-align: left;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    #dashboard .dash-overview-card:hover {
+      background: #fafafa;
+      border-color: rgba(0, 104, 93, 0.18);
+      transform: translateY(-1px);
+    }
+
+    #dashboard .dash-overview-card.is-mine {
+      background: linear-gradient(180deg, rgba(0, 104, 93, 0.06) 0%, rgba(0, 104, 93, 0.02) 100%);
+      border-color: rgba(0, 104, 93, 0.14);
+    }
+
+    #dashboard .dash-overview-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--app-green);
+    }
+
+    #dashboard .dash-overview-title {
+      margin-top: 0.375rem;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+      line-height: 1.25;
+    }
+
+    #dashboard .dash-overview-meta {
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--app-muted);
+      line-height: 1.35;
+    }
+
+    #dashboard .dash-card {
+      border-radius: 1.25rem;
+      background: var(--app-card);
+      border: 1px solid var(--app-border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    #dashboard .calendar-card {
+      padding: 1.25rem 1rem 1.5rem;
+      border-top: none;
+    }
+
+    #dashboard .calendar-card #calendarMonthTitle {
+      font-family: inherit;
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: #1d1d1f;
+    }
+
+    #dashboard .dash-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      border: none;
+      background: var(--app-fill);
+      color: #1d1d1f;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    #dashboard .dash-icon-btn:hover {
+      background: #e8e8ed;
+    }
+
+    #dashboard .dash-icon-btn.is-primary {
+      background: var(--app-green);
+      color: #fff;
+    }
+
+    #dashboard .dash-icon-btn.is-primary:hover {
+      background: #007a6c;
+    }
+
+    #dashboard .weekday-grid {
+      color: var(--app-muted);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    #dashboard .calendar-day {
+      border-radius: 0.75rem;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    #dashboard .calendar-day:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    #dashboard .calendar-day.is-today {
+      border: 1px solid rgba(0, 104, 93, 0.35) !important;
+      background: var(--app-green-soft) !important;
+      box-shadow: none !important;
+    }
+
+    #dashboard .calendar-day.is-today > span:first-child {
+      background: var(--app-green) !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+      box-shadow: none !important;
+    }
+
+    #dashboard .calendar-day.selected-date {
+      border: 1.5px solid var(--app-green) !important;
+      background: rgba(0, 104, 93, 0.04) !important;
+    }
+
+    #dashboard .calendar-day.is-past:not(.is-today):not(.selected-date) {
+      background: #fafafa !important;
+      border-color: rgba(0, 0, 0, 0.04) !important;
+      color: rgba(29, 29, 31, 0.45);
+    }
+
+    #dashboard .pulse-dot {
+      animation: none;
+      width: 5px;
+      height: 5px;
+      opacity: 0.85;
+      box-shadow: none;
+    }
+
+    #dashboard .calendar-day [class*="bg-secondary"],
+    #dashboard .calendar-day [class*="bg-tertiary"],
+    #dashboard .calendar-day [class*="bg-error"],
+    #dashboard .calendar-day [class*="bg-amber"],
+    #dashboard .calendar-day [class*="bg-indigo"] {
+      border-radius: 0.375rem;
+      font-weight: 500 !important;
+      font-size: 0.625rem !important;
+      box-shadow: none !important;
+    }
+
+    #dashboard #calendarAddMenu {
+      border-radius: 0.875rem;
+      border: 1px solid var(--app-border);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      padding: 0.375rem;
+    }
+
+    #dashboard #calendarAddMenu button {
+      border-radius: 0.625rem;
+      font-weight: 500;
+    }
+
+    #dashboard #selectedDatePanel {
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--app-border);
+    }
+
+    #dashboard #selectedDatePanel #selectedDateTitle {
+      font-family: inherit;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    #dashboard #selectedDatePanel h4 {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--app-muted);
+    }
+
+    #dashboard #selectedDatePanel h4:first-of-type {
+      color: var(--app-green);
+    }
+
+    #dashboard #selectedDateList article {
+      border: 1px solid var(--app-border) !important;
+      background: #fff !important;
+      border-radius: 0.875rem !important;
+      box-shadow: none !important;
+    }
+
+    #dashboard #selectedDateList article:hover {
+      background: #fafafa !important;
+      box-shadow: none !important;
+    }
+
+    #dashboard [data-view-link="schedule"] {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--app-green);
+    }
+
+    #dashboard [data-overview-scroll] {
+      border: 1px solid var(--app-border);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Schedule, Courts, Members, Detail */
+    .apple-ui #scheduleGroups > section {
+      padding: 1.25rem;
+      background: var(--app-card);
+      border: 1px solid var(--app-border);
+      border-radius: 1.25rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .apple-ui #scheduleGroups > section h3 {
+      font-family: inherit;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--app-text);
+    }
+
+    .apple-ui #scheduleGroups .app-count-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--app-muted);
+      background: var(--app-fill);
+      border: 1px solid var(--app-border);
+      border-radius: 9999px;
+      padding: 0.25rem 0.625rem;
+    }
+
+    .apple-ui #memberGrid article {
+      background: #fff;
+      border: 1px solid var(--app-border) !important;
+      border-radius: 1rem !important;
+      box-shadow: none;
+    }
+
+    .apple-ui #memberGrid article:hover {
+      border-color: rgba(0, 104, 93, 0.18) !important;
+      transform: translateY(-1px);
+    }
+
+    .apple-ui #memberGrid h3 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .apple-ui #courtCards article {
+      overflow: hidden;
+      background: #fff;
+      border-radius: 1.25rem;
+    }
+
+    .apple-ui #courtCards article img {
+      transition: transform 0.4s ease;
+    }
+
+    .apple-ui #courtCards article:hover img {
+      transform: scale(1.03);
+    }
+
+    .apple-ui #courtCards .court-badge {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--app-border);
+      font-weight: 500;
+      font-size: 0.6875rem;
+      color: var(--app-text);
+    }
+
+    .apple-ui #courtCards .court-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--app-green);
+    }
+
+    .apple-ui #detailContent h2,
+    .apple-ui #memberDetailContent h2 {
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .apple-ui #detailContent .detail-meta-card {
+      border-radius: 0.875rem;
+      border: 1px solid var(--app-border);
+      background: var(--app-fill);
+    }
+
+    .apple-ui .app-empty {
+      border: 1px dashed rgba(0, 0, 0, 0.1);
+      border-radius: 1.25rem;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .apple-ui .app-empty h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--app-text);
+    }
+
+    .apple-ui .app-empty p {
+      font-size: 0.8125rem;
+      color: var(--app-muted);
+      margin-top: 0.375rem;
+    }
+
+    .apple-ui #detailContent article,
+    .apple-ui #memberDetailContent article {
+      border-color: var(--app-border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .apple-ui .sticky-detail-bar {
+      border-top: none !important;
+      border: 1px solid var(--app-border) !important;
+      border-radius: 1.25rem !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    @media (min-width: 768px) {
+      #dashboard .dash-overview-card {
+        width: 200px;
+      }
+
+      #dashboard .calendar-card {
+        padding: 1.5rem 1.5rem 1.75rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      #dashboard .dashboard-title {
+        font-size: 1.75rem;
+      }
+
+      #dashboard .weather-card {
+        max-width: 148px;
+        padding: 0.375rem 0.625rem;
+      }
+    }
+
+    #pwaInstallBanner {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    #pwaInstallBanner .pwa-banner-inner {
+      border: 1px solid var(--app-border);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    }
   </style>
 </head>
-<body class="min-h-screen bg-background font-body-md text-body-md text-on-background antialiased">
+<body class="apple-ui min-h-screen bg-[#f5f5f7] font-body-md text-body-md text-[#1d1d1f] antialiased">
   <div id="backdrop" class="fixed inset-0 z-40 hidden bg-black/30 md:hidden"></div>
 
-  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base bg-surface-container-low/75 backdrop-blur-xl border-r border-outline-variant/15 py-md shadow-sm md:flex">
+  <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base backdrop-blur-xl py-md md:flex">
     <div class="mb-lg px-margin-mobile">
-      <div class="flex items-center gap-3">
-        <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="아직도 성장중 로고">
+      <button type="button" class="brand-home flex w-full items-center gap-3" aria-label="Dashboard로 이동">
+        <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="">
         <div>
           <h1 class="sr-only">아직도 성장중</h1>
           <img class="brand-wordmark h-7 w-auto max-w-[142px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
           <p class="font-body-md text-sm text-on-surface-variant">Tennis Club Management</p>
         </div>
-      </div>
+      </button>
     </div>
 
     <div class="nav-container flex flex-1 flex-col gap-sm text-label-md font-label-md relative">
@@ -809,19 +1559,19 @@
     </div>
   </nav>
 
-  <header class="fixed left-0 right-0 top-0 z-30 flex h-[54px] items-center justify-between border-b border-outline-variant/15 bg-surface/75 backdrop-blur-xl px-margin-mobile shadow-sm md:left-64 md:h-16 md:px-margin-desktop">
+  <header class="fixed left-0 right-0 top-0 z-30 flex h-[54px] items-center justify-between backdrop-blur-xl px-margin-mobile md:left-64 md:h-16 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
-      <button id="mobileMenu" class="hidden rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high">
+      <button id="mobileMenu" class="app-icon-btn flex md:hidden" type="button" aria-label="메뉴">
         <span class="material-symbols-outlined" data-icon="menu">menu</span>
       </button>
       <label class="relative hidden sm:block">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
-        <input id="globalSearch" class="w-64 rounded-full border border-outline-variant bg-surface-container-low py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Search..." type="search">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b]" data-icon="search">search</span>
+        <input id="globalSearch" class="w-64 rounded-full py-2 pl-10 pr-4 outline-none transition-colors" placeholder="Search..." type="search">
       </label>
-      <div class="flex items-center gap-2 sm:hidden">
+      <button type="button" class="brand-home flex items-center gap-2 sm:hidden" aria-label="Dashboard로 이동">
         <img class="h-7 w-7 shrink-0 object-contain" src="assets/logo.png" alt="" aria-hidden="true">
         <img class="brand-wordmark h-8 w-auto max-w-[168px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
-      </div>
+      </button>
     </div>
     <div class="relative flex items-center gap-sm">
       <div id="headerProfileAvatar" class="avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex">성</div>
@@ -830,67 +1580,59 @@
 
   <main class="min-h-screen px-margin-mobile pb-16 pt-20 md:pt-24 md:ml-64 md:px-margin-desktop">
     <section id="dashboard" class="view active">
-      <div class="dashboard-summary mb-3 flex items-center justify-between gap-3">
+      <div class="dashboard-summary flex items-start justify-between gap-3">
         <div>
-          <h2 class="dashboard-title font-display text-3xl font-bold text-on-surface">Dashboard</h2>
+          <h2 class="dashboard-title app-page-title">Dashboard</h2>
+          <p id="dashboardSubtitle" class="dash-subtitle"></p>
         </div>
-        <a class="weather-card group block w-full max-w-[210px] sm:max-w-[320px] lg:max-w-[360px] rounded-xl bg-transparent border-0 p-1.5 sm:p-2 shadow-none hover:bg-primary/5 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-primary/20" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
-          <div class="flex items-center justify-end gap-2.5 text-right">
-            <!-- Weather details -->
-            <div class="min-w-0 text-right">
-              <span class="flex items-center justify-end gap-0.5 text-[9px] sm:text-[10px] font-bold text-primary tracking-wider uppercase truncate leading-none">
-                <span class="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0">location_on</span>
+        <a class="weather-card group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
+          <div class="flex items-center gap-2">
+            <div class="weather-icon inline-flex shrink-0 items-center justify-center">
+              <span class="material-symbols-outlined icon-fill text-[18px]" data-weather-icon>partly_cloudy_day</span>
+            </div>
+            <div class="min-w-0 text-left">
+              <p class="tabular-nums text-[15px] font-semibold leading-none text-[#1d1d1f]" data-weather-temp>22°C</p>
+              <p class="mt-0.5 truncate text-[11px] font-medium text-[#86868b]">
+                <span data-weather-label>흐림</span>
+                <span class="mx-0.5">·</span>
                 송도동
-              </span>
-              <p class="mt-px text-sm sm:text-base font-bold text-on-surface flex items-baseline justify-end gap-1 leading-none">
-                <span class="font-display tracking-tight tabular-nums text-sm sm:text-lg" data-weather-temp>22°C</span>
-                <span class="text-[10px] sm:text-xs font-semibold text-on-surface-variant" data-weather-label>흐림</span>
               </p>
             </div>
-            <!-- Glow Icon Wrapper (Tactile 3D glass dome effect) -->
-            <div class="weather-icon inline-flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-white to-primary/5 border border-primary/10 text-primary shadow-[0_3px_8px_rgba(0,104,93,0.06),_inset_0_1.5px_0_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_5px_15px_rgba(0,104,93,0.15)] group-hover:border-primary/20 group-hover:from-white group-hover:to-primary/10">
-              <span class="material-symbols-outlined icon-fill text-[18px] sm:text-[22px] transition-transform duration-300 group-hover:scale-110" data-weather-icon>partly_cloudy_day</span>
-            </div>
-            <!-- Arrow Link (if shown on desktop) -->
-            <span class="weather-link inline-flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border border-primary/5 bg-primary/5 text-primary transition-all duration-200 group-hover:border-transparent group-hover:bg-primary group-hover:text-on-primary group-hover:shadow-sm" aria-hidden="true">
-              <span class="material-symbols-outlined text-[12px] font-bold">arrow_outward</span>
-            </span>
           </div>
         </a>
       </div>
 
-      <div class="space-y-gutter">
-          <section id="quickOverview" class="dashboard-overview group relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-hidden md:pb-0"></section>
+      <div class="mt-5 space-y-5 md:space-y-6">
+          <section id="quickOverview" class="dashboard-overview group relative flex overflow-x-auto snap-x snap-mandatory gap-2.5 pb-1 scrollbar-none -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 md:overflow-hidden md:pb-0"></section>
 
-          <section class="calendar-card rounded-xl border-t-4 border-primary bg-surface-container-lowest px-md py-4 shadow-ambient md:p-md">
-            <div class="mb-md flex items-center justify-between">
-              <h3 id="calendarMonthTitle" class="font-display text-xl font-semibold">May. 2026</h3>
-              <div class="flex items-center gap-1">
-                <!-- 통합 일정 추가 버튼 및 드롭다운 -->
+          <section class="calendar-card dash-card">
+            <div class="mb-4 flex items-center justify-between gap-3">
+              <h3 id="calendarMonthTitle">May. 2026</h3>
+              <div class="flex items-center gap-1.5">
                 <div class="relative inline-block">
-                  <button id="calendarAddBtn" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm transition-all duration-200 hover:bg-primary-container hover:text-on-primary-container" type="button" aria-label="일정 추가 및 생성" aria-controls="calendarAddMenu" aria-expanded="false" onclick="event.preventDefault(); event.stopImmediatePropagation(); window.toggleCalendarAddMenu();">
+                  <button id="calendarAddBtn" class="dash-icon-btn is-primary h-8 w-8" type="button" aria-label="일정 추가 및 생성" aria-controls="calendarAddMenu" aria-expanded="false" onclick="event.preventDefault(); event.stopImmediatePropagation(); window.toggleCalendarAddMenu();">
                     <span id="calendarAddIcon" class="material-symbols-outlined text-[18px] transition-transform duration-200">add</span>
                   </button>
-                  <div id="calendarAddMenu" class="absolute right-0 top-12 z-[70] hidden w-48 origin-top-right rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-1.5 shadow-float transition-all duration-200 ease-out transform scale-95 opacity-0">
-                    <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-bold text-on-surface hover:bg-primary/5 transition-colors" type="button" data-add-schedule>
+                  <div id="calendarAddMenu" class="absolute right-0 top-11 z-[70] hidden w-48 origin-top-right bg-white transition-all duration-200 ease-out transform scale-95 opacity-0">
+                    <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-schedule>
                       <span class="material-symbols-outlined text-primary text-[18px]">sports_tennis</span>
                       <span>테니스 매치 추가</span>
                     </button>
-                    <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-bold text-on-surface hover:bg-sky-600/5 transition-colors" type="button" data-add-event>
-                      <span class="material-symbols-outlined text-sky-600 text-[18px]">event</span>
+                    <button class="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors" type="button" data-add-event>
+                      <span class="material-symbols-outlined text-[#0071e3] text-[18px]">event</span>
                       <span>일반 일정 추가</span>
                     </button>
                   </div>
                 </div>
-                <button id="prevMonth" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="이전 달">
+                <button id="prevMonth" class="dash-icon-btn" type="button" aria-label="이전 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
-                <button id="nextMonth" class="inline-flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border border-outline-variant/70 text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="다음 달">
+                <button id="nextMonth" class="dash-icon-btn" type="button" aria-label="다음 달">
                   <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                 </button>
               </div>
             </div>
-            <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-on-surface-variant">
+            <div class="weekday-grid mb-2 grid grid-cols-7 gap-2 text-center">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
             <div id="calendarGridWrapper" class="relative overflow-hidden">
@@ -898,12 +1640,12 @@
             </div>
           </section>
 
-          <section id="selectedDatePanel" class="hidden rounded-xl bg-surface-container-lowest p-md shadow-ambient">
+          <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
             <div class="mb-4 flex items-center justify-between">
               <div>
-                <h3 id="selectedDateTitle" class="font-display text-xl font-semibold">Selected Matches</h3>
+                <h3 id="selectedDateTitle">Selected Matches</h3>
               </div>
-              <button class="text-sm font-bold text-primary" data-view-link="schedule">전체 보기</button>
+              <button type="button" data-view-link="schedule">전체 보기</button>
             </div>
             <div id="selectedDateList" class="space-y-3"></div>
           </section>
@@ -911,76 +1653,78 @@
     </section>
 
     <section id="schedule" class="view">
-      <div class="mb-4 flex flex-col gap-4 md:mb-lg md:flex-row md:items-end md:justify-between">
+      <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 class="font-display text-3xl font-bold">Schedule</h2>
+          <h2 class="app-page-title">Schedule</h2>
+          <p class="app-page-subtitle">테니스 매치와 일반 일정</p>
         </div>
-        <div class="grid grid-cols-2 gap-2 md:flex md:flex-row">
-          <button class="btn-primary min-w-0 justify-center px-3 py-2 text-sm font-bold md:px-4" type="button" data-add-schedule>
+        <div class="grid grid-cols-2 gap-2 md:flex md:flex-row md:flex-wrap">
+          <button class="btn-primary min-w-0 justify-center px-3 py-2 text-sm md:px-4" type="button" data-add-schedule>
             <span class="material-symbols-outlined text-[18px]">add</span> 일정 추가
           </button>
-          <button id="scheduleWindowToggle" class="btn-outline min-w-0 justify-center px-3 py-2 text-sm font-bold md:px-4" type="button">
+          <button id="scheduleWindowToggle" class="btn-outline min-w-0 justify-center px-3 py-2 text-sm md:px-4" type="button">
             지난 일정 보기
           </button>
-          <select id="placeFilter" class="min-w-0 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
-          <select id="personFilter" class="min-w-0 rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm"></select>
+          <select id="placeFilter" class="app-segment min-w-0"></select>
+          <select id="personFilter" class="app-segment min-w-0"></select>
         </div>
       </div>
-      <div id="scheduleGroups" class="space-y-4 md:space-y-gutter"></div>
+      <div id="scheduleGroups" class="space-y-4 md:space-y-5"></div>
     </section>
 
     <section id="detail" class="view">
-      <div class="mb-lg flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-          <button class="transition hover:text-primary" data-view-link="schedule">Schedule</button>
+      <div class="mb-5 flex items-center justify-between gap-3">
+        <div class="app-crumb">
+          <button type="button" data-view-link="schedule">Schedule</button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
-          <span id="detailCrumbTitle" class="text-on-surface">Match Details</span>
+          <span id="detailCrumbTitle" class="is-current">Match Details</span>
         </div>
-        <div class="flex gap-3">
-          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary"><span class="material-symbols-outlined">share</span></button>
-          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary" type="button" data-edit-current aria-label="일정 수정"><span class="material-symbols-outlined">edit</span></button>
-          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-error-container hover:text-on-error-container" type="button" data-delete-current aria-label="일정 삭제"><span class="material-symbols-outlined">delete</span></button>
-          <button class="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+        <div class="flex gap-1">
+          <button class="app-icon-btn" type="button" aria-label="공유"><span class="material-symbols-outlined text-[18px]">share</span></button>
+          <button class="app-icon-btn" type="button" data-edit-current aria-label="일정 수정"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+          <button class="app-icon-btn" type="button" data-delete-current aria-label="일정 삭제"><span class="material-symbols-outlined text-[18px]">delete</span></button>
         </div>
       </div>
       <div id="detailContent"></div>
     </section>
 
     <section id="member-detail" class="view">
-      <div class="mb-lg flex items-center justify-between">
-        <div class="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
-          <button class="transition hover:text-primary" data-view-link="members">Members</button>
+      <div class="mb-5">
+        <div class="app-crumb">
+          <button type="button" data-view-link="members">Members</button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
-          <span id="memberDetailCrumbTitle" class="text-on-surface">Member Profile</span>
+          <span id="memberDetailCrumbTitle" class="is-current">Member Profile</span>
         </div>
       </div>
       <div id="memberDetailContent"></div>
     </section>
 
     <section id="courts" class="view">
-      <div class="mb-4 md:mb-lg">
-        <h2 class="font-display text-3xl font-bold">Court Reservations</h2>
+      <div class="mb-5 md:mb-6">
+        <h2 class="app-page-title">Courts</h2>
+        <p class="app-page-subtitle">코트별 예약 현황</p>
       </div>
-      <div id="courtCards" class="grid grid-cols-1 gap-gutter xl:grid-cols-2"></div>
+      <div id="courtCards" class="grid grid-cols-1 gap-5 xl:grid-cols-2"></div>
     </section>
 
     <section id="members" class="view">
-      <div class="mb-4 flex flex-col gap-4 md:mb-lg md:flex-row md:items-center md:justify-between">
+      <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 class="font-display text-3xl font-bold">Members Directory</h2>
+          <h2 class="app-page-title">Members</h2>
+          <p class="app-page-subtitle">클럽 멤버 디렉토리</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <select id="memberMonthFilter" class="rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" aria-label="멤버 랭킹 집계 기간"></select>
-          <button class="member-sort rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary" data-sort="count">참석순</button>
-          <button class="member-sort rounded-full bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient" data-sort="name">이름순</button>
+          <select id="memberMonthFilter" class="app-segment" aria-label="멤버 랭킹 집계 기간"></select>
+          <button class="member-sort app-chip is-active" data-sort="count" type="button">참석순</button>
+          <button class="member-sort app-chip" data-sort="name" type="button">이름순</button>
         </div>
       </div>
-      <div id="memberGrid" class="grid grid-cols-2 gap-3 sm:gap-gutter sm:grid-cols-2 xl:grid-cols-4"></div>
+      <div id="memberGrid" class="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
     </section>
   </main>
 
   <!-- 모바일 하단 네비게이션 바 -->
-  <nav id="bottomNav" class="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-around border-t border-outline-variant/15 bg-surface/85 backdrop-blur-xl px-margin-mobile shadow-float md:hidden">
+  <nav id="bottomNav" class="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-around backdrop-blur-xl px-margin-mobile md:hidden">
     <button class="nav-item active flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="dashboard">
       <span class="material-symbols-outlined transition-transform duration-200" data-icon="dashboard">dashboard</span>
       <span class="text-[10px] font-bold">Dashboard</span>
@@ -999,36 +1743,55 @@
     </button>
   </nav>
 
+  <div id="pwaInstallBanner" class="fixed inset-x-0 bottom-16 z-[60] hidden px-margin-mobile md:hidden" role="region" aria-label="홈 화면 추가 안내">
+    <div class="pwa-banner-inner rounded-2xl bg-white p-4">
+      <div class="flex items-start gap-3">
+        <img class="h-11 w-11 shrink-0 rounded-xl" src="assets/icons/icon-192.png" alt="" aria-hidden="true">
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-[#1d1d1f]">홈 화면에 추가</p>
+          <p id="pwaInstallMessage" class="mt-1 text-xs leading-relaxed text-[#86868b]"></p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button id="pwaInstallAction" class="btn-primary hidden px-3 py-2 text-xs" type="button">앱 설치</button>
+            <button id="pwaInstallDismiss" class="btn-outline px-3 py-2 text-xs" type="button">나중에</button>
+          </div>
+        </div>
+        <button id="pwaInstallClose" class="app-icon-btn shrink-0" type="button" aria-label="닫기">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <section id="addScheduleSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addScheduleBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="일정 추가 닫기"></button>
-    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-2xl bg-surface-container-lowest p-5 shadow-float md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:p-6">
+    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
-          <p class="text-xs font-bold uppercase tracking-widest text-primary">Local Schedule</p>
-          <h3 id="addScheduleSheetTitle" class="mt-1 font-display text-xl font-bold text-on-surface">일정 추가</h3>
+          <p class="text-xs font-medium uppercase tracking-wide text-primary">Local Schedule</p>
+          <h3 id="addScheduleSheetTitle" class="mt-1 text-xl font-semibold text-[#1d1d1f]">일정 추가</h3>
         </div>
-        <button id="closeAddSchedule" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
+        <button id="closeAddSchedule" class="app-icon-btn" type="button" aria-label="닫기">
           <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
 
       <form id="addScheduleForm" class="space-y-5">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             날짜
-            <input id="addScheduleDate" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="date" type="date" required>
+            <input id="addScheduleDate" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="date" type="date" required>
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             구장
-            <select id="addScheduleCourt" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="courtId" required></select>
+            <select id="addScheduleCourt" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="courtId" required></select>
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             시작
-            <input id="addScheduleStart" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="startTime" type="time" value="20:00" required>
+            <input id="addScheduleStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="startTime" type="time" value="20:00" required>
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             종료
-            <input id="addScheduleEnd" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="endTime" type="time" value="22:00" required>
+            <input id="addScheduleEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="endTime" type="time" value="22:00" required>
           </label>
         </div>
 
@@ -1042,13 +1805,13 @@
           <div id="addScheduleMembers" class="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-outline-variant/60 bg-surface-container-low p-3 sm:grid-cols-3"></div>
         </fieldset>
 
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <label class="flex items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
-            <input class="h-4 w-4 accent-primary" name="regular" type="checkbox">
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
+            <input class="h-4 w-4 shrink-0 accent-primary" name="regular" type="checkbox">
             정기모임
           </label>
-          <label class="flex items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
-            <input class="h-4 w-4 accent-primary" name="closed" type="checkbox">
+          <label class="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
+            <input class="h-4 w-4 shrink-0 accent-primary" name="closed" type="checkbox">
             마감
           </label>
         </div>
@@ -1065,26 +1828,26 @@
 
   <section id="addEventSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addEventBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="다른 일정 추가 닫기"></button>
-    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-2xl bg-surface-container-lowest p-5 shadow-float md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:p-6">
+    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
-          <p class="text-xs font-bold uppercase tracking-widest text-sky-600">Calendar Event</p>
-          <h3 id="addEventSheetTitle" class="mt-1 font-display text-xl font-bold text-on-surface">다른 일정 추가</h3>
+          <p class="text-xs font-medium uppercase tracking-wide text-primary">Calendar Event</p>
+          <h3 id="addEventSheetTitle" class="mt-1 text-xl font-semibold text-[#1d1d1f]">다른 일정 추가</h3>
         </div>
-        <button id="closeAddEvent" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
+        <button id="closeAddEvent" class="app-icon-btn" type="button" aria-label="닫기">
           <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
 
       <form id="addEventForm" class="space-y-5">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             날짜
-            <input id="addEventDate" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="date" type="date" required>
+            <input id="addEventDate" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="date" type="date" required>
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             분류
-            <select id="addEventCategory" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="category" required>
+            <select id="addEventCategory" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="category" required>
               <option value="personal">개인</option>
               <option value="work">업무</option>
               <option value="bookclub">독서모임</option>
@@ -1092,13 +1855,13 @@
               <option value="other">기타</option>
             </select>
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             시작
-            <input id="addEventStart" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="startTime" type="time">
+            <input id="addEventStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="startTime" type="time">
           </label>
-          <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             종료
-            <input id="addEventEnd" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="endTime" type="time">
+            <input id="addEventEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="endTime" type="time">
           </label>
         </div>
 
@@ -1129,13 +1892,13 @@
 
   <section id="attendeeSheet" class="fixed inset-0 z-[85] hidden" aria-hidden="true">
     <button id="attendeeBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="참석자 추가 닫기"></button>
-    <div class="absolute inset-x-0 bottom-0 rounded-t-2xl bg-surface-container-lowest p-5 shadow-float md:left-1/2 md:top-1/2 md:bottom-auto md:w-full md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:p-6">
+    <div class="absolute inset-x-0 bottom-0 rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:w-full md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
-          <p class="text-xs font-bold uppercase tracking-widest text-primary">Match Players</p>
-          <h3 class="mt-1 font-display text-xl font-bold text-on-surface">참석자 추가</h3>
+          <p class="text-xs font-medium uppercase tracking-wide text-primary">Match Players</p>
+          <h3 class="mt-1 text-xl font-semibold text-[#1d1d1f]">참석자 추가</h3>
         </div>
-        <button id="closeAttendeeSheet" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button" aria-label="닫기">
+        <button id="closeAttendeeSheet" class="app-icon-btn" type="button" aria-label="닫기">
           <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
@@ -1589,6 +2352,15 @@
     }
 
     function renderDashboard() {
+      const subtitle = document.querySelector("#dashboardSubtitle");
+      if (subtitle) {
+        subtitle.textContent = new Date().toLocaleDateString("ko-KR", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
       renderCalendar();
       renderSelectedDate();
       renderUpcoming();
@@ -1815,20 +2587,18 @@
 
     function emptyStateHTML(title, message) {
       return `
-        <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-outline-variant/60 bg-surface-container-low/30 p-10 text-center shadow-sm">
-          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-surface-container-high/60 text-primary mb-4 shadow-sm">
-            <svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="app-empty">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f5f7] text-[var(--app-green)]">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="9" cy="9" r="5" />
               <path d="M12.5 12.5 19 19" />
-              <path d="m14 16.5 2.5-2.5" />
-              <circle cx="16.5" cy="5.5" r="1.2" />
             </svg>
           </div>
-          <h4 class="text-sm font-bold text-on-surface tracking-tight">${title}</h4>
-          <p class="mt-1.5 text-xs font-semibold text-on-surface-variant leading-relaxed max-w-[280px]">${message}</p>
-              <button class="btn-outline mt-5 px-5 py-2 text-xs font-bold shadow-sm" type="button" data-add-schedule>
-                ${icon("calendar_today", "text-[14px]")} 일정 추가
-              </button>
+          <h4>${title}</h4>
+          <p class="max-w-[280px] mx-auto">${message}</p>
+          <button class="btn-outline mt-5 px-5 py-2 text-xs" type="button" data-add-schedule>
+            ${icon("calendar_today", "text-[14px]")} 일정 추가
+          </button>
         </div>
       `;
     }
@@ -1865,16 +2635,16 @@
       const location = event.location ? ` @ ${escapeHTML(event.location)}` : "";
       const note = event.note ? `<p class="mt-1 text-xs font-semibold text-on-surface-variant">${escapeHTML(event.note)}</p>` : "";
       return `
-        <article class="rounded-xl border border-outline-variant bg-surface-bright transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+        <article class="app-list-card">
           <button class="schedule-card-button block w-full p-4" type="button" data-event-detail-id="${event.id}" aria-label="${escapeHTML(event.title)} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
-              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${category.chip} shadow-sm">
-                ${icon(category.icon)}
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${category.chip}">
+                ${icon(category.icon, "text-[20px]")}
               </div>
               <div class="min-w-0 text-left">
-                <h4 class="truncate font-label-md text-label-md font-bold text-on-surface">${escapeHTML(event.title)}</h4>
-                <p class="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-on-surface-variant">
-                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${eventTimeLabel(event)}</span>${location}
+                <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${escapeHTML(event.title)}</h4>
+                <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${eventTimeLabel(event)}</span>${location}
                 </p>
                 ${note}
               </div>
@@ -1947,8 +2717,8 @@
           ? `<span class="block truncate rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-bold leading-normal text-on-surface-variant">+${calendarItems.length - 2} more</span>`
           : "";
 
-        let cellClass = "bg-surface-container-lowest border border-surface-container-high";
-        let numberClass = "text-on-surface";
+        let cellClass = "bg-white border border-[rgba(0,0,0,0.06)]";
+        let numberClass = "text-[#1d1d1f] font-medium";
         const dotCount = Math.min(calendarItems.length, 3);
         const dotsMarkup = calendarItems.slice(0, dotCount).map(({ type, item }) => {
           if (type === "event") {
@@ -1980,14 +2750,14 @@
 
 
         if (isToday) {
-          cellClass = "calendar-day is-today shadow-sm";
-          numberClass = "font-bold bg-primary text-white shadow-sm";
+          cellClass = "calendar-day is-today";
+          numberClass = "font-semibold";
         } else if (state.selectedDate === iso) {
-          cellClass = "border-2 border-primary bg-primary/5 shadow-sm";
+          cellClass = "selected-date";
         } else if (calendarItems.length) {
-          cellClass = "bg-surface-container-lowest border border-outline-variant hover:border-primary";
+          cellClass = "bg-white border border-[rgba(0,104,93,0.12)] hover:border-[rgba(0,104,93,0.28)]";
         } else {
-          cellClass = "bg-surface-container-lowest border border-surface-container-high/60 hover:border-primary/50";
+          cellClass = "bg-white border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,104,93,0.18)]";
         }
 
         cells.push(`
@@ -2054,43 +2824,39 @@
       }, 20);
     }
 
-    function scheduleRow(item, variant = "") {
+    function scheduleRow(item) {
       const empty = item.attendees.length === 0;
-      const isDatePanel = variant === "datePanel";
       const isBookClub = isBookClubSchedule(item);
       const isYonsei = isYonseiSchedule(item);
       const isMine = item.attendees.includes(MY_NAME);
 
       const iconClass = isBookClub
-        ? "border border-amber-300 bg-amber-50 text-amber-800"
+        ? "border border-amber-200 bg-amber-50 text-amber-800"
         : isYonsei
-          ? "border border-indigo-300 bg-indigo-50 text-indigo-700"
+          ? "border border-indigo-200 bg-indigo-50 text-indigo-700"
           : empty
-            ? "bg-surface-container-high text-on-surface-variant"
+            ? "bg-[#f5f5f7] text-[#86868b]"
             : item.regular
-              ? "bg-tertiary-container/20 text-tertiary"
-              : "bg-secondary-container text-secondary";
+              ? "bg-[rgba(0,104,93,0.08)] text-primary"
+              : "bg-[rgba(0,104,93,0.12)] text-primary";
 
       const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
       const attendeeListHTML = scheduleAttendeesHTML(item);
-      const cardClass = isMine
-        ? "border-2 border-primary/70 bg-primary/5 shadow-[0_0_0_1px_rgba(0,104,93,0.08)]"
-        : "border border-outline-variant bg-surface-bright";
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
-        <article class="rounded-xl ${cardClass} transition-all duration-200 hover:bg-surface-container-low hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+        <article class="app-list-card ${isMine ? "is-mine" : ""}">
           <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
-              <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${iconClass} transition-transform duration-300 group-hover:scale-105 shadow-sm">
-                ${icon(iconName)}
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClass}">
+                ${icon(iconName, "text-[20px]")}
               </div>
               <div class="min-w-0">
-                <h4 class="truncate font-label-md text-label-md text-on-surface font-bold">${item.title}</h4>
-                <p class="mt-1 flex items-center gap-1.5 truncate font-body-md text-sm text-on-surface-variant font-medium">
-                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-semibold">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-on-surface font-semibold">${item.place}</span>
+                <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${item.title}</h4>
+                <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${item.place}</span>
                 </p>
-                <p class="mt-1.5 flex min-w-0 items-center gap-1 text-xs font-semibold text-on-surface-variant">
+                <p class="mt-1 flex min-w-0 items-center gap-1 text-xs text-[#86868b]">
                   ${icon("group", "text-[14px] shrink-0")} <span class="min-w-0 truncate">${attendeeListHTML}</span>
                 </p>
               </div>
@@ -2219,7 +2985,7 @@
         const memberId = memberIdForName(name);
 
         return `
-          <div class="group flex cursor-pointer items-center gap-2 sm:gap-3 rounded-xl border border-outline-variant/60 bg-surface-bright p-2.5 sm:p-3.5 transition-all duration-200 hover:border-primary/50 hover:shadow-sm" data-member-id="${memberId}" role="button" tabindex="0" aria-label="${escapeHTML(name)} 프로필 보기">
+          <div class="group flex cursor-pointer items-center gap-2 sm:gap-3 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-2.5 sm:p-3 transition hover:bg-[#fafafa]" data-member-id="${memberId}" role="button" tabindex="0" aria-label="${escapeHTML(name)} 프로필 보기">
             <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
             <div class="min-w-0 flex-1">
               <div class="text-xs sm:text-sm font-bold text-on-surface flex items-center flex-wrap gap-1 leading-tight">
@@ -2246,25 +3012,24 @@
           <!-- Left Column: Match Info & Description -->
           <div class="flex flex-col gap-gutter lg:col-span-8">
             <!-- Hero Info Card -->
-            <article class="overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-ambient">
-              <div class="relative h-32 md:h-56 w-full overflow-hidden bg-surface-dim">
-                <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-3 left-4 md:bottom-4 md:left-6 flex flex-wrap items-center gap-2 md:gap-3">
-                  <span class="rounded-full bg-secondary-container px-2.5 py-0.5 md:px-3.5 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider text-on-secondary-container shadow-sm">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
+            <article class="app-card overflow-hidden">
+              <div class="relative h-32 md:h-48 w-full overflow-hidden bg-[#f5f5f7]">
+                <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
+                <div class="absolute bottom-3 left-4 md:bottom-4 md:left-5">
+                  <span class="rounded-full bg-white/90 backdrop-blur px-3 py-1 text-[11px] font-medium text-[#1d1d1f]">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
                 </div>
               </div>
 
-              <div class="p-4 md:p-8">
+              <div class="p-4 md:p-6">
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                  <div class="space-y-1 md:space-y-2 w-full md:w-auto">
-                    <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface font-black leading-tight tracking-tight">${item.title}</h2>
-                    <p class="mt-1 md:mt-3 flex items-center gap-2 text-sm md:text-base text-on-surface-variant font-medium">
-                      ${icon("location_on", "text-[18px] md:text-[20px] text-primary")} ${item.place}
+                  <div class="space-y-1 w-full md:w-auto">
+                    <h2 class="text-xl md:text-2xl font-semibold text-[#1d1d1f] leading-tight">${item.title}</h2>
+                    <p class="mt-2 flex items-center gap-2 text-sm text-[#86868b]">
+                      ${icon("location_on", "text-[18px] text-primary")} ${item.place}
                     </p>
 
-                    <!-- Mobile Date/Time Metadata (inline) -->
-                    <div class="flex flex-col gap-1.5 text-xs font-semibold text-on-surface-variant md:hidden mt-3 pt-3 border-t border-outline-variant/20">
+                    <div class="flex flex-col gap-1.5 text-xs text-[#86868b] md:hidden mt-3 pt-3 border-t border-[rgba(0,0,0,0.06)]">
                       <div class="flex items-center gap-2">
                         ${icon("calendar_today", "text-[16px] text-primary")} ${dateLabel(item)}
                       </div>
@@ -2274,24 +3039,22 @@
                     </div>
                   </div>
 
-                  <!-- Desktop Date & Time Card -->
-                  <div class="hidden md:block min-w-[220px] rounded-xl border border-outline-variant/40 bg-surface-container-low p-5 text-right shadow-sm">
-                    <div class="mb-1 text-xs font-bold uppercase tracking-widest text-primary">Date & Time</div>
-                    <div class="font-headline-md text-headline-md text-on-surface font-black text-lg">${dateLabel(item)}</div>
-                    <div class="mt-1.5 text-sm font-semibold text-on-surface-variant">${timeStart(item)} - ${timeEnd(item)}</div>
+                  <div class="detail-meta-card hidden md:block min-w-[200px] p-4 text-right">
+                    <div class="mb-1 text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Date & Time</div>
+                    <div class="text-base font-semibold text-[#1d1d1f]">${dateLabel(item)}</div>
+                    <div class="mt-1 text-sm text-[#86868b]">${timeStart(item)} - ${timeEnd(item)}</div>
                   </div>
                 </div>
 
                 <!-- Overlap Alert Banners -->
                 ${conflictBanners}
 
-                <hr class="my-6 md:my-8 border-outline-variant/30">
+                <hr class="my-5 md:my-6 border-[rgba(0,0,0,0.06)]">
 
-                <!-- Players Grid -->
                 <div>
-                  <div class="mb-4 md:mb-6 flex items-center justify-between gap-4">
-                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-base md:text-lg">Players (${attendeeCount}/${capacity})</h3>
-                    <span class="rounded-full ${spotsLeft ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-container/30" : "bg-primary-fixed text-on-primary-fixed border border-primary-container/30"} px-2.5 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-bold shadow-sm">${spotsLeft ? `${spotsLeft} Spot Left` : "Full"}</span>
+                  <div class="mb-4 flex items-center justify-between gap-4">
+                    <h3 class="text-base md:text-lg font-semibold text-[#1d1d1f]">Players (${attendeeCount}/${capacity})</h3>
+                    <span class="rounded-full ${spotsLeft ? "bg-[rgba(0,104,93,0.08)] text-primary" : "bg-[#f5f5f7] text-[#86868b]"} px-2.5 py-0.5 text-[10px] md:text-xs font-medium">${spotsLeft ? `${spotsLeft} spot left` : "Full"}</span>
                   </div>
                   <div class="grid grid-cols-2 gap-2 sm:gap-4">
                     ${playerCards || ""}
@@ -2302,9 +3065,9 @@
             </article>
 
             <!-- Comments/Discussion Card -->
-            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 md:p-8 shadow-ambient">
-              <h3 class="mb-4 md:mb-6 font-headline-md text-headline-md text-on-surface font-bold text-base md:text-lg flex items-center gap-2">
-                ${icon("forum", "text-[18px] md:text-[20px] text-primary")} Match Discussion
+            <article class="app-card p-4 md:p-6">
+              <h3 class="mb-4 md:mb-5 text-base md:text-lg font-semibold text-[#1d1d1f] flex items-center gap-2">
+                ${icon("forum", "text-[18px] text-primary")} Match Discussion
               </h3>
 
               ${renderDiscussionMessages(item)}
@@ -2326,51 +3089,46 @@
           <!-- Right Column: Join Action & Conditions -->
           <aside class="flex flex-col gap-gutter lg:col-span-4">
             <!-- Join Action Card -->
-            <article class="sticky-detail-bar md:rounded-xl md:border-t-4 md:border-secondary md:bg-surface-container-lowest md:p-6 md:shadow-ambient md:border md:border-outline-variant/10">
-                  <!-- Desktop-only Header Info -->
+            <article class="sticky-detail-bar app-card md:p-5">
                   <div class="hidden md:block">
-                    <h3 class="mb-2 font-headline-md text-on-surface font-bold text-lg">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
-                    <p class="mb-6 text-sm text-on-surface-variant font-medium leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다. 일정이 겹치면 바로 취소할 수 있어요." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
+                    <h3 class="mb-1 text-lg font-semibold text-[#1d1d1f]">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
+                    <p class="mb-5 text-sm text-[#86868b] leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
                   </div>
 
-                  <!-- Container for buttons & mobile-layout -->
-                  <div class="flex flex-row md:flex-col items-center justify-between gap-4 md:gap-0 w-full">
-                    <!-- Mobile-only quick info (on the left side) -->
+                  <div class="flex flex-row md:flex-col items-center justify-between gap-4 w-full">
                     <div class="md:hidden flex flex-col justify-center">
-                      <span class="text-[10px] font-black uppercase tracking-widest text-primary leading-none">${myAttending ? "Status" : "Match"}</span>
-                      <span class="text-sm font-black text-on-surface leading-tight mt-0.5">${myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
+                      <span class="text-[10px] font-medium uppercase tracking-wide text-[#86868b] leading-none">${myAttending ? "Status" : "Match"}</span>
+                      <span class="text-sm font-semibold text-[#1d1d1f] leading-tight mt-0.5">${myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex flex-1 md:w-full items-center gap-2 md:flex-col justify-end">
-                      <button class="${myAttending ? "bg-error-container text-on-error-container hover:bg-error-container/80" : "bg-secondary-container text-on-secondary-container hover:bg-secondary"} flex w-full md:w-full items-center justify-center gap-2 rounded-lg py-3 md:py-4 text-xs sm:text-sm font-bold shadow transition-all disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
-                        ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px] sm:text-[18px]")}
+                      <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
+                        ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px]")}
                         <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
                       </button>
-                      <button class="hidden md:block w-full rounded-lg border border-primary bg-transparent py-3.5 text-sm font-bold text-primary transition hover:bg-primary/5" type="button" data-contact-organizer>
+                      <button class="hidden md:block w-full btn-outline py-3 text-sm" type="button" data-contact-organizer>
                         댓글로 문의
                       </button>
                     </div>
                   </div>
             </article>
 
-            <!-- Weather/Conditions Card -->
-            <article class="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
-              <h4 class="mb-5 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Conditions</h4>
+            <article class="app-card p-5">
+              <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Conditions</h4>
 
-              <div class="mb-5 flex items-center gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-fixed text-tertiary shadow-sm">
+              <div class="mb-4 flex items-center gap-4">
+                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-primary">
                   ${icon("light_mode")}
                 </div>
                 <div>
-                  <div class="font-headline-md text-headline-md text-on-surface font-black text-xl">18°C / 64°F</div>
-                  <div class="text-sm font-semibold text-on-surface-variant">맑음 & 운동하기 좋은 날씨</div>
+                  <div class="text-lg font-semibold text-[#1d1d1f]">18°C / 64°F</div>
+                  <div class="text-sm text-[#86868b]">맑음 & 운동하기 좋은 날씨</div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-3 rounded-lg border border-outline-variant/30 bg-surface-container-low p-4">
+              <div class="flex items-start gap-3 rounded-xl bg-[#f5f5f7] p-3.5">
                 ${icon("info", "text-primary shrink-0")}
-                <span class="text-xs font-semibold text-on-surface leading-normal">구장 코트 정비 및 sweep 상태가 매우 양호합니다.</span>
+                <span class="text-xs text-[#86868b] leading-normal">구장 코트 정비 및 sweep 상태가 매우 양호합니다.</span>
               </div>
             </article>
           </aside>
@@ -2496,29 +3254,23 @@
             : "예정된 테니스 일정 없음";
           const cards = [
             `
-              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
-                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
-                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">Next</span>
-                  <span class="min-w-0 truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</span>
-                </p>
-                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(nextSummary)}</p>
+              <button class="dash-overview-card shrink-0 snap-center" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
+                <p class="dash-overview-label">Next</p>
+                <p class="dash-overview-title truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
+                <p class="dash-overview-meta truncate">${escapeHTML(nextSummary)}</p>
               </button>
             `,
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
-              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-detail-id="${schedule.id}">
-                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
-                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
-                  <span class="min-w-0 truncate">${escapeHTML(schedule.place)}</span>
-                </p>
-                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
+              <button class="dash-overview-card is-mine shrink-0 snap-center" type="button" data-detail-id="${schedule.id}">
+                <p class="dash-overview-label">${index === 0 ? "My Match" : `My ${index + 1}`}</p>
+                <p class="dash-overview-title truncate">${escapeHTML(schedule.place)}</p>
+                <p class="dash-overview-meta truncate">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
             `) : [`
-              <button class="w-[49.5vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-3 py-2 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[200px] md:px-4 md:py-2" type="button" data-view-link="schedule">
-                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
-                  <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">My</span>
-                  <span class="min-w-0 truncate">아직 없음</span>
-                </p>
-                <p class="mt-0.5 truncate text-xs font-semibold leading-relaxed text-on-surface-variant">내 참석 예정 없음</p>
+              <button class="dash-overview-card shrink-0 snap-center" type="button" data-view-link="schedule">
+                <p class="dash-overview-label">My Match</p>
+                <p class="dash-overview-title truncate">아직 없음</p>
+                <p class="dash-overview-meta truncate">내 참석 예정 없음</p>
               </button>
             `])
           ].join("");
@@ -2602,12 +3354,12 @@
             : "다른 검색어를 입력하시거나, 구장/참석자 필터를 조절해 보세요.";
           // Stitch bridge: Schedule grouped-list HTML markup starts here.
           document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, rows]) => `
-        <section class="rounded-xl bg-surface-container-low p-5 shadow-ambient border border-outline-variant/10">
-          <div class="mb-4 flex items-center justify-between">
-            <h3 class="font-display text-xl font-bold text-on-surface">${dateLabel(rows[0].item)}</h3>
-            <span class="rounded-full bg-surface-container-lowest px-3 py-1.5 text-xs font-bold text-primary border border-outline-variant/20 shadow-sm">${rows.length}개 일정 · 참석 ${rows.reduce((n, row) => n + (row.type === "schedule" ? row.item.attendees.length : 0), 0)}명</span>
+        <section>
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <h3>${dateLabel(rows[0].item)}</h3>
+            <span class="app-count-badge">${rows.length}개 일정 · 참석 ${rows.reduce((n, row) => n + (row.type === "schedule" ? row.item.attendees.length : 0), 0)}명</span>
           </div>
-          <div class="space-y-3">${[...rows]
+          <div class="space-y-2.5">${[...rows]
             .sort((a, b) => compareCalendarItemsByTime(a.item, b.item))
             .map(row => row.type === "event" ? calendarEventRow(row.item) : scheduleRow(row.item))
             .join("")}</div>
@@ -2626,47 +3378,47 @@
         const subLocation = court.location || "인천 연수구 송도동";
 
         return `
-          <article class="card-premium flex flex-col overflow-hidden bg-surface-container-lowest rounded-xl">
-            <div class="h-24 md:h-44 w-full relative overflow-hidden bg-surface-dim">
-              <img src="${image}" alt="${place}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
-              <div class="absolute top-2 right-2 md:top-3 md:right-3">
-                <span class="badge-blur px-2 py-1 md:px-3 md:py-1.5 rounded-full font-label-sm text-[10px] md:text-label-sm text-on-surface flex items-center gap-1 md:gap-1.5 font-bold shadow-sm">
-                  <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-pulse"></span>
-                  ${items.length} Bookings
+          <article class="card-premium app-card flex flex-col overflow-hidden">
+            <div class="h-28 md:h-40 w-full relative overflow-hidden bg-[#f5f5f7]">
+              <img src="${image}" alt="${place}" class="w-full h-full object-cover" />
+              <div class="absolute top-2.5 right-2.5 md:top-3 md:right-3">
+                <span class="court-badge inline-flex items-center gap-1.5 rounded-full px-2.5 py-1">
+                  <span class="dot"></span>
+                  ${items.length} bookings
                 </span>
               </div>
             </div>
 
-            <div class="p-4 md:p-6 flex flex-col flex-1">
-              <div class="flex justify-between items-start mb-2 md:mb-3 gap-2">
+            <div class="p-4 md:p-5 flex flex-col flex-1">
+              <div class="flex justify-between items-start mb-2 gap-2">
                 <div>
-                  <h3 class="font-headline-md text-on-surface font-bold text-base md:text-lg leading-snug">${place}</h3>
-                  <p class="font-body-md text-xs md:text-sm text-on-surface-variant flex items-center gap-1 mt-0.5 md:mt-1 font-medium">
-                    ${icon("location_on", "text-[14px] md:text-[16px] text-primary")} ${subLocation}
+                  <h3 class="text-base md:text-lg font-semibold text-[#1d1d1f] leading-snug">${place}</h3>
+                  <p class="text-xs md:text-sm text-[#86868b] flex items-center gap-1 mt-1">
+                    ${icon("location_on", "text-[14px] text-primary")} ${subLocation}
                   </p>
                 </div>
-                <span class="bg-primary/10 text-primary px-2 py-0.5 md:px-2.5 md:py-1 rounded-md text-[10px] md:text-xs font-bold uppercase tracking-wider shrink-0">${courtType}</span>
+                <span class="rounded-md bg-[rgba(0,104,93,0.08)] text-primary px-2 py-0.5 text-[10px] md:text-xs font-medium uppercase tracking-wide shrink-0">${courtType}</span>
               </div>
 
-              <div class="mt-2.5 md:mt-4 mb-3 md:mb-5 flex-1">
-                <p class="font-label-sm text-[10px] md:text-label-sm text-on-surface-variant mb-1 md:mb-2 font-bold uppercase tracking-wider">Next Available</p>
+              <div class="mt-3 mb-4 flex-1">
+                <p class="text-[10px] md:text-xs text-[#86868b] mb-1.5 font-medium uppercase tracking-wide">Next available</p>
                 <div class="flex gap-2 flex-wrap">
                   ${next
-                    ? `<button class="btn-outline px-2.5 py-1 md:px-3.5 md:py-1.5 text-[10px] md:text-xs font-bold" data-detail-id="${next.id}">
-                        ${icon("event_available", "text-[12px] md:text-[14px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
+                    ? `<button class="btn-outline px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs" data-detail-id="${next.id}">
+                        ${icon("event_available", "text-[12px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
                        </button>`
-                    : `<span class="text-xs text-on-surface-variant font-semibold">예정된 일정이 없습니다.</span>`}
+                    : `<span class="text-xs text-[#86868b]">예정된 일정이 없습니다.</span>`}
                 </div>
               </div>
 
-              <hr class="border-outline-variant/30 mb-3 md:mb-4" />
+              <hr class="border-[rgba(0,0,0,0.06)] mb-3" />
 
-              <p class="font-label-sm text-[10px] md:text-label-sm text-on-surface-variant mb-1.5 md:mb-2.5 font-bold uppercase tracking-wider">All Slots (${items.length})</p>
-              <div class="flex overflow-x-auto scrollbar-none gap-2 md:grid md:grid-cols-3 text-center text-xs font-bold pb-1">
+              <p class="text-[10px] md:text-xs text-[#86868b] mb-2 font-medium uppercase tracking-wide">All slots (${items.length})</p>
+              <div class="flex overflow-x-auto scrollbar-none gap-2 md:grid md:grid-cols-3 text-center text-xs pb-1">
                 ${items.slice(0, 6).map(s => `
-                  <div class="shrink-0 w-[85px] md:w-auto rounded-lg bg-surface-container-low p-2 md:p-2.5 border border-outline-variant/10 hover:border-primary/20 hover:bg-surface-container-high transition-colors cursor-pointer" data-detail-id="${s.id}">
-                    <p class="text-primary font-bold text-[10px] md:text-[11px]">${dateLabel(s).replace("5월 ", "5/").replace("6월 ", "6/").split(" (")[0]}</p>
-                    <p class="mt-0.5 md:mt-1 text-on-surface-variant text-[9px] md:text-[10px]">${s.attendees.length}명 참여</p>
+                  <div class="shrink-0 w-[85px] md:w-auto rounded-lg bg-[#f5f5f7] p-2 md:p-2.5 border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,104,93,0.2)] transition-colors cursor-pointer" data-detail-id="${s.id}">
+                    <p class="text-primary font-semibold text-[10px] md:text-[11px]">${dateLabel(s).replace("5월 ", "5/").replace("6월 ", "6/").split(" (")[0]}</p>
+                    <p class="mt-0.5 text-[#86868b] text-[9px] md:text-[10px]">${s.attendees.length}명 참여</p>
                   </div>
                 `).join("")}
               </div>
@@ -2764,36 +3516,34 @@
         const memberId = memberIdForName(m.name) || m.name;
         const genderCardClass = memberGenderCardClass(m.name);
         return `
-          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl ${genderCardClass} p-3 sm:p-4 cursor-pointer transition hover:-translate-y-0.5 hover:shadow-ambient duration-300" data-member-id="${memberId}">
-            <div class="flex items-start gap-2.5 sm:gap-4">
+          <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 p-3 sm:p-4 cursor-pointer" data-member-id="${memberId}">
+            <div class="flex items-start gap-2.5 sm:gap-3">
               <div class="relative shrink-0">
-                <div class="member-avatar flex items-center justify-center rounded-full font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
+                <div class="member-avatar flex items-center justify-center rounded-full font-semibold ${getAvatarClassForMember(m.name, rank)}">
                   ${initial}
                 </div>
               </div>
               <div class="min-w-0 flex-1 pt-0.5">
-                <div class="flex min-w-0 flex-col gap-0.5 sm:gap-1">
+                <div class="flex min-w-0 flex-col gap-0.5">
                   <div class="flex items-center gap-1 flex-wrap">
-                    <h3 class="font-headline-md text-sm sm:text-lg font-black leading-tight text-on-surface">${escapeHTML(m.name)}</h3>
+                    <h3 class="text-sm sm:text-base font-semibold leading-tight text-[#1d1d1f]">${escapeHTML(m.name)}</h3>
                     ${memberGenderChipHTML(m.name)}
                   </div>
-                  <!-- Mobile only matches and last active info -->
-                  <div class="block sm:hidden text-[10px] font-semibold text-on-surface-variant space-y-0.5">
-                    <p class="text-primary font-bold flex items-center gap-0.5">
-                      ${icon("sports_tennis", "text-[12px]")} ${m.count} Matches
+                  <div class="block sm:hidden text-[10px] font-medium text-[#86868b]">
+                    <p class="text-primary font-semibold flex items-center gap-0.5">
+                      ${icon("sports_tennis", "text-[12px]")} ${m.count} matches
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Desktop only actions -->
-            <div class="hidden sm:grid grid-cols-2 gap-3 mt-auto">
-              <div class="flex min-h-12 items-center justify-between rounded-lg bg-surface-container-low px-3">
-                <div class="text-xs font-semibold uppercase text-on-surface-variant">Matches</div>
-                <div class="font-headline-md text-xl font-black text-primary">${m.count}</div>
+            <div class="hidden sm:grid grid-cols-2 gap-2 mt-auto pt-2">
+              <div class="flex min-h-11 items-center justify-between rounded-lg bg-[#f5f5f7] px-3">
+                <div class="text-xs font-medium text-[#86868b]">Matches</div>
+                <div class="text-lg font-semibold text-primary">${m.count}</div>
               </div>
-              <button class="btn-outline min-h-10 px-3 text-sm font-bold" data-member-id="${memberId}">
+              <button class="btn-outline min-h-10 px-3 text-sm" data-member-id="${memberId}" type="button">
                 ${icon("person", "text-[14px]")} Profile
               </button>
             </div>
@@ -2856,43 +3606,39 @@
         <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12 animate-fade-in">
           <!-- Profile Card -->
           <div class="lg:col-span-4 flex flex-col gap-gutter">
-            <article class="rounded-xl border ${genderProfileCardClass} p-6 shadow-ambient">
+            <article class="app-card p-5 md:p-6">
               <div class="flex flex-col items-center text-center">
                 <div class="relative mb-4">
-                  <div class="w-24 h-24 rounded-full flex items-center justify-center font-black text-white text-4xl shadow-md ${avatarClass}">
+                  <div class="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center font-semibold text-white text-3xl md:text-4xl ${avatarClass}">
                     ${initial}
                   </div>
-                  <div class="absolute -bottom-1 -right-1 rounded-full bg-primary text-white p-1.5 shadow-sm flex items-center justify-center">
-                    ${icon("verified", "text-[18px]")}
-                  </div>
                 </div>
-                <h2 class="font-headline-lg text-2xl font-black ${genderTextClass} mb-1">${escapeHTML(name)}</h2>
-                <span class="rounded-full ${genderStatusClass} px-3 py-1 text-xs font-bold uppercase tracking-wider mb-6">
-                  ${status.toUpperCase()} MEMBER
+                <h2 class="text-xl md:text-2xl font-semibold text-[#1d1d1f] mb-1">${escapeHTML(name)}</h2>
+                <span class="rounded-full bg-[#f5f5f7] px-3 py-1 text-xs font-medium text-[#86868b] uppercase tracking-wide mb-5">
+                  ${status} member
                 </span>
 
-                <div class="w-full space-y-3 pt-3 border-t border-outline-variant/30 text-left">
-                  <div class="flex justify-between items-center text-sm font-medium">
-                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("military_tech", "text-[18px] text-amber-500")} Club Rank</span>
-                    <span class="font-black text-on-surface">${rank}위</span>
+                <div class="w-full space-y-3 pt-3 border-t border-[rgba(0,0,0,0.06)] text-left">
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#86868b] flex items-center gap-1.5">${icon("military_tech", "text-[18px] text-primary")} Club rank</span>
+                    <span class="font-semibold text-[#1d1d1f]">${rank}위</span>
                   </div>
-                  <div class="flex justify-between items-center text-sm font-medium">
-                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("sports_tennis", "text-[18px] text-primary")} Total Matches</span>
-                    <span class="font-black text-on-surface">${overallCount}회</span>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#86868b] flex items-center gap-1.5">${icon("sports_tennis", "text-[18px] text-primary")} Total matches</span>
+                    <span class="font-semibold text-[#1d1d1f]">${overallCount}회</span>
                   </div>
-                  <div class="flex justify-between items-center text-sm font-medium">
-                    <span class="text-on-surface-variant flex items-center gap-1.5">${icon("calendar_month", "text-[18px] text-sky-600")} This Month</span>
-                    <span class="font-black text-on-surface">${monthlyCount}회</span>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#86868b] flex items-center gap-1.5">${icon("calendar_month", "text-[18px] text-primary")} This month</span>
+                    <span class="font-semibold text-[#1d1d1f]">${monthlyCount}회</span>
                   </div>
                 </div>
               </div>
             </article>
 
-            <!-- Club Motto / Info Card -->
-            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-low p-5 shadow-sm">
-              <h3 class="font-headline-md text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Club Status</h3>
-              <p class="text-xs font-semibold leading-relaxed text-on-surface-variant">
-                아직도 성장중 테니스 클럽의 활성 멤버입니다. 코트 위에서 매너 있는 플레이와 성장을 지향합니다. 🎾
+            <article class="app-card p-4">
+              <h3 class="text-xs font-medium text-[#86868b] uppercase tracking-wide mb-2">Club status</h3>
+              <p class="text-xs leading-relaxed text-[#86868b]">
+                아직도 성장중 테니스 클럽의 활성 멤버입니다. 코트 위에서 매너 있는 플레이와 성장을 지향합니다.
               </p>
             </article>
           </div>
@@ -2900,34 +3646,32 @@
           <!-- Matches Section -->
           <div class="lg:col-span-8 flex flex-col gap-gutter">
             <!-- Stats Dashboard Grid -->
-            <div class="grid grid-cols-3 gap-3">
-              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
-                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Total Played</div>
+            <div class="grid grid-cols-3 gap-2.5">
+              <div class="app-card p-3 md:p-4 flex flex-col justify-between">
+                <div class="text-[10px] md:text-xs font-medium text-[#86868b] uppercase tracking-wide mb-1">Total</div>
                 <div class="flex items-baseline gap-1">
-                  <span class="text-3xl font-black text-primary">${overallCount}</span>
-                  <span class="text-xs font-semibold text-on-surface-variant">경기</span>
+                  <span class="text-2xl md:text-3xl font-semibold text-primary">${overallCount}</span>
+                  <span class="text-xs text-[#86868b]">경기</span>
                 </div>
               </div>
-              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
-                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Attendance Rank</div>
+              <div class="app-card p-3 md:p-4 flex flex-col justify-between">
+                <div class="text-[10px] md:text-xs font-medium text-[#86868b] uppercase tracking-wide mb-1">Rank</div>
                 <div class="flex items-baseline gap-1">
-                  <span class="text-3xl font-black text-primary">#${rank}</span>
-                  <span class="text-xs font-semibold text-on-surface-variant">위</span>
+                  <span class="text-2xl md:text-3xl font-semibold text-primary">#${rank}</span>
                 </div>
               </div>
-              <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between shadow-sm">
-                <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Monthly Played</div>
+              <div class="app-card p-3 md:p-4 flex flex-col justify-between">
+                <div class="text-[10px] md:text-xs font-medium text-[#86868b] uppercase tracking-wide mb-1">Month</div>
                 <div class="flex items-baseline gap-1">
-                  <span class="text-3xl font-black text-primary">${monthlyCount}</span>
-                  <span class="text-xs font-semibold text-on-surface-variant">경기</span>
+                  <span class="text-2xl md:text-3xl font-semibold text-primary">${monthlyCount}</span>
+                  <span class="text-xs text-[#86868b]">경기</span>
                 </div>
               </div>
             </div>
 
-            <!-- Matches List Card -->
-            <article class="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-ambient">
-              <h3 class="font-headline-md text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
-                ${icon("sports_tennis", "text-[22px] text-primary")} 예정된 참석 일정 (${upcomingMatches.length})
+            <article class="app-card p-4 md:p-5">
+              <h3 class="text-base font-semibold text-[#1d1d1f] mb-4 flex items-center gap-2">
+                ${icon("sports_tennis", "text-[20px] text-primary")} 예정된 참석 일정 (${upcomingMatches.length})
               </h3>
               <div class="space-y-3 mb-8">
                 ${upcomingMatches.length > 0
@@ -2939,8 +3683,8 @@
                 }
               </div>
 
-              <h3 class="font-headline-md text-lg font-bold text-on-surface mb-4 flex items-center gap-2 pt-4 border-t border-outline-variant/20">
-                ${icon("history", "text-[22px] text-primary")} 지난 참석 일정 (${pastMatches.length})
+              <h3 class="text-base font-semibold text-[#1d1d1f] mb-4 flex items-center gap-2 pt-4 border-t border-[rgba(0,0,0,0.06)]">
+                ${icon("history", "text-[20px] text-primary")} 지난 참석 일정 (${pastMatches.length})
               </h3>
               <div class="space-y-3 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
                 ${pastMatches.length > 0
@@ -3565,6 +4309,21 @@
       }
     }
 
+    function resetDashboardState() {
+      state.selectedDate = "";
+      state.currentMonth = todayIso.slice(0, 7);
+      state.query = "";
+      const search = document.querySelector("#globalSearch");
+      if (search) search.value = "";
+      toggleCalendarAddMenu(false);
+      document.body.classList.remove("mobile-nav-open");
+    }
+
+    function goHomeDashboard() {
+      resetDashboardState();
+      switchView("dashboard");
+    }
+
     function switchView(view) {
       const renderRequest = ++viewRenderRequest;
       const targetView = (view === "detail" || view === "member-detail")
@@ -3840,6 +4599,9 @@
       renderMembers();
     });
     document.querySelector("#mobileMenu").addEventListener("click", () => document.body.classList.add("mobile-nav-open"));
+    document.querySelectorAll(".brand-home").forEach(button => {
+      button.addEventListener("click", goHomeDashboard);
+    });
     document.querySelector("#backdrop").addEventListener("click", () => document.body.classList.remove("mobile-nav-open"));
     document.querySelector("#prevMonth").addEventListener("click", () => changeCalendarMonth(-1));
     document.querySelector("#nextMonth").addEventListener("click", () => changeCalendarMonth(1));
@@ -3916,9 +4678,9 @@
     document.querySelectorAll(".member-sort").forEach(btn => btn.addEventListener("click", () => {
       state.memberSort = btn.dataset.sort;
       document.querySelectorAll(".member-sort").forEach(b => {
-        b.className = "member-sort rounded-full bg-surface-container-lowest px-4 py-2 text-sm font-bold text-on-surface shadow-ambient";
+        b.className = "member-sort app-chip";
       });
-      btn.className = "member-sort rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary";
+      btn.className = "member-sort app-chip is-active";
       renderMembers();
     }));
 
@@ -3955,6 +4717,101 @@
     }
 
     initApp();
+
+    const PWA_DISMISS_KEY = "tennis.pwaInstallDismissed";
+    let pwaDeferredPrompt = null;
+    let pwaInstallBannerBound = false;
+
+    function isStandalonePwa() {
+      return window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+    }
+
+    function isMobileViewport() {
+      return window.matchMedia("(max-width: 767px)").matches;
+    }
+
+    function isIosSafari() {
+      const ua = window.navigator.userAgent;
+      return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    }
+
+    function hidePwaInstallBanner() {
+      const banner = document.querySelector("#pwaInstallBanner");
+      if (banner) banner.classList.add("hidden");
+    }
+
+    function dismissPwaInstallBanner() {
+      localStorage.setItem(PWA_DISMISS_KEY, "1");
+      hidePwaInstallBanner();
+    }
+
+    function updatePwaInstallBanner() {
+      const message = document.querySelector("#pwaInstallMessage");
+      const action = document.querySelector("#pwaInstallAction");
+      if (!message || !action) return;
+
+      if (isIosSafari()) {
+        message.textContent = "Safari 하단 공유(↑) 버튼 → “홈 화면에 추가”를 선택하면 앱처럼 사용할 수 있어요.";
+      } else if (/Android/i.test(navigator.userAgent)) {
+        message.textContent = pwaDeferredPrompt
+          ? "설치하면 주소창 없이 바로 일정을 확인할 수 있어요."
+          : "브라우저 메뉴(⋮) → “앱 설치” 또는 “홈 화면에 추가”를 선택하세요.";
+      } else {
+        message.textContent = "브라우저 메뉴에서 “홈 화면에 추가”를 선택하면 앱처럼 사용할 수 있어요.";
+      }
+
+      action.classList.toggle("hidden", !pwaDeferredPrompt);
+    }
+
+    function initPwaInstallBanner() {
+      if (isStandalonePwa() || !isMobileViewport() || localStorage.getItem(PWA_DISMISS_KEY)) {
+        return;
+      }
+
+      const banner = document.querySelector("#pwaInstallBanner");
+      const action = document.querySelector("#pwaInstallAction");
+      const dismiss = document.querySelector("#pwaInstallDismiss");
+      const close = document.querySelector("#pwaInstallClose");
+      if (!banner || !action || !dismiss || !close) return;
+
+      updatePwaInstallBanner();
+      banner.classList.remove("hidden");
+
+      if (!pwaInstallBannerBound) {
+        pwaInstallBannerBound = true;
+        action.addEventListener("click", async () => {
+          if (!pwaDeferredPrompt) return;
+          pwaDeferredPrompt.prompt();
+          await pwaDeferredPrompt.userChoice;
+          pwaDeferredPrompt = null;
+          dismissPwaInstallBanner();
+        });
+        dismiss.addEventListener("click", dismissPwaInstallBanner);
+        close.addEventListener("click", dismissPwaInstallBanner);
+      }
+    }
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      pwaDeferredPrompt = event;
+      if (isMobileViewport() && !localStorage.getItem(PWA_DISMISS_KEY) && !isStandalonePwa()) {
+        initPwaInstallBanner();
+        updatePwaInstallBanner();
+      }
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(error => {
+          console.warn("Service worker registration failed:", error);
+        });
+      });
+    }
+
+    window.addEventListener("load", () => {
+      setTimeout(initPwaInstallBanner, 800);
+    });
   </script>
 </body>
 </html>
