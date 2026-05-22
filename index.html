@@ -2486,10 +2486,7 @@
           const cards = [
             `
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/20 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
-                <div class="flex items-center justify-end">
-                  ${icon(next ? "chevron_right" : "add", "text-[18px] text-primary")}
-                </div>
-                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">Next</span>
                   <span class="min-w-0 truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</span>
                 </p>
@@ -2498,10 +2495,7 @@
             `,
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-primary/30 bg-primary/10 p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-detail-id="${schedule.id}">
-                <div class="flex items-center justify-end">
-                  ${icon("check_circle", "text-[18px] text-primary")}
-                </div>
-                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">${index === 0 ? "My" : `My ${index + 1}`}</span>
                   <span class="min-w-0 truncate">${escapeHTML(schedule.place)}</span>
                 </p>
@@ -2509,10 +2503,7 @@
               </button>
             `) : [`
               <button class="w-[62vw] shrink-0 snap-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-3 text-left shadow-ambient transition hover:border-primary/40 hover:bg-primary/5 md:w-[220px] md:p-4" type="button" data-view-link="schedule">
-                <div class="flex items-center justify-end">
-                  ${icon("person_search", "text-[18px] text-on-surface-variant")}
-                </div>
-                <p class="mt-1.5 flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
+                <p class="flex items-center gap-2 text-base font-black leading-snug text-on-surface md:text-lg">
                   <span class="shrink-0 text-xs font-black uppercase tracking-wider text-primary">My</span>
                   <span class="min-w-0 truncate">아직 없음</span>
                 </p>
