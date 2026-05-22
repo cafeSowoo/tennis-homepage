@@ -30,6 +30,22 @@ self.addEventListener("message", event => {
   }
 });
 
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+
+  const targetUrl = new URL(event.notification.data?.url || "./", self.location.origin).href;
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
+      const existingClient = clientList.find(client => new URL(client.url).origin === self.location.origin);
+      if (existingClient) {
+        existingClient.focus();
+        return "navigate" in existingClient ? existingClient.navigate(targetUrl) : existingClient;
+      }
+      return clients.openWindow ? clients.openWindow(targetUrl) : undefined;
+    })
+  );
+});
+
 function isHtmlRequest(request) {
   return request.mode === "navigate" ||
     request.headers.get("accept")?.includes("text/html");

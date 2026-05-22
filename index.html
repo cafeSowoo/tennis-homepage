@@ -1675,6 +1675,9 @@
           <h2 class="dashboard-title app-page-title">Dashboard</h2>
           <div class="dashboard-summary-meta mt-1 flex items-center justify-between gap-3">
             <p id="dashboardSubtitle" class="dash-subtitle min-w-0 flex-1"></p>
+            <button id="scheduleReminderButton" class="app-icon-btn shrink-0" type="button" aria-label="내 일정 알림 켜기" title="내 일정 알림 켜기">
+              <span class="material-symbols-outlined text-[18px]" data-reminder-icon>notifications</span>
+            </button>
             <a class="weather-card group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
               <div class="flex items-center gap-1.5">
                 <div class="weather-icon inline-flex shrink-0 items-center justify-center">
@@ -2019,6 +2022,8 @@
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
     const ATTENDEE_OVERRIDES_KEY = "tennis.scheduleAttendeeOverrides";
     const LOCAL_DISCUSSIONS_KEY = "tennis.localDiscussions";
+    const REMINDER_ENABLED_KEY = "tennis.scheduleRemindersEnabled";
+    const REMINDER_LOG_KEY = "tennis.scheduleReminderLog";
         const SCHEDULE_OVERRIDES_KEY = "tennis.scheduleOverrides";
         const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
         const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
@@ -2667,6 +2672,188 @@
 
         function isMySchedule(item) {
           return item.attendees.includes(MY_NAME);
+        }
+
+        function isoFromDateLocal(date) {
+          return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+          ].join("-");
+        }
+
+        function addDaysIso(dateValue, days) {
+          const date = new Date(`${dateValue}T00:00:00`);
+          date.setDate(date.getDate() + days);
+          return isoFromDateLocal(date);
+        }
+
+        function notificationSupported() {
+          return "Notification" in window;
+        }
+
+        function remindersEnabled() {
+          try {
+            return localStorage.getItem(REMINDER_ENABLED_KEY) === "true";
+          } catch {
+            return false;
+          }
+        }
+
+        function loadReminderLog() {
+          try {
+            return JSON.parse(localStorage.getItem(REMINDER_LOG_KEY) || "{}");
+          } catch {
+            return {};
+          }
+        }
+
+        function saveReminderLog(log) {
+          try {
+            localStorage.setItem(REMINDER_LOG_KEY, JSON.stringify(log));
+          } catch {
+            // Notifications are helpful, but schedule rendering should never depend on storage.
+          }
+        }
+
+        function reminderLogKey(kind, targetDate) {
+          return `${kind}:${targetDate}`;
+        }
+
+        function hasSentReminder(kind, targetDate) {
+          return Boolean(loadReminderLog()[reminderLogKey(kind, targetDate)]);
+        }
+
+        function markReminderSent(kind, targetDate) {
+          const log = loadReminderLog();
+          log[reminderLogKey(kind, targetDate)] = new Date().toISOString();
+          saveReminderLog(log);
+        }
+
+        function reminderSchedulesForDate(targetDate) {
+          return schedules
+            .filter(schedule => schedule.date === targetDate && isMySchedule(schedule))
+            .sort(compareSchedulesByTime);
+        }
+
+        function formatReminderBody(kind, rows) {
+          const lead = kind === "today" ? "오늘" : "내일";
+          const summary = rows
+            .slice(0, 3)
+            .map(row => `${scheduleTimeRangeLabel(row)} ${row.place}`)
+            .join("\n");
+          const extraCount = rows.length - 3;
+          return `${lead} 참석 일정 ${rows.length}개\n${summary}${extraCount > 0 ? `\n외 ${extraCount}개` : ""}`;
+        }
+
+        async function showScheduleReminder(kind, targetDate, rows) {
+          const title = kind === "today"
+            ? "오늘 테니스 일정이 있어요"
+            : "내일 테니스 일정이 있어요";
+          const options = {
+            body: formatReminderBody(kind, rows),
+            icon: "assets/icons/icon-192.png",
+            badge: "assets/icons/icon-192.png",
+            tag: `tennis-reminder-${kind}-${targetDate}`,
+            renotify: false,
+            data: { url: "./" }
+          };
+
+          if (navigator.serviceWorker?.ready) {
+            const registration = await navigator.serviceWorker.ready;
+            if (registration?.showNotification) {
+              await registration.showNotification(title, options);
+              return;
+            }
+          }
+
+          new Notification(title, options);
+        }
+
+        async function checkScheduleReminders() {
+          if (!notificationSupported() || !remindersEnabled() || Notification.permission !== "granted") return;
+
+          const reminderTargets = [
+            { kind: "today", date: todayIsoLocal() },
+            { kind: "tomorrow", date: addDaysIso(todayIsoLocal(), 1) }
+          ];
+
+          for (const target of reminderTargets) {
+            if (hasSentReminder(target.kind, target.date)) continue;
+
+            const rows = reminderSchedulesForDate(target.date);
+            if (!rows.length) continue;
+
+            await showScheduleReminder(target.kind, target.date, rows);
+            markReminderSent(target.kind, target.date);
+          }
+        }
+
+        function updateScheduleReminderButton() {
+          const button = document.querySelector("#scheduleReminderButton");
+          if (!button) return;
+
+          const icon = button.querySelector("[data-reminder-icon]");
+          if (!notificationSupported()) {
+            button.hidden = true;
+            return;
+          }
+
+          button.hidden = false;
+          button.disabled = false;
+          button.classList.remove("is-primary");
+
+          if (Notification.permission === "denied") {
+            button.disabled = true;
+            button.setAttribute("aria-label", "알림이 차단됨");
+            button.setAttribute("title", "브라우저 설정에서 알림 허용이 필요합니다");
+            if (icon) icon.textContent = "notifications_off";
+            return;
+          }
+
+          if (Notification.permission === "granted" && remindersEnabled()) {
+            button.classList.add("is-primary");
+            button.setAttribute("aria-label", "내 일정 알림 끄기");
+            button.setAttribute("title", "내 일정 알림 켜짐");
+            if (icon) icon.textContent = "notifications_active";
+            return;
+          }
+
+          button.setAttribute("aria-label", "내 일정 알림 켜기");
+          button.setAttribute("title", "내 일정 알림 켜기");
+          if (icon) icon.textContent = "notifications";
+        }
+
+        async function toggleScheduleReminders() {
+          if (!notificationSupported()) {
+            alert("이 브라우저에서는 알림을 지원하지 않습니다.");
+            return;
+          }
+
+          if (Notification.permission === "granted" && remindersEnabled()) {
+            localStorage.setItem(REMINDER_ENABLED_KEY, "false");
+            updateScheduleReminderButton();
+            return;
+          }
+
+          if (Notification.permission === "denied") {
+            updateScheduleReminderButton();
+            alert("브라우저 설정에서 알림 권한을 허용해야 사용할 수 있습니다.");
+            return;
+          }
+
+          const permission = Notification.permission === "granted"
+            ? "granted"
+            : await Notification.requestPermission();
+
+          if (permission !== "granted") {
+            updateScheduleReminderButton();
+            return;
+          }
+
+          localStorage.setItem(REMINDER_ENABLED_KEY, "true");
+          updateScheduleReminderButton();
+          await checkScheduleReminders();
         }
 
         function getScheduleOverlapAlerts(date, startTime, endTime, excludeId) {
@@ -4623,6 +4810,12 @@
         }
       }
 
+      const reminderButton = event.target.closest("#scheduleReminderButton");
+      if (reminderButton) {
+        toggleScheduleReminders().catch(error => console.warn("Schedule reminder failed", error));
+        return;
+      }
+
       const addButton = event.target.closest("[data-add-schedule]");
       if (addButton) {
         openAddSchedule();
@@ -4852,6 +5045,8 @@
         renderDashboard();
         initHeaderAvatar();
         deferSecondaryRenders();
+        updateScheduleReminderButton();
+        checkScheduleReminders().catch(error => console.warn("Schedule reminder check failed", error));
 
         requestAnimationFrame(() => {
           document.body.classList.remove("app-first-paint");
