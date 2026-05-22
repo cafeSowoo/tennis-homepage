@@ -1857,9 +1857,9 @@
 
             <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
               <!-- 모바일 드래그 핸들바 인디케이터 -->
-              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden"></div>
+              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-panel-dismiss-zone></div>
 
-              <div class="mb-4 flex items-center justify-between">
+              <div class="mb-4 flex items-center justify-between" data-panel-dismiss-zone>
                 <div>
                   <h3 id="selectedDateTitle">Selected Matches</h3>
                 </div>
@@ -4683,6 +4683,18 @@
       if (!panel || !window.PointerEvent) return;
 
       const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+      const restorePanelPosition = () => {
+        if (panel.classList.contains("hidden")) return;
+        panel.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+        panel.style.transform = "translateY(0) scale(1)";
+        window.setTimeout(() => {
+          if (!panel.classList.contains("hidden")) {
+            panel.style.transition = "";
+            panel.style.transform = "";
+            panel.style.opacity = "";
+          }
+        }, 180);
+      };
       const restoreListPosition = () => {
         const list = document.querySelector("#selectedDateList");
         if (!list || isPanelSwiping) return;
@@ -4704,8 +4716,22 @@
             panel.releasePointerCapture(panelDrag.pointerId);
           } catch (e) {}
         }
+        const wasVerticalDismiss = panelDrag?.isVerticalDismiss;
         panelDrag = null;
-        if (restore) restoreListPosition();
+        if (restore) {
+          if (wasVerticalDismiss) restorePanelPosition();
+          restoreListPosition();
+        }
+      };
+      const closePanelFromSwipe = () => {
+        suppressPanelClick = true;
+        panel.style.transition = "";
+        panel.style.transform = "";
+        panel.style.opacity = "";
+        state.selectedDate = "";
+        renderCalendar();
+        renderSelectedDate();
+        window.setTimeout(() => { suppressPanelClick = false; }, 250);
       };
 
       panel.addEventListener("pointerdown", event => {
@@ -4718,7 +4744,9 @@
           pointerId: event.pointerId,
           startX: event.clientX,
           startY: event.clientY,
-          isHorizontal: false
+          isHorizontal: false,
+          isVerticalDismiss: false,
+          canDismiss: Boolean(event.target.closest("[data-panel-dismiss-zone]"))
         };
         panel.setPointerCapture?.(event.pointerId);
       });
@@ -4729,7 +4757,25 @@
         const dx = event.clientX - panelDrag.startX;
         const dy = event.clientY - panelDrag.startY;
 
+        if (panelDrag.isVerticalDismiss) {
+          if (event.cancelable) event.preventDefault();
+          const translateY = Math.max(0, dy);
+          panel.style.transition = "none";
+          panel.style.transform = `translateY(${translateY}px) scale(1)`;
+          panel.style.opacity = String(Math.max(0.72, 1 - translateY / 320));
+          return;
+        }
+
         if (!panelDrag.isHorizontal) {
+          if (panelDrag.canDismiss && dy > 14 && dy > Math.abs(dx) * 1.2) {
+            panelDrag.isVerticalDismiss = true;
+            if (event.cancelable) event.preventDefault();
+            panel.style.transition = "none";
+            panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
+            panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
+            return;
+          }
+
           // If vertical scrolling is significant, cancel horizontal swipe early
           if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
             resetDrag({ restore: true });
@@ -4756,10 +4802,16 @@
         if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
 
         const dx = event.clientX - panelDrag.startX;
+        const dy = event.clientY - panelDrag.startY;
+        const shouldDismiss = panelDrag.isVerticalDismiss && dy >= 56;
         const shouldSwipe = panelDrag.isHorizontal && Math.abs(dx) >= 60;
         const list = document.querySelector("#selectedDateList");
 
-        if (shouldSwipe && state.selectedDate && !isPanelSwiping) {
+        if (shouldDismiss) {
+          closePanelFromSwipe();
+        } else if (panelDrag.isVerticalDismiss) {
+          restorePanelPosition();
+        } else if (shouldSwipe && state.selectedDate && !isPanelSwiping) {
           suppressPanelClick = true;
           const offset = dx < 0 ? 1 : -1;
           swipeDate(offset);
@@ -5322,12 +5374,12 @@
         const clickedCalendarBlockingControl = event.target.closest("#calendarAddBtn, #calendarAddMenu");
         const clickedCalendarDateGrid = event.target.closest("#calendarGridWrapper");
 
-        event.preventDefault();
-        event.stopPropagation();
-
         if (clickedInsidePanel || clickedDateBtn || clickedCalendarBlockingControl || clickedCalendarDateGrid) {
           return;
         }
+
+        event.preventDefault();
+        event.stopPropagation();
 
         state.selectedDate = "";
         renderCalendar();
