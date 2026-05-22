@@ -1320,6 +1320,28 @@
       text-transform: uppercase;
     }
 
+    #dashboard .weekday-grid > div {
+      transition: color 0.2s ease, font-weight 0.2s ease, transform 0.2s ease;
+    }
+
+    #dashboard .weekday-grid > div.highlight-sun {
+      color: #ff3b30 !important;
+      font-weight: 700 !important;
+      transform: scale(1.08);
+    }
+
+    #dashboard .weekday-grid > div.highlight-sat {
+      color: #0071e3 !important;
+      font-weight: 700 !important;
+      transform: scale(1.08);
+    }
+
+    #dashboard .weekday-grid > div.highlight-weekday {
+      color: #1d1d1f !important;
+      font-weight: 700 !important;
+      transform: scale(1.08);
+    }
+
     #dashboard .calendar-day {
       border-radius: 0.75rem;
       transition: background 0.2s ease, border-color 0.2s ease;
@@ -1623,6 +1645,7 @@
         display: flex;
         flex-direction: column;
         padding: 0.75rem 1rem 1rem !important; /* 상단 패딩 조절 */
+        touch-action: pan-y; /* 모바일 세로 스크롤은 유지하고 가로 스와이프 제스처 활성화 */
 
         /* 슬라이드 업 트랜지션 */
         opacity: 0;
@@ -1647,6 +1670,9 @@
         -webkit-overflow-scrolling: touch;
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
+        transition: transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease;
+        transform: translateX(0);
+        opacity: 1;
       }
 
       #dashboard #selectedDatePanel #selectedDateList::-webkit-scrollbar {
@@ -3236,6 +3262,28 @@
       const cells = [];
       document.querySelector("#calendarMonthTitle").textContent = monthLabel(state.currentMonth);
 
+      // 요일 헤더 하이라이트 처리
+      const weekdayHeaders = document.querySelectorAll(".calendar-card .weekday-grid > div");
+      if (weekdayHeaders.length === 7) {
+        let selectedDayIndex = -1;
+        if (state.selectedDate) {
+          selectedDayIndex = new Date(`${state.selectedDate}T00:00:00`).getDay();
+        }
+
+        weekdayHeaders.forEach((header, idx) => {
+          header.classList.remove("highlight-sun", "highlight-sat", "highlight-weekday");
+          if (idx === selectedDayIndex) {
+            if (idx === 0) {
+              header.classList.add("highlight-sun");
+            } else if (idx === 6) {
+              header.classList.add("highlight-sat");
+            } else {
+              header.classList.add("highlight-weekday");
+            }
+          }
+        });
+      }
+
       // Stitch bridge: Calendar HTML markup starts here.
       for (let i = 0; i < firstOffset; i++) {
         cells.push(`<div class="aspect-square h-auto md:aspect-auto md:h-32 rounded-lg bg-surface-container-lowest border border-surface-container-high/50 opacity-50 p-2"></div>`);
@@ -4538,18 +4586,93 @@
 
     let panelDrag = null;
     let suppressPanelClick = false;
+    let isPanelSwiping = false;
+
+    function swipeDate(offset) {
+      const list = document.querySelector("#selectedDateList");
+      if (!list || !state.selectedDate || isPanelSwiping) return;
+
+      isPanelSwiping = true;
+
+      // Start transition out (using 100% or -100% width of the panel)
+      list.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+      const targetX = offset > 0 ? "-100%" : "100%";
+      list.style.transform = `translateX(${targetX})`;
+      list.style.opacity = "0";
+
+      setTimeout(() => {
+        const newDate = getAdjacentDate(state.selectedDate, offset);
+        state.selectedDate = newDate;
+        state.currentMonth = newDate.slice(0, 7);
+
+        renderCalendar();
+
+        const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
+        const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
+        const sample = items[0] || eventItems[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
+
+        const tennisHTML = items.length
+          ? `<div class="space-y-3">
+              <h4 class="text-xs font-black uppercase tracking-wider text-primary">테니스 일정</h4>
+              ${items.map(item => scheduleRow(item, "datePanel")).join("")}
+            </div>`
+          : "";
+        const selectedDateWeatherHTML = renderSelectedDateWeatherCard(state.selectedDate);
+        const eventHTML = eventItems.length
+          ? `<div class="space-y-3">
+              <h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">다른 일정</h4>
+              ${eventItems.map(calendarEventRow).join("")}
+            </div>`
+          : "";
+
+        document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
+        list.innerHTML = items.length || eventItems.length
+          ? `<div class="space-y-5">${eventHTML}${tennisHTML}${selectedDateWeatherHTML ? `<div class="space-y-3"><h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">날씨</h4>${selectedDateWeatherHTML}</div>` : ""}</div>`
+          : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
+
+        updatePanelGeometry();
+
+        // Instantly switch to opposite side
+        list.style.transition = "none";
+        const startX = offset > 0 ? "100%" : "-100%";
+        list.style.transform = `translateX(${startX})`;
+        list.style.opacity = "0";
+
+        list.offsetHeight; // force reflow
+
+        // Slide in from the other side
+        list.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+        list.style.transform = "translateX(0)";
+        list.style.opacity = "1";
+
+        setTimeout(() => {
+          list.style.transition = "";
+          list.style.transform = "";
+          list.style.opacity = "";
+          isPanelSwiping = false;
+        }, 180);
+      }, 180);
+    }
 
     function setupSelectedDatePanelSwipe() {
       const panel = document.querySelector("#selectedDatePanel");
       if (!panel || !window.PointerEvent) return;
 
       const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
-      const resetDrag = () => { panelDrag = null; };
+      const resetDrag = () => {
+        if (panelDrag) {
+          try {
+            panel.releasePointerCapture(panelDrag.pointerId);
+          } catch (e) {}
+        }
+        panelDrag = null;
+      };
 
       panel.addEventListener("pointerdown", event => {
         if (!isMobile()) return;
+        if (isPanelSwiping) return;
         if (event.button !== undefined && event.button !== 0) return;
-        if (event.target.closest("button, a, input, [data-detail-id], [data-event-detail-id]")) return;
+        if (event.target.closest("input, select, textarea")) return;
 
         panelDrag = {
           pointerId: event.pointerId,
@@ -4566,9 +4689,26 @@
         const dx = event.clientX - panelDrag.startX;
         const dy = event.clientY - panelDrag.startY;
 
-        if (Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          panelDrag.isHorizontal = true;
+        if (!panelDrag.isHorizontal) {
+          // If vertical scrolling is significant, cancel horizontal swipe early
+          if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
+            resetDrag();
+            return;
+          }
+          if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+            panelDrag.isHorizontal = true;
+          }
+        }
+
+        if (panelDrag.isHorizontal) {
           if (event.cancelable) event.preventDefault();
+          const list = document.querySelector("#selectedDateList");
+          if (list) {
+            list.style.transition = "none";
+            list.style.transform = `translateX(${dx}px)`;
+            const opacityVal = Math.max(0.4, 1 - Math.abs(dx) / 400);
+            list.style.opacity = opacityVal;
+          }
         }
       });
 
@@ -4576,20 +4716,28 @@
         if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
 
         const dx = event.clientX - panelDrag.startX;
-        const dy = event.clientY - panelDrag.startY;
-
         const shouldSwipe = panelDrag.isHorizontal && Math.abs(dx) >= 60;
-        if (shouldSwipe && state.selectedDate) {
+        const list = document.querySelector("#selectedDateList");
+
+        if (shouldSwipe && state.selectedDate && !isPanelSwiping) {
           suppressPanelClick = true;
           const offset = dx < 0 ? 1 : -1;
-          const newDate = getAdjacentDate(state.selectedDate, offset);
-
-          state.selectedDate = newDate;
-          state.currentMonth = newDate.slice(0, 7);
-          renderCalendar();
-          renderSelectedDate();
-
+          swipeDate(offset);
           window.setTimeout(() => { suppressPanelClick = false; }, 250);
+        } else {
+          // Spring back to center
+          if (list && !isPanelSwiping) {
+            list.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+            list.style.transform = "translateX(0)";
+            list.style.opacity = "1";
+            setTimeout(() => {
+              if (!isPanelSwiping) {
+                list.style.transition = "";
+                list.style.transform = "";
+                list.style.opacity = "";
+              }
+            }, 180);
+          }
         }
         resetDrag();
       });
@@ -5137,16 +5285,28 @@
 
     document.addEventListener("click", event => {
       if (window.innerWidth < 768 && state.selectedDate) {
+        if (event.target.closest("#bottomNav")) return;
+
         const panel = document.querySelector("#selectedDatePanel");
         const clickedInsidePanel = event.target.closest("#selectedDatePanel");
         const clickedDateBtn = dateButtonFromEvent(event);
-        if (!clickedInsidePanel && !clickedDateBtn) {
-          state.selectedDate = "";
-          renderCalendar();
-          renderSelectedDate();
-        }
-      }
+        const clickedCalendarBlockingControl = event.target.closest("#calendarAddBtn, #calendarAddMenu");
+        const clickedCalendarDateGrid = event.target.closest("#calendarGridWrapper");
 
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (clickedInsidePanel || clickedDateBtn || clickedCalendarBlockingControl || clickedCalendarDateGrid) {
+          return;
+        }
+
+        state.selectedDate = "";
+        renderCalendar();
+        renderSelectedDate();
+      }
+    }, true);
+
+    document.addEventListener("click", event => {
       const menu = document.querySelector("#calendarAddMenu");
       if (menu && !menu.classList.contains("hidden")) {
         const clickedInsideMenu = event.target.closest("#calendarAddMenu");
