@@ -647,9 +647,8 @@
         line-height: 34px;
       }
       .weather-card {
-        align-self: flex-start;
         max-width: none;
-        padding: 0.4375rem 0.75rem;
+        padding: 0;
         border-radius: 0.75rem;
       }
       .weather-card .weather-icon {
@@ -1175,6 +1174,11 @@
       margin-bottom: 1.25rem;
     }
 
+    #dashboard .dashboard-heading-row {
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     #dashboard .dashboard-title {
       font-family: inherit;
       font-size: 2rem;
@@ -1194,18 +1198,18 @@
 
     #dashboard .weather-card {
       max-width: none;
-      padding: 0.5rem 0.875rem;
+      padding: 0;
       border-radius: 0.75rem;
-      background: var(--app-fill);
-      border: 1px solid var(--app-border);
-      transition: background 0.2s ease, transform 0.2s ease;
+      background: transparent;
+      border: 0;
+      transition: transform 0.2s ease;
     }
 
     #dashboard .weather-card .weather-body {
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.125rem;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
       min-width: 0;
     }
 
@@ -1218,7 +1222,6 @@
     }
 
     #dashboard .weather-card:hover {
-      background: #ebebed;
       transform: scale(1.01);
     }
 
@@ -1237,7 +1240,7 @@
 
     #dashboard .dash-overview-card {
       flex: 0 0 auto;
-      width: min(72vw, 220px);
+      width: min(58vw, 185px);
       padding: 0.625rem 0.875rem;
       border-radius: 0.875rem;
       background: var(--app-card);
@@ -1393,8 +1396,9 @@
     }
 
     #dashboard .calendar-day.selected-date {
-      border: 1.5px solid var(--app-green) !important;
+      border-color: rgba(0, 104, 93, 0.12) !important;
       background: rgba(0, 104, 93, 0.04) !important;
+      box-shadow: inset 0 0 0 1.5px var(--app-green) !important;
     }
 
     #dashboard .calendar-day.is-past:not(.is-today):not(.selected-date) {
@@ -1405,8 +1409,8 @@
 
     #dashboard .pulse-dot {
       animation: none;
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
       opacity: 0.85;
       box-shadow: none;
     }
@@ -1444,6 +1448,11 @@
       font-size: 1.25rem;
       font-weight: 600;
       letter-spacing: -0.02em;
+    }
+
+    #dashboard #selectedDateWeatherSummary {
+      max-width: 9.5rem;
+      white-space: nowrap;
     }
 
     #dashboard #selectedDatePanel h4 {
@@ -1622,12 +1631,8 @@
         font-size: 1.75rem;
       }
 
-      #dashboard .dashboard-summary-meta {
-        align-items: center;
-      }
-
       #dashboard .weather-card {
-        padding: 0.375rem 0.625rem;
+        padding: 0;
         border-radius: 0.625rem;
       }
 
@@ -1812,9 +1817,8 @@
     <section id="dashboard" class="view active active-animate">
       <div class="dashboard-summary flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
-          <h2 class="dashboard-title app-page-title">Dashboard</h2>
-          <div class="dashboard-summary-meta mt-1 flex items-center justify-between gap-3">
-            <p id="dashboardSubtitle" class="dash-subtitle min-w-0 flex-1"></p>
+          <div class="dashboard-heading-row flex justify-between">
+            <h2 class="dashboard-title app-page-title">Dashboard</h2>
             <a class="weather-card group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
               <div class="flex items-center gap-1.5">
                 <div class="weather-icon inline-flex shrink-0 items-center justify-center">
@@ -1877,10 +1881,11 @@
               <!-- 모바일 드래그 핸들바 인디케이터 -->
               <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden"></div>
 
-              <div class="mb-4 flex items-center justify-between">
-                <div>
+              <div class="mb-4 flex items-start justify-between gap-3">
+                <div class="min-w-0">
                   <h3 id="selectedDateTitle">Selected Matches</h3>
                 </div>
+                <div id="selectedDateWeatherSummary" class="flex shrink-0 items-center justify-end gap-1 pt-1 text-[13px] font-semibold leading-tight text-[#6e6e73]"></div>
               </div>
               <div id="selectedDateList" class="space-y-3"></div>
             </section>
@@ -2368,6 +2373,23 @@
       `;
     }
 
+    function renderSelectedDateWeatherSummary(dateValue) {
+      const forecast = dailyForecastForDate(dateValue);
+      if (!forecast) return "";
+
+      const tempLabel = forecast.maxTemp === null || forecast.minTemp === null
+        ? "기온 -"
+        : `${forecast.maxTemp}°/${forecast.minTemp}°`;
+      const precipitationLabel = forecast.precipitation === null ? "-" : `${forecast.precipitation}%`;
+
+      return `
+        <span class="truncate">${forecast.label}</span>
+        <span class="tabular-nums">${tempLabel}</span>
+        <span class="material-symbols-outlined text-[13px] leading-none text-primary" aria-hidden="true">umbrella</span>
+        <span class="tabular-nums">${precipitationLabel}</span>
+      `;
+    }
+
     async function refreshWeather() {
       try {
         const weather = await fetchJSON(SONGDO_WEATHER_URL);
@@ -2736,30 +2758,12 @@
     }
 
     function renderDashboard() {
-      const subtitle = document.querySelector("#dashboardSubtitle");
-      if (subtitle) {
-        subtitle.textContent = new Date().toLocaleDateString("ko-KR", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-      }
       renderCalendar();
       renderSelectedDate();
       renderUpcoming();
     }
 
     function showDashboardShell() {
-      const subtitle = document.querySelector("#dashboardSubtitle");
-      if (subtitle) {
-        subtitle.textContent = new Date().toLocaleDateString("ko-KR", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-      }
       const monthTitle = document.querySelector("#calendarMonthTitle");
       if (monthTitle) monthTitle.textContent = monthLabel(state.currentMonth);
 
@@ -3442,6 +3446,7 @@
 
       if (!state.selectedDate) {
         panel.classList.remove("active-animate");
+        document.querySelector("#selectedDateWeatherSummary").innerHTML = "";
         document.body.classList.remove("selected-date-active");
         if (isMobile) {
           panel._hideTimeout = setTimeout(() => {
@@ -3470,7 +3475,7 @@
             ${items.map(item => scheduleRow(item, "datePanel")).join("")}
           </div>`
         : "";
-      const selectedDateWeatherHTML = renderSelectedDateWeatherCard(state.selectedDate);
+      const selectedDateWeatherSummaryHTML = renderSelectedDateWeatherSummary(state.selectedDate);
       const eventHTML = eventItems.length
         ? `<div class="space-y-3">
             <h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">다른 일정</h4>
@@ -3492,8 +3497,9 @@
       }
 
       document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
+      document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
-        ? `<div class="space-y-5">${eventHTML}${tennisHTML}${selectedDateWeatherHTML ? `<div class="space-y-3"><h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">날씨</h4>${selectedDateWeatherHTML}</div>` : ""}</div>`
+        ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
         : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
 
       updatePanelGeometry();
@@ -3963,7 +3969,7 @@
             ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
               <button class="dash-overview-card is-mine shrink-0 snap-center" type="button" data-detail-id="${schedule.id}">
                 <div class="dash-overview-row">
-                  <p class="dash-overview-label">${index === 0 ? "My Match" : `My ${index + 1}`}</p>
+                  <p class="dash-overview-label">My ${String(index + 1).padStart(2, "0")}</p>
                   <p class="dash-overview-title truncate">${escapeHTML(schedule.place)}</p>
                 </div>
                 <p class="dash-overview-meta truncate">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
@@ -3971,7 +3977,7 @@
             `) : [`
               <button class="dash-overview-card shrink-0 snap-center" type="button" data-view-link="schedule">
                 <div class="dash-overview-row">
-                  <p class="dash-overview-label">My Match</p>
+                  <p class="dash-overview-label">My 00</p>
                   <p class="dash-overview-title truncate">아직 없음</p>
                 </div>
                 <p class="dash-overview-meta truncate">내 참석 예정 없음</p>
@@ -4659,7 +4665,7 @@
               ${items.map(item => scheduleRow(item, "datePanel")).join("")}
             </div>`
           : "";
-        const selectedDateWeatherHTML = renderSelectedDateWeatherCard(state.selectedDate);
+        const selectedDateWeatherSummaryHTML = renderSelectedDateWeatherSummary(state.selectedDate);
         const eventHTML = eventItems.length
           ? `<div class="space-y-3">
               <h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">다른 일정</h4>
@@ -4668,8 +4674,9 @@
           : "";
 
         document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
+        document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
         list.innerHTML = items.length || eventItems.length
-          ? `<div class="space-y-5">${eventHTML}${tennisHTML}${selectedDateWeatherHTML ? `<div class="space-y-3"><h4 class="text-xs font-black uppercase tracking-wider text-on-surface-variant">날씨</h4>${selectedDateWeatherHTML}</div>` : ""}</div>`
+          ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
           : emptyStateHTML("오늘의 코트는 평화롭게 휴식 중입니다 🎾", "선택하신 날짜에는 예정된 일정이 없어요. 새로운 코트를 예약하고 라켓을 잡아볼까요?");
 
         updatePanelGeometry();
