@@ -2687,27 +2687,6 @@
       document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => {
         const initial = m.name.slice(0, 1);
         const rank = idx + 1;
-        const lastActiveDate = m.latest ? dateLabel(m.latest).split(" (")[0] : "없음";
-
-        // Dynamic NTRP rating for realistic visualization
-        let ntrp = "3.5";
-        if (rank === 1) ntrp = "4.5";
-        else if (rank <= 4) ntrp = "4.0";
-        else if (rank <= 8) ntrp = "3.8";
-
-        // Trophy & badge styling
-        let badgeHtml = "";
-
-        if (rank === 1) {
-          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-800">🏆 Champion</span>`;
-        } else if (rank === 2) {
-          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-slate-700">🥈 Runner-up</span>`;
-        } else if (rank === 3) {
-          badgeHtml = `<span class="inline-flex w-fit items-center gap-1 rounded-full border border-amber-800/20 bg-amber-700/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-900">🥉 Elite</span>`;
-        } else {
-          badgeHtml = `<span class="inline-flex w-fit items-center rounded-full bg-surface-container-high px-3 py-1 text-[11px] font-bold text-on-surface-variant">Rank #${rank}</span>`;
-        }
-
         return `
           <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 rounded-xl bg-surface-container-lowest p-3 sm:p-4">
             <div class="flex items-start gap-2.5 sm:gap-4">
@@ -2715,33 +2694,18 @@
                 <div class="member-avatar flex items-center justify-center rounded-full font-black shadow-sm ${getAvatarClassForMember(m.name, rank)}">
                   ${initial}
                 </div>
-                ${rank === 1 ? `
-                  <div class="avatar-rank-badge bg-amber-500 text-white">🥇</div>
-                ` : rank === 2 ? `
-                  <div class="avatar-rank-badge bg-slate-400 text-white">🥈</div>
-                ` : rank === 3 ? `
-                  <div class="avatar-rank-badge bg-amber-700 text-white">🥉</div>
-                ` : `
-                  <div class="avatar-rank-badge bg-surface-container-high text-on-surface-variant text-[9px] font-bold">${rank}</div>
-                `}
               </div>
               <div class="min-w-0 flex-1 pt-0.5">
                 <div class="flex min-w-0 flex-col gap-0.5 sm:gap-1">
                   <div class="flex items-center gap-1 flex-wrap">
                     <h3 class="font-headline-md text-sm sm:text-lg font-black leading-tight text-on-surface">${m.name}</h3>
-                    <span class="rounded-full bg-secondary-container px-1.5 py-0.5 text-[9px] sm:text-[11px] font-black leading-none text-on-secondary-container">NTRP ${ntrp}</span>
-                  </div>
-                  <div class="hidden sm:inline-flex mt-1">
-                    ${badgeHtml}
                   </div>
                   <!-- Mobile only matches and last active info -->
                   <div class="block sm:hidden text-[10px] font-semibold text-on-surface-variant space-y-0.5">
                     <p class="text-primary font-bold flex items-center gap-0.5">
                       ${icon("sports_tennis", "text-[12px]")} ${m.count} Matches
                     </p>
-                    <p class="text-[9px]">최근: ${lastActiveDate}</p>
                   </div>
-                  <p class="hidden sm:block mt-1.5 text-xs font-semibold text-on-surface-variant">최근 참석: ${lastActiveDate}</p>
                 </div>
               </div>
             </div>
