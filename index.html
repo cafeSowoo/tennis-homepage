@@ -1699,6 +1699,12 @@
         transform: translateY(0) scale(1);
       }
 
+      #dashboard [data-panel-dismiss-zone] {
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
       #dashboard #selectedDatePanel #selectedDateList {
         flex: 1;
         overflow-y: auto;
@@ -1879,9 +1885,9 @@
 
             <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
               <!-- 모바일 드래그 핸들바 인디케이터 -->
-              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden"></div>
+              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-panel-dismiss-zone></div>
 
-              <div class="mb-4 flex items-start justify-between gap-3">
+              <div class="mb-4 flex items-start justify-between gap-3" data-panel-dismiss-zone>
                 <div class="min-w-0">
                   <h3 id="selectedDateTitle">Selected Matches</h3>
                 </div>
@@ -4712,10 +4718,12 @@
         if (panel.classList.contains("hidden")) return;
         panel.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
         panel.style.transform = "translateY(0) scale(1)";
+        panel.style.webkitTransform = "translateY(0) scale(1)";
         window.setTimeout(() => {
           if (!panel.classList.contains("hidden")) {
             panel.style.transition = "";
             panel.style.transform = "";
+            panel.style.webkitTransform = "";
             panel.style.opacity = "";
           }
         }, 180);
@@ -4753,11 +4761,18 @@
         suppressPanelClick = true;
         panel.style.transition = "";
         panel.style.transform = "";
+        panel.style.webkitTransform = "";
         panel.style.opacity = "";
         state.selectedDate = "";
         renderCalendar();
         renderSelectedDate();
         window.setTimeout(() => { suppressPanelClick = false; }, 250);
+      };
+      const beginPanelDismiss = (dy) => {
+        panel.style.transition = "none";
+        panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
+        panel.style.webkitTransform = `translateY(${Math.max(0, dy)}px) scale(1)`;
+        panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
       };
 
       panel.addEventListener("pointerdown", event => {
@@ -4791,9 +4806,7 @@
         if (panelDrag.isVerticalDismiss) {
           if (event.cancelable) event.preventDefault();
           const translateY = Math.max(0, dy);
-          panel.style.transition = "none";
-          panel.style.transform = `translateY(${translateY}px) scale(1)`;
-          panel.style.opacity = String(Math.max(0.72, 1 - translateY / 320));
+          beginPanelDismiss(translateY);
           return;
         }
 
@@ -4812,9 +4825,7 @@
               if (panelDrag.canDismiss && dy > 0) {
                 panelDrag.isVerticalDismiss = true;
                 if (event.cancelable) event.preventDefault();
-                panel.style.transition = "none";
-                panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
-                panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
+                beginPanelDismiss(dy);
                 return;
               } else {
                 panelDrag.isScrollingList = true;
@@ -4868,6 +4879,64 @@
         event.stopPropagation();
         suppressPanelClick = false;
       }, true);
+
+      let touchDismissDrag = null;
+      const resetTouchDismiss = ({ restore = false } = {}) => {
+        const wasDismissing = touchDismissDrag?.isDismissing;
+        touchDismissDrag = null;
+        if (restore && wasDismissing) restorePanelPosition();
+      };
+
+      panel.addEventListener("touchstart", event => {
+        if (!isMobile() || isPanelSwiping) return;
+        if (!event.target.closest("[data-panel-dismiss-zone]")) return;
+        if (event.touches.length !== 1) return;
+
+        const touch = event.touches[0];
+        touchDismissDrag = {
+          startX: touch.clientX,
+          startY: touch.clientY,
+          isDismissing: false
+        };
+      }, { passive: true });
+
+      panel.addEventListener("touchmove", event => {
+        if (!touchDismissDrag || event.touches.length !== 1) return;
+
+        const touch = event.touches[0];
+        const dx = touch.clientX - touchDismissDrag.startX;
+        const dy = touch.clientY - touchDismissDrag.startY;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        if (!touchDismissDrag.isDismissing) {
+          if (dy > 8 && absDy > absDx * 1.15) {
+            touchDismissDrag.isDismissing = true;
+          } else if (absDx > 10 && absDx > absDy) {
+            resetTouchDismiss();
+            return;
+          } else {
+            return;
+          }
+        }
+
+        event.preventDefault();
+        beginPanelDismiss(dy);
+      }, { passive: false });
+
+      panel.addEventListener("touchend", event => {
+        if (!touchDismissDrag) return;
+
+        const touch = event.changedTouches[0];
+        const dy = touch.clientY - touchDismissDrag.startY;
+        if (touchDismissDrag.isDismissing && dy >= 64) {
+          closePanelFromSwipe();
+        } else {
+          resetTouchDismiss({ restore: true });
+        }
+      }, { passive: true });
+
+      panel.addEventListener("touchcancel", () => resetTouchDismiss({ restore: true }), { passive: true });
     }
 
         function dateButtonFromEvent(event) {
