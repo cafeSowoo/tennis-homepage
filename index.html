@@ -4807,11 +4807,12 @@
         panel.addEventListener("touchstart", event => {
           if (!isMobile() || isPanelSwiping) return;
           if (event.touches.length !== 1) return;
-          if (event.target.closest("input, select, textarea, button, a")) return;
+          if (event.target.closest("input, select, textarea, a")) return;
 
           const list = panel.querySelector("#selectedDateList");
           const touch = event.touches[0];
           const touchedList = event.target.closest("#selectedDateList");
+          if (event.target.closest("button") && !touchedList) return;
           const onDismissZone = event.target.closest("[data-panel-dismiss-zone]");
           const startScrollTop = list ? list.scrollTop : 0;
 
@@ -4863,7 +4864,15 @@
           touchDrag = null;
           panel.classList.remove("is-panel-dragging");
 
+          const suppressCardTap = () => {
+            if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+              suppressPanelClick = true;
+              window.setTimeout(() => { suppressPanelClick = false; }, 250);
+            }
+          };
+
           if (mode === "dismiss") {
+            suppressCardTap();
             if (dy >= dismissThreshold()) {
               closePanelFromSwipe();
             } else {
@@ -4873,10 +4882,9 @@
           }
 
           if (mode === "horizontal") {
+            suppressCardTap();
             if (Math.abs(dx) >= 60 && state.selectedDate && !isPanelSwiping) {
-              suppressPanelClick = true;
               swipeDate(dx < 0 ? 1 : -1);
-              window.setTimeout(() => { suppressPanelClick = false; }, 250);
             } else {
               restoreListPosition();
             }
