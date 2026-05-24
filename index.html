@@ -1705,6 +1705,16 @@
         -webkit-user-select: none;
       }
 
+      #dashboard #selectedDatePanel.is-panel-dragging {
+        touch-action: none;
+        overscroll-behavior: none;
+      }
+
+      #dashboard #selectedDatePanel.is-panel-dragging #selectedDateList {
+        touch-action: none;
+        overflow-y: hidden;
+      }
+
       #dashboard #selectedDatePanel #selectedDateList {
         flex: 1;
         overflow-y: auto;
@@ -4711,11 +4721,15 @@
 
     function setupSelectedDatePanelSwipe() {
       const panel = document.querySelector("#selectedDatePanel");
-      if (!panel || !window.PointerEvent) return;
+      if (!panel) return;
 
       const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+      const isCoarseMobile = () => isMobile() && window.matchMedia("(pointer: coarse)").matches;
+      const dismissThreshold = () => Math.max(72, Math.min(120, panel.offsetHeight * 0.18));
+
       const restorePanelPosition = () => {
         if (panel.classList.contains("hidden")) return;
+        panel.classList.remove("is-panel-dragging");
         panel.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
         panel.style.transform = "translateY(0) scale(1)";
         panel.style.webkitTransform = "translateY(0) scale(1)";
@@ -4743,22 +4757,9 @@
           }
         }, 180);
       };
-      const resetDrag = ({ restore = false } = {}) => {
-        if (panelDrag) {
-          try {
-            panel.releasePointerCapture(panelDrag.pointerId);
-          } catch (e) {}
-        }
-        const wasVerticalDismiss = panelDrag?.isVerticalDismiss;
-        const wasHorizontal = panelDrag?.isHorizontal;
-        panelDrag = null;
-        if (restore) {
-          if (wasVerticalDismiss) restorePanelPosition();
-          if (wasHorizontal) restoreListPosition();
-        }
-      };
       const closePanelFromSwipe = () => {
         suppressPanelClick = true;
+        panel.classList.remove("is-panel-dragging");
         panel.style.transition = "";
         panel.style.transform = "";
         panel.style.webkitTransform = "";
@@ -4769,14 +4770,144 @@
         window.setTimeout(() => { suppressPanelClick = false; }, 250);
       };
       const beginPanelDismiss = (dy) => {
+        panel.classList.add("is-panel-dragging");
         panel.style.transition = "none";
         panel.style.transform = `translateY(${Math.max(0, dy)}px) scale(1)`;
         panel.style.webkitTransform = `translateY(${Math.max(0, dy)}px) scale(1)`;
         panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
       };
+      const beginHorizontalDrag = (dx) => {
+        const list = document.querySelector("#selectedDateList");
+        if (!list) return;
+        panel.classList.add("is-panel-dragging");
+        list.style.transition = "none";
+        list.style.transform = `translateX(${dx}px)`;
+        list.style.opacity = String(Math.max(0.4, 1 - Math.abs(dx) / 400));
+      };
+
+      panel.addEventListener("click", event => {
+        if (!suppressPanelClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        suppressPanelClick = false;
+      }, true);
+
+      if (isCoarseMobile()) {
+        let touchDrag = null;
+
+        const resetTouchDrag = ({ restore = false } = {}) => {
+          const mode = touchDrag?.mode;
+          touchDrag = null;
+          panel.classList.remove("is-panel-dragging");
+          if (!restore || !mode) return;
+          if (mode === "dismiss") restorePanelPosition();
+          if (mode === "horizontal") restoreListPosition();
+        };
+
+        panel.addEventListener("touchstart", event => {
+          if (!isMobile() || isPanelSwiping) return;
+          if (event.touches.length !== 1) return;
+          if (event.target.closest("input, select, textarea, button, a")) return;
+
+          const list = panel.querySelector("#selectedDateList");
+          const touch = event.touches[0];
+          const touchedList = event.target.closest("#selectedDateList");
+          const onDismissZone = event.target.closest("[data-panel-dismiss-zone]");
+          const startScrollTop = list ? list.scrollTop : 0;
+
+          touchDrag = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            mode: null,
+            canDismiss: Boolean(onDismissZone) || (Boolean(touchedList) && startScrollTop <= 0)
+          };
+        }, { passive: true });
+
+        panel.addEventListener("touchmove", event => {
+          if (!touchDrag || event.touches.length !== 1) return;
+
+          const touch = event.touches[0];
+          const dx = touch.clientX - touchDrag.startX;
+          const dy = touch.clientY - touchDrag.startY;
+          const absDx = Math.abs(dx);
+          const absDy = Math.abs(dy);
+
+          if (!touchDrag.mode) {
+            if (absDx < 5 && absDy < 5) return;
+            if (absDx > absDy * 1.15) {
+              touchDrag.mode = "horizontal";
+            } else if (dy > 0 && absDy > absDx * 1.15 && touchDrag.canDismiss) {
+              touchDrag.mode = "dismiss";
+            } else {
+              touchDrag = null;
+              return;
+            }
+          }
+
+          if (event.cancelable) event.preventDefault();
+
+          if (touchDrag.mode === "dismiss") {
+            beginPanelDismiss(Math.max(0, dy));
+          } else if (touchDrag.mode === "horizontal") {
+            beginHorizontalDrag(dx);
+          }
+        }, { passive: false });
+
+        panel.addEventListener("touchend", event => {
+          if (!touchDrag) return;
+
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - touchDrag.startX;
+          const dy = touch.clientY - touchDrag.startY;
+          const mode = touchDrag.mode;
+          touchDrag = null;
+          panel.classList.remove("is-panel-dragging");
+
+          if (mode === "dismiss") {
+            if (dy >= dismissThreshold()) {
+              closePanelFromSwipe();
+            } else {
+              restorePanelPosition();
+            }
+            return;
+          }
+
+          if (mode === "horizontal") {
+            if (Math.abs(dx) >= 60 && state.selectedDate && !isPanelSwiping) {
+              suppressPanelClick = true;
+              swipeDate(dx < 0 ? 1 : -1);
+              window.setTimeout(() => { suppressPanelClick = false; }, 250);
+            } else {
+              restoreListPosition();
+            }
+          }
+        }, { passive: true });
+
+        panel.addEventListener("touchcancel", () => resetTouchDrag({ restore: true }), { passive: true });
+        return;
+      }
+
+      if (!window.PointerEvent) return;
+
+      const resetDrag = ({ restore = false } = {}) => {
+        if (panelDrag) {
+          try {
+            panel.releasePointerCapture(panelDrag.pointerId);
+          } catch (e) {}
+        }
+        const wasVerticalDismiss = panelDrag?.isVerticalDismiss;
+        const wasHorizontal = panelDrag?.isHorizontal;
+        panelDrag = null;
+        panel.classList.remove("is-panel-dragging");
+        if (restore) {
+          if (wasVerticalDismiss) restorePanelPosition();
+          if (wasHorizontal) restoreListPosition();
+        }
+      };
 
       panel.addEventListener("pointerdown", event => {
         if (!isMobile()) return;
+        if (event.pointerType === "touch") return;
         if (isPanelSwiping) return;
         if (event.button !== undefined && event.button !== 0) return;
         if (event.target.closest("input, select, textarea")) return;
@@ -4799,14 +4930,14 @@
 
       panel.addEventListener("pointermove", event => {
         if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
+        if (event.pointerType === "touch") return;
 
         const dx = event.clientX - panelDrag.startX;
         const dy = event.clientY - panelDrag.startY;
 
         if (panelDrag.isVerticalDismiss) {
           if (event.cancelable) event.preventDefault();
-          const translateY = Math.max(0, dy);
-          beginPanelDismiss(translateY);
+          beginPanelDismiss(Math.max(0, dy));
           return;
         }
 
@@ -4838,22 +4969,17 @@
 
         if (panelDrag.isHorizontal) {
           if (event.cancelable) event.preventDefault();
-          const list = document.querySelector("#selectedDateList");
-          if (list) {
-            list.style.transition = "none";
-            list.style.transform = `translateX(${dx}px)`;
-            const opacityVal = Math.max(0.4, 1 - Math.abs(dx) / 400);
-            list.style.opacity = opacityVal;
-          }
+          beginHorizontalDrag(dx);
         }
       });
 
       panel.addEventListener("pointerup", event => {
         if (!panelDrag || event.pointerId !== panelDrag.pointerId) return;
+        if (event.pointerType === "touch") return;
 
         const dx = event.clientX - panelDrag.startX;
         const dy = event.clientY - panelDrag.startY;
-        const shouldDismiss = panelDrag.isVerticalDismiss && dy >= 100;
+        const shouldDismiss = panelDrag.isVerticalDismiss && dy >= dismissThreshold();
         const shouldSwipe = panelDrag.isHorizontal && Math.abs(dx) >= 60;
         const list = document.querySelector("#selectedDateList");
 
@@ -4872,71 +4998,10 @@
         resetDrag();
       });
 
-      panel.addEventListener("pointercancel", () => resetDrag({ restore: true }));
-      panel.addEventListener("click", event => {
-        if (!suppressPanelClick) return;
-        event.preventDefault();
-        event.stopPropagation();
-        suppressPanelClick = false;
-      }, true);
-
-      let touchDismissDrag = null;
-      const resetTouchDismiss = ({ restore = false } = {}) => {
-        const wasDismissing = touchDismissDrag?.isDismissing;
-        touchDismissDrag = null;
-        if (restore && wasDismissing) restorePanelPosition();
-      };
-
-      panel.addEventListener("touchstart", event => {
-        if (!isMobile() || isPanelSwiping) return;
-        if (!event.target.closest("[data-panel-dismiss-zone]")) return;
-        if (event.touches.length !== 1) return;
-
-        const touch = event.touches[0];
-        touchDismissDrag = {
-          startX: touch.clientX,
-          startY: touch.clientY,
-          isDismissing: false
-        };
-      }, { passive: true });
-
-      panel.addEventListener("touchmove", event => {
-        if (!touchDismissDrag || event.touches.length !== 1) return;
-
-        const touch = event.touches[0];
-        const dx = touch.clientX - touchDismissDrag.startX;
-        const dy = touch.clientY - touchDismissDrag.startY;
-        const absDx = Math.abs(dx);
-        const absDy = Math.abs(dy);
-
-        if (!touchDismissDrag.isDismissing) {
-          if (dy > 8 && absDy > absDx * 1.15) {
-            touchDismissDrag.isDismissing = true;
-          } else if (absDx > 10 && absDx > absDy) {
-            resetTouchDismiss();
-            return;
-          } else {
-            return;
-          }
-        }
-
-        event.preventDefault();
-        beginPanelDismiss(dy);
-      }, { passive: false });
-
-      panel.addEventListener("touchend", event => {
-        if (!touchDismissDrag) return;
-
-        const touch = event.changedTouches[0];
-        const dy = touch.clientY - touchDismissDrag.startY;
-        if (touchDismissDrag.isDismissing && dy >= 64) {
-          closePanelFromSwipe();
-        } else {
-          resetTouchDismiss({ restore: true });
-        }
-      }, { passive: true });
-
-      panel.addEventListener("touchcancel", () => resetTouchDismiss({ restore: true }), { passive: true });
+      panel.addEventListener("pointercancel", event => {
+        if (event.pointerType === "touch") return;
+        resetDrag({ restore: true });
+      });
     }
 
         function dateButtonFromEvent(event) {
