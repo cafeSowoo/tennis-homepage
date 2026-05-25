@@ -3529,6 +3529,39 @@
       }
     }
 
+    function clearSelectedDatePanel({ immediate = false, rerenderCalendar = false } = {}) {
+      const panel = document.querySelector("#selectedDatePanel");
+
+      state.selectedDate = "";
+      document.body.classList.remove("selected-date-active");
+
+      if (panel?._hideTimeout) {
+        clearTimeout(panel._hideTimeout);
+        panel._hideTimeout = null;
+      }
+
+      if (immediate && panel) {
+        const list = document.querySelector("#selectedDateList");
+
+        panel.classList.remove("active-animate", "is-panel-dragging");
+        panel.classList.add("hidden");
+        panel.style.transition = "";
+        panel.style.transform = "";
+        panel.style.webkitTransform = "";
+        panel.style.opacity = "";
+        if (list) {
+          list.style.transition = "";
+          list.style.transform = "";
+          list.style.opacity = "";
+        }
+        document.querySelector("#selectedDateWeatherSummary").innerHTML = "";
+      } else {
+        renderSelectedDate();
+      }
+
+      if (rerenderCalendar) renderCalendar();
+    }
+
     function updatePanelGeometry() {
       const panel = document.querySelector("#selectedDatePanel");
       if (!panel || panel.classList.contains("hidden")) return;
@@ -5431,6 +5464,10 @@
         : view;
 
       const updateDOM = () => {
+        if (view !== "dashboard" && (state.selectedDate || document.body.classList.contains("selected-date-active"))) {
+          clearSelectedDatePanel({ immediate: true });
+        }
+
         syncNavigation(targetView);
 
         // Render Views
