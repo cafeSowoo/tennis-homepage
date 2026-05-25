@@ -1,7 +1,8 @@
 Netlify production은 항상 lock 유지, 운영 배포할 때만 unlock/deploy/re-lock 원칙.
 
 이 프로젝트의 기본 배포는 GitHub 기반이다.
-사용자가 "배포", "커밋 배포", "deploy"라고만 말하면 Netlify를 절대 사용하지 말고 git commit + git push만 수행한다.
+사용자가 "배포", "커밋 배포", "deploy"라고만 말하면 Netlify를 절대 사용하지 않는다.
+기본 배포 절차는 git commit + git push origin main 후 GitHub Pages 워크플로(`.github/workflows/pages.yml`) 완료 여부를 확인하는 것까지 포함한다.
 Netlify는 사용자가 명시적으로 "Netlify에 배포"라고 요청한 경우에만 사용한다.
 Netlify Git 연동을 새로 만들거나 복구하지 않는다.
 `netlify link`, `netlify init`, `unlinkSiteRepo` 반대 작업 등 Netlify와 GitHub를 다시 연결하는 작업은 사용자에게 별도 확인 없이 실행하지 않는다.
