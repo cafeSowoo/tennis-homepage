@@ -3720,6 +3720,7 @@
     function renderSelectedDate() {
       const panel = document.querySelector("#selectedDatePanel");
       const isMobile = window.innerWidth < 768;
+      const dashboardActive = Boolean(document.querySelector("#dashboard.active"));
 
       if (panel._hideTimeout) {
         clearTimeout(panel._hideTimeout);
@@ -3741,8 +3742,10 @@
         return;
       }
 
-      if (isMobile) {
+      if (isMobile && dashboardActive) {
         document.body.classList.add("selected-date-active");
+      } else {
+        document.body.classList.remove("selected-date-active");
       }
 
       // active-animate가 없거나 hidden인 경우 둘 다 hidden 상태(혹은 닫히는 도중)로 간주
@@ -3794,7 +3797,7 @@
         panel.classList.add("active-animate");
       }
 
-      if (isMobile && state.selectedDate) {
+      if (isMobile && dashboardActive && state.selectedDate) {
         if (wasHidden) {
           openDatePanelHistory();
         } else if (datePanelHistoryActive) {
