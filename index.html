@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="성장중">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>아직도 성장중 - 5월 테니스 일정</title>
+  <title>아직도 성장중 - 테니스 일정</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -30,13 +30,16 @@
           })
         ])
       );
+
+      const now = new Date();
+      document.title = `아직도 성장중 - ${now.getFullYear()}년 ${now.getMonth() + 1}월 테니스 일정`;
     })();
   </script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-  <script src="env.js"></script>
+  <script src="env.js?v=20260526-auth-writes"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
@@ -1776,6 +1779,27 @@
       border: 1px solid var(--app-border);
       box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
     }
+
+    .auth-control {
+      border: 1px solid var(--app-border);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--app-text);
+    }
+
+    .auth-control:hover {
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .auth-control.is-signed-in {
+      border-color: rgba(0, 104, 93, 0.16);
+      background: rgba(0, 104, 93, 0.08);
+      color: var(--app-green);
+    }
+
+    .auth-control.is-disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
   </style>
 </head>
 <body class="apple-ui min-h-screen bg-[#f5f5f7] font-body-md text-body-md text-[#1d1d1f] antialiased">
@@ -1831,6 +1855,10 @@
       </button>
     </div>
     <div class="relative flex items-center gap-sm">
+      <button id="authButton" class="auth-control inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition sm:w-auto sm:gap-2 sm:px-3" type="button" aria-label="Google 로그인" title="Google 로그인">
+        <span class="material-symbols-outlined text-[18px]" data-auth-icon>login</span>
+        <span class="hidden lg:inline" data-auth-label>로그인</span>
+      </button>
       <button id="scheduleReminderButton" class="app-icon-btn shrink-0" type="button" aria-label="내 일정 알림 켜기" title="내 일정 알림 켜기">
         <span class="material-symbols-outlined text-[18px]" data-reminder-icon>notifications</span>
       </button>
@@ -2204,6 +2232,7 @@
         const EVENT_OVERRIDES_KEY = "tennis.eventOverrides";
         const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
         const ALLOW_REMOTE_WRITES = SUPABASE_CONFIG.allowRemoteWrites === true;
+        const OWNER_EMAIL = SUPABASE_CONFIG.ownerEmail || "harminis@gmail.com";
         const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=14&timezone=Asia%2FSeoul";
     const MATCH_CAPACITY = 16;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
@@ -2212,6 +2241,7 @@
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
         const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", detailReturnTo: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+    const authState = { session: null, user: null, initialized: false };
     const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -2900,6 +2930,7 @@
     function showDashboardShell() {
       const monthTitle = document.querySelector("#calendarMonthTitle");
       if (monthTitle) monthTitle.textContent = monthLabel(state.currentMonth);
+      syncDocumentTitle(state.currentMonth);
 
       const overview = document.querySelector("#quickOverview");
       if (overview && !overview.children.length) {
@@ -2980,6 +3011,117 @@
     function monthLabelKo(monthValue) {
       const [year, month] = monthValue.split("-").map(Number);
       return `${year}년 ${Number(month)}월`;
+    }
+
+    function syncDocumentTitle(monthValue = state.currentMonth) {
+      document.title = `아직도 성장중 - ${monthLabelKo(monthValue)} 테니스 일정`;
+    }
+
+    function currentUserEmail() {
+      return authState.user?.email || "";
+    }
+
+    function isOwnerSignedIn() {
+      return currentUserEmail().toLowerCase() === OWNER_EMAIL.toLowerCase();
+    }
+
+    function remoteWritesEnabled() {
+      return Boolean(supabaseClient && ALLOW_REMOTE_WRITES);
+    }
+
+    function requireOfficialWriteAccess() {
+      if (!remoteWritesEnabled()) return false;
+      if (!authState.initialized) {
+        throw new Error("로그인 상태를 확인하는 중입니다. 잠시 후 다시 시도해 주세요.");
+      }
+      if (!authState.user) {
+        throw new Error(`공식 데이터 수정은 ${OWNER_EMAIL} Google 로그인 후 가능합니다.`);
+      }
+      if (!isOwnerSignedIn()) {
+        throw new Error(`${OWNER_EMAIL} 계정으로 로그인해야 공식 데이터를 수정할 수 있습니다.`);
+      }
+      return true;
+    }
+
+    function authRedirectUrl() {
+      return `${window.location.origin}${window.location.pathname}`;
+    }
+
+    function renderAuthStatus() {
+      const button = document.querySelector("#authButton");
+      if (!button) return;
+
+      const iconEl = button.querySelector("[data-auth-icon]");
+      const labelEl = button.querySelector("[data-auth-label]");
+      const email = currentUserEmail();
+      const hasClient = Boolean(supabaseClient);
+
+      button.disabled = !hasClient;
+      button.classList.toggle("is-disabled", !hasClient);
+      button.classList.toggle("is-signed-in", Boolean(email));
+
+      if (!hasClient) {
+        if (iconEl) iconEl.textContent = "cloud_off";
+        if (labelEl) labelEl.textContent = "인증 꺼짐";
+        button.setAttribute("aria-label", "Supabase 인증 설정이 없습니다");
+        button.title = "Supabase 인증 설정이 없습니다";
+        return;
+      }
+
+      if (!email) {
+        if (iconEl) iconEl.textContent = "login";
+        if (labelEl) labelEl.textContent = "로그인";
+        button.setAttribute("aria-label", "Google 로그인");
+        button.title = "Google 로그인";
+        return;
+      }
+
+      if (iconEl) iconEl.textContent = "logout";
+      if (labelEl) labelEl.textContent = isOwnerSignedIn() ? "로그인됨" : "다른 계정";
+      button.setAttribute("aria-label", `${email} 로그아웃`);
+      button.title = `${email} 로그아웃`;
+    }
+
+    async function initAuth() {
+      if (!supabaseClient?.auth) {
+        authState.initialized = true;
+        renderAuthStatus();
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) console.warn("Auth session could not be loaded.", error);
+      authState.session = data?.session || null;
+      authState.user = authState.session?.user || null;
+      authState.initialized = true;
+      renderAuthStatus();
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        authState.session = session || null;
+        authState.user = session?.user || null;
+        renderAuthStatus();
+      });
+    }
+
+    async function handleAuthButton() {
+      if (!supabaseClient?.auth) return;
+
+      if (authState.user) {
+        const { error } = await supabaseClient.auth.signOut({ scope: "local" });
+        if (error) throw error;
+        authState.session = null;
+        authState.user = null;
+        renderAuthStatus();
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: authRedirectUrl()
+        }
+      });
+      if (error) throw error;
     }
 
     function addMonths(monthValue, delta) {
@@ -3441,6 +3583,7 @@
       const totalDays = daysInMonth(state.currentMonth);
       const cells = [];
       document.querySelector("#calendarMonthTitle").textContent = monthLabel(state.currentMonth);
+      syncDocumentTitle(state.currentMonth);
 
       // 요일 헤더 하이라이트 처리
       const weekdayHeaders = document.querySelectorAll(".calendar-card .weekday-grid > div");
@@ -5262,7 +5405,8 @@
     }
 
         async function addSchedule(schedule) {
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { data, error } = await supabaseClient
           .from("schedules")
           .insert(toSupabaseSchedule(schedule))
@@ -5285,7 +5429,8 @@
       const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
       if (!rawSchedule) return;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { error } = await supabaseClient
           .from("schedules")
           .update(toSupabaseSchedule({ ...rawSchedule, ...updates }))
@@ -5315,7 +5460,8 @@
         async function addEvent(event) {
       let storedEvent = event;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { data, error } = await supabaseClient
           .from("events")
           .insert(toSupabaseEvent(event))
@@ -5341,7 +5487,8 @@
       const rawEvent = dataStore.events.find(item => String(item.id) === String(eventId));
       if (!rawEvent) return;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { data, error } = await supabaseClient
           .from("events")
           .update(toSupabaseEvent({ ...rawEvent, ...updates }))
@@ -5382,7 +5529,8 @@
       const rawSchedule = dataStore.schedules.find(item => String(item.id) === String(scheduleId));
       if (!rawSchedule) return;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { error } = await supabaseClient
           .from("schedules")
           .update({ attendee_ids: normalizedIds })
@@ -5484,7 +5632,8 @@
         source: "local"
       };
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { data, error } = await supabaseClient
           .from("discussions")
           .insert(toSupabaseDiscussion(discussion))
@@ -5506,7 +5655,8 @@
       if (!schedule) return;
       if (!confirm(`${schedule.title} 일정을 삭제할까요?`)) return;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { error } = await supabaseClient
           .from("schedules")
           .delete()
@@ -5531,7 +5681,8 @@
       if (!event) return;
       if (!confirm(`${event.title} 일정을 삭제할까요?`)) return;
 
-          if (supabaseClient && ALLOW_REMOTE_WRITES) {
+          if (remoteWritesEnabled()) {
+        requireOfficialWriteAccess();
         const { error } = await supabaseClient
           .from("events")
           .delete()
@@ -5756,6 +5907,12 @@
       const reminderButton = event.target.closest("#scheduleReminderButton");
       if (reminderButton) {
         toggleScheduleReminders().catch(error => console.warn("Schedule reminder failed", error));
+        return;
+      }
+
+      const authButton = event.target.closest("#authButton");
+      if (authButton) {
+        handleAuthButton().catch(error => alert(error.message));
         return;
       }
 
@@ -5997,6 +6154,7 @@
         syncNavigation("dashboard");
         refreshWeather();
 
+        await initAuth();
         await loadData();
         renderDashboard();
         initHeaderAvatar();

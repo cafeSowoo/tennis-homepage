@@ -66,6 +66,15 @@ drop policy if exists "public read discussions" on public.discussions;
 drop policy if exists "preview write schedules" on public.schedules;
 drop policy if exists "preview write events" on public.events;
 drop policy if exists "preview write discussions" on public.discussions;
+drop policy if exists "owner insert schedules" on public.schedules;
+drop policy if exists "owner update schedules" on public.schedules;
+drop policy if exists "owner delete schedules" on public.schedules;
+drop policy if exists "owner insert events" on public.events;
+drop policy if exists "owner update events" on public.events;
+drop policy if exists "owner delete events" on public.events;
+drop policy if exists "owner insert discussions" on public.discussions;
+drop policy if exists "owner update discussions" on public.discussions;
+drop policy if exists "owner delete discussions" on public.discussions;
 
 create policy "public read members" on public.members for select using (true);
 create policy "public read courts" on public.courts for select using (true);
@@ -73,7 +82,64 @@ create policy "public read schedules" on public.schedules for select using (true
 create policy "public read events" on public.events for select using (true);
 create policy "public read discussions" on public.discussions for select using (true);
 
+create policy "owner insert schedules"
+  on public.schedules
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner update schedules"
+  on public.schedules
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete schedules"
+  on public.schedules
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner insert events"
+  on public.events
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner update events"
+  on public.events
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete events"
+  on public.events
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner insert discussions"
+  on public.discussions
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner update discussions"
+  on public.discussions
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete discussions"
+  on public.discussions
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
 grant usage on schema public to anon, authenticated;
 grant select on public.members, public.courts, public.schedules, public.events, public.discussions to anon, authenticated;
-revoke insert, update, delete on public.schedules, public.events, public.discussions from anon;
+revoke insert, update, delete, truncate on public.members, public.courts, public.schedules, public.events, public.discussions from anon, authenticated;
 grant insert, update, delete on public.schedules, public.events, public.discussions to authenticated;
