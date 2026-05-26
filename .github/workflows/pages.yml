@@ -42,6 +42,7 @@ jobs:
           window.TENNIS_CONFIG = {
             supabaseUrl: "${SUPABASE_URL}",
             supabaseAnonKey: "${SUPABASE_ANON_KEY}",
+            siteUrl: "${SITE_URL:-https://cafesowoo.github.io/tennis-homepage/}",
             ownerEmail: "${OWNER_EMAIL:-harminis@gmail.com}",
             allowRemoteWrites: true
           };
@@ -49,6 +50,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
           OWNER_EMAIL: ${{ vars.OWNER_EMAIL }}
 
       - name: Upload artifact
