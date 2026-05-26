@@ -1677,6 +1677,7 @@
         display: flex;
         flex-direction: column;
         padding: 0.75rem 1rem 1rem !important; /* 상단 패딩 조절 */
+        overflow: hidden;
         touch-action: pan-y; /* 모바일 세로 스크롤은 유지하고 가로 스와이프 제스처 활성화 */
 
         /* 슬라이드 업 트랜지션 */
@@ -1715,9 +1716,17 @@
         overflow-y: hidden;
       }
 
-      #dashboard #selectedDatePanel #selectedDateList {
+      #dashboard #selectedDatePanel #selectedDateListViewport {
         flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      #dashboard #selectedDatePanel #selectedDateList {
+        height: 100%;
         overflow-y: auto;
+        overflow-x: hidden;
         overscroll-behavior-y: contain;
         overscroll-behavior-x: contain;
         padding-bottom: 1.5rem;
@@ -1903,7 +1912,9 @@
                 </div>
                 <div id="selectedDateWeatherSummary" class="flex shrink-0 items-center justify-end gap-1 pt-1 text-[13px] font-semibold leading-tight text-[#6e6e73]"></div>
               </div>
-              <div id="selectedDateList" class="space-y-3"></div>
+              <div id="selectedDateListViewport">
+                <div id="selectedDateList" class="space-y-3"></div>
+              </div>
             </section>
           </div>
       </div>
@@ -1932,7 +1943,10 @@
     <section id="detail" class="view">
       <div class="mb-5 flex items-center justify-between gap-3">
         <div class="app-crumb">
-          <button type="button" data-view-link="schedule">Schedule</button>
+          <button type="button" id="detailBackLink" class="detail-back-link inline-flex items-center gap-1" data-detail-back="schedule" aria-label="Schedule로 돌아가기">
+            <span class="material-symbols-outlined text-[18px] md:hidden">arrow_back</span>
+            <span id="detailBackLabel">Schedule</span>
+          </button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
           <span id="detailCrumbTitle" class="is-current">Match Details</span>
         </div>
@@ -2197,7 +2211,7 @@
       : null;
     const todayIso = todayIsoLocal();
     const today = new Date(`${todayIso}T00:00:00`);
-        const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
+        const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", detailReturnTo: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
@@ -2216,6 +2230,7 @@
     let fileDiscussions = [];
     let calendarDrag = null;
     let suppressCalendarClick = false;
+    let detailHistoryActive = false;
     let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
@@ -2771,6 +2786,66 @@
       } else {
         renderDetail(findScheduleById(state.selectedId));
       }
+      syncDetailBackLink();
+    }
+
+    function computeDetailReturnTo() {
+      const dashboardActive = document.querySelector("#dashboard.active");
+      if (state.selectedDate && dashboardActive) return "dashboard-date";
+      if (dashboardActive) return "dashboard";
+      return "schedule";
+    }
+
+    function syncDetailBackLink() {
+      const backLink = document.querySelector("#detailBackLink");
+      const backLabel = document.querySelector("#detailBackLabel");
+      if (!backLink || !backLabel) return;
+
+      const returnTo = state.detailReturnTo || "schedule";
+      if (returnTo === "dashboard-date" && state.selectedDate) {
+        backLabel.textContent = `${dateLabel({ date: state.selectedDate, day: dayNameFromDate(state.selectedDate) })} 일정`;
+        backLink.dataset.detailBack = "dashboard-date";
+        backLink.setAttribute("aria-label", "날짜 일정 목록으로 돌아가기");
+        return;
+      }
+
+      if (returnTo === "dashboard") {
+        backLabel.textContent = "Dashboard";
+        backLink.dataset.detailBack = "dashboard";
+        backLink.setAttribute("aria-label", "Dashboard로 돌아가기");
+        return;
+      }
+
+      backLabel.textContent = "Schedule";
+      backLink.dataset.detailBack = "schedule";
+      backLink.setAttribute("aria-label", "Schedule로 돌아가기");
+    }
+
+    function openDetailNavigation() {
+      state.detailReturnTo = computeDetailReturnTo();
+      switchView("detail");
+      if (state.detailReturnTo === "dashboard-date") {
+        history.pushState({ tennisHomeView: "detail", returnTo: state.detailReturnTo }, "");
+        detailHistoryActive = true;
+      }
+    }
+
+    function returnFromDetail({ fromHistory = false } = {}) {
+      if (!fromHistory && detailHistoryActive) {
+        history.back();
+        return;
+      }
+
+      detailHistoryActive = false;
+      const returnTo = state.detailReturnTo || "schedule";
+      state.detailReturnTo = "schedule";
+
+      if (returnTo === "dashboard-date" || returnTo === "dashboard") {
+        switchView("dashboard");
+        return;
+      }
+
+      switchView("schedule");
     }
 
     function renderDashboard() {
@@ -5464,8 +5539,15 @@
         : view;
 
       const updateDOM = () => {
-        if (view !== "dashboard" && (state.selectedDate || document.body.classList.contains("selected-date-active"))) {
+        if (view !== "dashboard" && view !== "detail" && (state.selectedDate || document.body.classList.contains("selected-date-active"))) {
           clearSelectedDatePanel({ immediate: true });
+        }
+
+        if (view !== "detail") {
+          state.detailReturnTo = "schedule";
+          if (view !== "dashboard") {
+            detailHistoryActive = false;
+          }
         }
 
         syncNavigation(targetView);
@@ -5522,6 +5604,7 @@
             }, 200);
           }
         } else if (view === "detail") {
+          document.body.classList.remove("selected-date-active");
           renderCurrentDetail();
         } else if (view === "member-detail") {
           renderMemberDetail();
@@ -5694,18 +5777,24 @@
         document.querySelector("#helpButton")?.setAttribute("aria-expanded", "false");
       }
 
+      const detailBack = event.target.closest("[data-detail-back]");
+      if (detailBack) {
+        returnFromDetail();
+        return;
+      }
+
       const detailButton = event.target.closest("[data-detail-id]");
       if (detailButton) {
         state.selectedId = detailButton.dataset.detailId;
         state.detailType = "schedule";
-        switchView("detail");
+        openDetailNavigation();
         return;
       }
       const eventDetailButton = event.target.closest("[data-event-detail-id]");
       if (eventDetailButton) {
         state.selectedEventId = eventDetailButton.dataset.eventDetailId;
         state.detailType = "event";
-        switchView("detail");
+        openDetailNavigation();
         return;
       }
       const memberDetailButton = event.target.closest("[data-member-id]");
@@ -5763,6 +5852,10 @@
     setupSelectedDatePanelSwipe();
     window.addEventListener("resize", updatePanelGeometry, { passive: true });
     window.addEventListener("scroll", updatePanelGeometry, { passive: true });
+    window.addEventListener("popstate", () => {
+      if (!document.querySelector("#detail.active")) return;
+      returnFromDetail({ fromHistory: true });
+    });
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
@@ -5790,7 +5883,7 @@
           await updateSchedule(editingScheduleId, updates);
         } else {
           await addSchedule(schedule);
-          switchView("detail");
+          openDetailNavigation();
         }
         closeAddSchedule();
       } catch (error) {
