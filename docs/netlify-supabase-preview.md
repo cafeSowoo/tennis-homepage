@@ -2,6 +2,8 @@
 
 This is the recommended path for solo mobile use when Tailscale on Android is inconvenient.
 
+For the general storage policy, see `storage-policy.md`.
+
 ## Target shape
 
 ```text
@@ -23,7 +25,10 @@ SUPABASE_ANON_KEY=your-public-anon-key
 
 The build command in `netlify.toml` writes those values into `env.js` at deploy time. Without those values, the app falls back to local JSON files and browser `localStorage`.
 
-For local static preview, `env.js` contains the same public Supabase preview settings so `http://127.0.0.1:4173/` writes to the preview database as well. The key is a publishable browser key, not a service-role secret.
+For local static preview, `env.js` may contain public Supabase preview settings.
+With the current default `allowRemoteWrites: false`, the app can read Supabase
+but direct homepage edits are still stored in that browser's localStorage. Enable
+official homepage writes only after Supabase Auth and RLS policies are ready.
 
 ## Supabase setup
 
@@ -39,6 +44,6 @@ node scripts/build-supabase-seed.mjs > supabase/seed.sql
 
 ## Security note
 
-The initial schema allows anon writes to schedules and discussions so the personal preview can work without login. This is acceptable only for a private preview URL used by one person.
-
-Before sharing with club members, replace the preview write policies with authenticated admin-only policies.
+The current schema does not grant anonymous writes. It grants public reads and
+reserves schedule, event, and discussion writes for the authenticated owner
+account configured in the RLS policies.

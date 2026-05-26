@@ -5,6 +5,7 @@ cat > env.js <<EOF
 window.TENNIS_CONFIG = {
   supabaseUrl: "${SUPABASE_URL}",
   supabaseAnonKey: "${SUPABASE_ANON_KEY}",
+  ownerEmail: "${OWNER_EMAIL:-harminis@gmail.com}",
   allowRemoteWrites: false
 };
 EOF

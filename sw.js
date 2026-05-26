@@ -63,6 +63,19 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  if (url.pathname.endsWith("/env.js") || url.pathname.endsWith("env.js")) {
+    event.respondWith(
+      fetch(request).then(response => {
+        if (response && response.status === 200 && response.type === "basic") {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+        return response;
+      }).catch(() => caches.match(request))
+    );
+    return;
+  }
+
   if (isHtmlRequest(request)) {
     event.respondWith(
       fetch(request).catch(async () => {

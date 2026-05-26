@@ -42,12 +42,14 @@ jobs:
           window.TENNIS_CONFIG = {
             supabaseUrl: "${SUPABASE_URL}",
             supabaseAnonKey: "${SUPABASE_ANON_KEY}",
-            allowRemoteWrites: false
+            ownerEmail: "${OWNER_EMAIL:-harminis@gmail.com}",
+            allowRemoteWrites: true
           };
           EOF
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          OWNER_EMAIL: ${{ vars.OWNER_EMAIL }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
