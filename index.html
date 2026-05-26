@@ -2231,6 +2231,7 @@
     let calendarDrag = null;
     let suppressCalendarClick = false;
     let detailHistoryActive = false;
+    let datePanelHistoryActive = false;
     let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
@@ -2846,6 +2847,48 @@
       }
 
       switchView("schedule");
+    }
+
+    function openDatePanelHistory() {
+      if (window.innerWidth >= 768 || !state.selectedDate) return;
+
+      if (datePanelHistoryActive) {
+        history.replaceState({ tennisHomeView: "dashboard-date", selectedDate: state.selectedDate }, "");
+        return;
+      }
+
+      history.pushState({ tennisHomeView: "dashboard-date", selectedDate: state.selectedDate }, "");
+      datePanelHistoryActive = true;
+    }
+
+    function syncDatePanelHistoryAfterDismiss() {
+      if (!datePanelHistoryActive) return;
+      datePanelHistoryActive = false;
+      history.back();
+    }
+
+    function closeDatePanel({ fromHistory = false, immediate = false, rerenderCalendar = false } = {}) {
+      if (!state.selectedDate && !datePanelHistoryActive) return;
+
+      if (!fromHistory && datePanelHistoryActive) {
+        history.back();
+        return;
+      }
+
+      datePanelHistoryActive = false;
+      clearSelectedDatePanel({ immediate, rerenderCalendar });
+    }
+
+    function handleAppPopState() {
+      if (document.querySelector("#detail.active")) {
+        returnFromDetail({ fromHistory: true });
+        return;
+      }
+
+      if (state.selectedDate && document.querySelector("#dashboard.active")) {
+        datePanelHistoryActive = false;
+        clearSelectedDatePanel({ immediate: true, rerenderCalendar: true });
+      }
     }
 
     function renderDashboard() {
@@ -3601,6 +3644,14 @@
         }, 20);
       } else {
         panel.classList.add("active-animate");
+      }
+
+      if (isMobile && state.selectedDate) {
+        if (wasHidden) {
+          openDatePanelHistory();
+        } else if (datePanelHistoryActive) {
+          history.replaceState({ tennisHomeView: "dashboard-date", selectedDate: state.selectedDate }, "");
+        }
       }
     }
 
@@ -4623,6 +4674,7 @@
         state.currentMonth = addMonths(state.currentMonth, delta);
         if (state.selectedDate && !state.selectedDate.startsWith(state.currentMonth)) {
           state.selectedDate = "";
+          syncDatePanelHistoryAfterDismiss();
           renderSelectedDate();
         }
         renderCalendar();
@@ -4655,6 +4707,7 @@
       state.currentMonth = addMonths(state.currentMonth, delta);
       if (state.selectedDate && !state.selectedDate.startsWith(state.currentMonth)) {
         state.selectedDate = "";
+        syncDatePanelHistoryAfterDismiss();
         renderSelectedDate();
       }
       renderCalendar();
@@ -4872,9 +4925,11 @@
         panel.style.transform = "";
         panel.style.webkitTransform = "";
         panel.style.opacity = "";
+        const hadHistory = datePanelHistoryActive;
         state.selectedDate = "";
         renderCalendar();
         renderSelectedDate();
+        if (hadHistory) syncDatePanelHistoryAfterDismiss();
         window.setTimeout(() => { suppressPanelClick = false; }, 250);
       };
       const beginPanelDismiss = (dy) => {
@@ -5528,8 +5583,11 @@
     }
 
     function goHomeDashboard() {
+      const hadDateHistory = datePanelHistoryActive;
+      if (hadDateHistory) datePanelHistoryActive = false;
       resetDashboardState();
       switchView("dashboard");
+      if (hadDateHistory) history.back();
     }
 
     function switchView(view) {
@@ -5540,7 +5598,7 @@
 
       const updateDOM = () => {
         if (view !== "dashboard" && view !== "detail" && (state.selectedDate || document.body.classList.contains("selected-date-active"))) {
-          clearSelectedDatePanel({ immediate: true });
+          closeDatePanel({ immediate: true });
         }
 
         if (view !== "detail") {
@@ -5681,9 +5739,7 @@
         event.preventDefault();
         event.stopPropagation();
 
-        state.selectedDate = "";
-        renderCalendar();
-        renderSelectedDate();
+        closeDatePanel({ rerenderCalendar: true });
       }
     }, true);
 
@@ -5852,10 +5908,7 @@
     setupSelectedDatePanelSwipe();
     window.addEventListener("resize", updatePanelGeometry, { passive: true });
     window.addEventListener("scroll", updatePanelGeometry, { passive: true });
-    window.addEventListener("popstate", () => {
-      if (!document.querySelector("#detail.active")) return;
-      returnFromDetail({ fromHistory: true });
-    });
+    window.addEventListener("popstate", handleAppPopState);
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
@@ -5937,6 +5990,9 @@
     async function initApp() {
       try {
         document.body.classList.add("app-first-paint");
+        if (!history.state?.tennisHomeView) {
+          history.replaceState({ tennisHomeView: "dashboard" }, "");
+        }
         showDashboardShell();
         syncNavigation("dashboard");
         refreshWeather();
