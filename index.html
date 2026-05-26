@@ -5665,7 +5665,7 @@
     window.toggleCalendarAddMenu = toggleCalendarAddMenu;
 
     document.addEventListener("click", event => {
-      if (window.innerWidth < 768 && state.selectedDate) {
+      if (window.innerWidth < 768 && state.selectedDate && document.querySelector("#dashboard.active")) {
         if (event.target.closest("#bottomNav")) return;
 
         const panel = document.querySelector("#selectedDatePanel");
