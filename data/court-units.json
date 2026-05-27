@@ -1,0 +1,163 @@
+[
+  {
+    "id": "court-moonlight-5",
+    "courtId": "court-moonlight",
+    "label": "5",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-moonlight-6",
+    "courtId": "court-moonlight",
+    "label": "6",
+    "surface": "하드",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-moonlight-7",
+    "courtId": "court-moonlight",
+    "label": "7",
+    "surface": "하드",
+    "sortOrder": 3
+  },
+  {
+    "id": "court-moonlight-8",
+    "courtId": "court-moonlight",
+    "label": "8",
+    "surface": "하드",
+    "sortOrder": 4
+  },
+  {
+    "id": "court-moonlight-9",
+    "courtId": "court-moonlight",
+    "label": "9",
+    "surface": "인조잔디",
+    "sortOrder": 5
+  },
+  {
+    "id": "court-moonlight-10",
+    "courtId": "court-moonlight",
+    "label": "10",
+    "surface": "인조잔디",
+    "sortOrder": 6
+  },
+  {
+    "id": "court-moonlight-11",
+    "courtId": "court-moonlight",
+    "label": "11",
+    "surface": "인조잔디",
+    "sortOrder": 7
+  },
+  {
+    "id": "court-moonlight-12",
+    "courtId": "court-moonlight",
+    "label": "12",
+    "surface": "인조잔디",
+    "sortOrder": 8
+  },
+  {
+    "id": "court-moonlight-13",
+    "courtId": "court-moonlight",
+    "label": "13",
+    "surface": "인조잔디",
+    "sortOrder": 9
+  },
+  {
+    "id": "court-moonlight-14",
+    "courtId": "court-moonlight",
+    "label": "14",
+    "surface": "인조잔디",
+    "sortOrder": 10
+  },
+  {
+    "id": "court-moonlight-festival-a",
+    "courtId": "court-moonlight-festival",
+    "label": "A",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-moonlight-festival-b",
+    "courtId": "court-moonlight-festival",
+    "label": "B",
+    "surface": "하드",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-newmorning-1",
+    "courtId": "court-newmorning",
+    "label": "1",
+    "surface": "인조잔디",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-newmorning-2",
+    "courtId": "court-newmorning",
+    "label": "2",
+    "surface": "인조잔디",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-newmorning-3",
+    "courtId": "court-newmorning",
+    "label": "3",
+    "surface": "인조잔디",
+    "sortOrder": 3
+  },
+  {
+    "id": "court-newmorning-4",
+    "courtId": "court-newmorning",
+    "label": "4",
+    "surface": "인조잔디",
+    "sortOrder": 4
+  },
+  {
+    "id": "court-manseok-a",
+    "courtId": "court-manseok",
+    "label": "A",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-ictus-a",
+    "courtId": "court-ictus",
+    "label": "A",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-ictus-b",
+    "courtId": "court-ictus",
+    "label": "B",
+    "surface": "하드",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-jfield-a",
+    "courtId": "court-jfield",
+    "label": "A",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-jfield-b",
+    "courtId": "court-jfield",
+    "label": "B",
+    "surface": "하드",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-jfield-c",
+    "courtId": "court-jfield",
+    "label": "C",
+    "surface": "하드",
+    "sortOrder": 3
+  },
+  {
+    "id": "court-jfield-d",
+    "courtId": "court-jfield",
+    "label": "D",
+    "surface": "하드",
+    "sortOrder": 4
+  }
+]

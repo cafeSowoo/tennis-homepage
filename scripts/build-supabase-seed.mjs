@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 const readJSON = path => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const members = readJSON("data/members.json");
 const courts = readJSON("data/courts.json");
+const courtUnits = readJSON("data/court-units.json");
 const schedules = readJSON("data/schedules.json");
 const events = readJSON("data/events.json");
 const discussions = readJSON("data/discussions.json");
@@ -27,10 +28,15 @@ console.log(courts.map(court =>
   `  (${sql(court.id)}, ${sql(court.name)}, ${sql(court.image)}, ${sql(court.type)}, ${sql(court.location)}, ${sql(court.canonicalName)})`
 ).join(",\n") + "\non conflict (id) do update set name = excluded.name, image = excluded.image, type = excluded.type, location = excluded.location, canonical_name = excluded.canonical_name;");
 
-console.log("insert into public.schedules (id, date, day, time, title, court_id, attendee_ids, regular, closed, important, source, created_at) values");
+console.log("insert into public.court_units (id, court_id, label, surface, sort_order) values");
+console.log(courtUnits.map(unit =>
+  `  (${sql(unit.id)}, ${sql(unit.courtId)}, ${sql(unit.label)}, ${sql(unit.surface)}, ${unit.sortOrder ?? 0})`
+).join(",\n") + "\non conflict (id) do update set court_id = excluded.court_id, label = excluded.label, surface = excluded.surface, sort_order = excluded.sort_order;");
+
+console.log("insert into public.schedules (id, date, day, time, title, court_id, court_unit_id, attendee_ids, regular, closed, important, source, created_at) values");
 console.log(schedules.map(schedule =>
-  `  (${sql(schedule.id)}, ${sql(schedule.date)}, ${sql(schedule.day)}, ${sql(schedule.time)}, ${sql(schedule.title)}, ${sql(schedule.courtId)}, ${textArray(schedule.attendeeIds)}, ${bool(schedule.regular)}, ${bool(schedule.closed)}, ${bool(schedule.important)}, ${sql(schedule.source || "seed")}, ${sql(schedule.createdAt)})`
-).join(",\n") + "\non conflict (id) do update set date = excluded.date, day = excluded.day, time = excluded.time, title = excluded.title, court_id = excluded.court_id, attendee_ids = excluded.attendee_ids, regular = excluded.regular, closed = excluded.closed, important = excluded.important;");
+  `  (${sql(schedule.id)}, ${sql(schedule.date)}, ${sql(schedule.day)}, ${sql(schedule.time)}, ${sql(schedule.title)}, ${sql(schedule.courtId)}, ${sql(schedule.courtUnitId)}, ${textArray(schedule.attendeeIds)}, ${bool(schedule.regular)}, ${bool(schedule.closed)}, ${bool(schedule.important)}, ${sql(schedule.source || "seed")}, ${sql(schedule.createdAt)})`
+).join(",\n") + "\non conflict (id) do update set date = excluded.date, day = excluded.day, time = excluded.time, title = excluded.title, court_id = excluded.court_id, court_unit_id = excluded.court_unit_id, attendee_ids = excluded.attendee_ids, regular = excluded.regular, closed = excluded.closed, important = excluded.important;");
 
 if (events.length) {
   console.log("insert into public.events (id, date, title, category, start_time, end_time, all_day, location, note, source, created_at) values");

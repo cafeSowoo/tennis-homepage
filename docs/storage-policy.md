@@ -14,8 +14,9 @@ Homepage display -> Supabase
 Supabase is the official source of truth for operational data:
 
 - `members`: people who can appear as attendees or discussion authors.
-- `courts`: places used by schedules.
-- `schedules`: tennis schedules and attendee IDs.
+- `courts`: parent court venues used by schedules.
+- `court_units`: optional sub-courts such as court numbers or A/B labels.
+- `schedules`: tennis schedules, optional sub-court IDs, and attendee IDs.
 - `events`: non-tennis calendar events that should be shared as official data.
 - `discussions`: schedule comments.
 
@@ -66,7 +67,7 @@ Long term, localStorage should keep only personal or UI state such as:
 - selected local profile or display preference.
 
 It should not be the official home for schedules, attendees, events, members,
-courts, or discussions.
+courts, sub-courts, or discussions.
 
 ## Transition Rule
 
