@@ -69,6 +69,9 @@ drop policy if exists "preview write discussions" on public.discussions;
 drop policy if exists "owner insert schedules" on public.schedules;
 drop policy if exists "owner update schedules" on public.schedules;
 drop policy if exists "owner delete schedules" on public.schedules;
+drop policy if exists "owner insert courts" on public.courts;
+drop policy if exists "owner update courts" on public.courts;
+drop policy if exists "owner delete courts" on public.courts;
 drop policy if exists "owner insert events" on public.events;
 drop policy if exists "owner update events" on public.events;
 drop policy if exists "owner delete events" on public.events;
@@ -81,6 +84,25 @@ create policy "public read courts" on public.courts for select using (true);
 create policy "public read schedules" on public.schedules for select using (true);
 create policy "public read events" on public.events for select using (true);
 create policy "public read discussions" on public.discussions for select using (true);
+
+create policy "owner insert courts"
+  on public.courts
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner update courts"
+  on public.courts
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete courts"
+  on public.courts
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
 
 create policy "owner insert schedules"
   on public.schedules
@@ -142,4 +164,63 @@ create policy "owner delete discussions"
 grant usage on schema public to anon, authenticated;
 grant select on public.members, public.courts, public.schedules, public.events, public.discussions to anon, authenticated;
 revoke insert, update, delete, truncate on public.members, public.courts, public.schedules, public.events, public.discussions from anon, authenticated;
-grant insert, update, delete on public.schedules, public.events, public.discussions to authenticated;
+grant insert, update, delete on public.courts, public.schedules, public.events, public.discussions to authenticated;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'court-images',
+  'court-images',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "public read court images" on storage.objects;
+drop policy if exists "owner read court images" on storage.objects;
+drop policy if exists "owner insert court images" on storage.objects;
+drop policy if exists "owner update court images" on storage.objects;
+drop policy if exists "owner delete court images" on storage.objects;
+
+create policy "owner read court images"
+  on storage.objects
+  for select
+  to authenticated
+  using (
+    bucket_id = 'court-images'
+    and lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com'
+  );
+
+create policy "owner insert court images"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'court-images'
+    and lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com'
+  );
+
+create policy "owner update court images"
+  on storage.objects
+  for update
+  to authenticated
+  using (
+    bucket_id = 'court-images'
+    and lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com'
+  )
+  with check (
+    bucket_id = 'court-images'
+    and lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com'
+  );
+
+create policy "owner delete court images"
+  on storage.objects
+  for delete
+  to authenticated
+  using (
+    bucket_id = 'court-images'
+    and lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com'
+  );

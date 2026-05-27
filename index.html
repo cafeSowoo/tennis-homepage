@@ -1999,9 +1999,15 @@
     </section>
 
     <section id="courts" class="view">
-      <div class="mb-5 md:mb-6">
-        <h2 class="app-page-title">Courts</h2>
-        <p class="app-page-subtitle">코트별 예약 현황</p>
+      <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 class="app-page-title">Courts</h2>
+          <p class="app-page-subtitle">코트별 예약 현황</p>
+        </div>
+        <button class="btn-primary w-full justify-center py-3 text-sm font-bold md:w-auto md:px-4 md:py-2.5" type="button" data-add-court>
+          <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
+          코트 추가
+        </button>
       </div>
       <div id="courtCards" class="grid grid-cols-1 gap-5 xl:grid-cols-2"></div>
     </section>
@@ -2125,6 +2131,65 @@
     </div>
   </section>
 
+  <section id="addCourtSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
+    <button id="addCourtBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="코트 추가 닫기"></button>
+    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
+      <div class="mb-5 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-primary">Court Library</p>
+          <h3 id="addCourtSheetTitle" class="mt-1 text-xl font-semibold text-[#1d1d1f]">코트 추가</h3>
+        </div>
+        <button id="closeAddCourt" class="app-icon-btn" type="button" aria-label="닫기">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form id="addCourtForm" class="space-y-5">
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          코트명
+          <input id="addCourtName" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="name" placeholder="예: 송도 스포츠파크 1번코트" type="text" required>
+        </label>
+
+        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
+            종류
+            <input id="addCourtType" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="type" placeholder="Outdoor Hard" type="text">
+          </label>
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
+            위치
+            <input id="addCourtLocation" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="location" placeholder="인천 연수구 송도동" type="text">
+          </label>
+        </div>
+
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          정식 표기
+          <input id="addCourtCanonicalName" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="canonicalName" placeholder="선택 사항" type="text">
+        </label>
+
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          사진
+          <input id="addCourtImageFile" class="w-full rounded-lg border border-dashed border-outline-variant bg-surface px-3 py-3 text-sm font-semibold outline-none file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-xs file:font-bold file:text-white" name="imageFile" type="file" accept="image/*">
+        </label>
+
+        <div id="addCourtPreview" class="hidden overflow-hidden rounded-xl border border-outline-variant/60 bg-surface-container-low">
+          <img class="h-40 w-full object-cover" alt="코트 사진 미리보기">
+        </div>
+
+        <p class="text-xs leading-relaxed text-[#86868b]">저장하면 사진은 Supabase Storage에 업로드되고, 코트 목록과 일정 추가 화면에 바로 반영됩니다.</p>
+
+        <div class="flex gap-2">
+          <button id="deleteCourtButton" class="btn-outline hidden justify-center py-3 text-sm font-bold text-red-600" type="button">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+          <button class="btn-outline flex-1 justify-center py-3 text-sm font-bold" type="button" id="cancelAddCourt">취소</button>
+          <button id="addCourtSubmit" class="btn-primary flex-1 justify-center py-3 text-sm font-bold" type="submit">
+            <span class="material-symbols-outlined text-[18px]">add_location_alt</span> 저장
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
   <section id="addEventSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addEventBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="다른 일정 추가 닫기"></button>
     <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
@@ -2233,6 +2298,7 @@
         const SUPABASE_CONFIG = window.TENNIS_CONFIG || {};
         const ALLOW_REMOTE_WRITES = SUPABASE_CONFIG.allowRemoteWrites === true;
         const OWNER_EMAIL = SUPABASE_CONFIG.ownerEmail || "harminis@gmail.com";
+        const COURT_IMAGE_BUCKET = "court-images";
         const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=14&timezone=Asia%2FSeoul";
     const MATCH_CAPACITY = 16;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
@@ -2265,8 +2331,11 @@
     let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
+    let courtFormMode = "create";
     let editingScheduleId = "";
     let editingEventId = "";
+    let editingCourtId = "";
+    let pendingCourtPreviewUrl = "";
 
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
 
@@ -2567,6 +2636,28 @@
       };
     }
 
+    function fromSupabaseCourt(row) {
+      return {
+        id: row.id,
+        name: row.name,
+        image: row.image,
+        type: row.type,
+        location: row.location,
+        canonicalName: row.canonical_name
+      };
+    }
+
+    function toSupabaseCourt(row) {
+      return {
+        id: String(row.id),
+        name: row.name,
+        image: row.image || null,
+        type: row.type || null,
+        location: row.location || null,
+        canonical_name: row.canonicalName || null
+      };
+    }
+
     function fromSupabaseDiscussion(row) {
       return {
         id: row.id,
@@ -2604,14 +2695,7 @@
       if (failed) throw failed.error;
 
       dataStore.members = membersResult.data || [];
-      dataStore.courts = (courtsResult.data || []).map(row => ({
-        id: row.id,
-        name: row.name,
-        image: row.image,
-        type: row.type,
-        location: row.location,
-        canonicalName: row.canonical_name
-      }));
+      dataStore.courts = (courtsResult.data || []).map(fromSupabaseCourt);
           dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
           dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
           dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
@@ -2794,7 +2878,10 @@
       })).sort(compareCalendarItemsByTime);
 
       people = unique(members.map(member => member.name));
-      places = unique(schedules.map(schedule => schedule.place));
+      places = unique([
+        ...courts.map(court => court.name),
+        ...schedules.map(schedule => schedule.place)
+      ].filter(Boolean));
       byDate = schedules.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
       eventsByDate = calendarEvents.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
       upcoming = schedules.filter(schedule => new Date(schedule.date + "T00:00:00") >= today);
@@ -3050,6 +3137,84 @@
       }
 
       return SUPABASE_CONFIG.siteUrl || "https://cafesowoo.github.io/tennis-homepage/";
+    }
+
+    function slugifyCourtName(name) {
+      const slug = name
+        .trim()
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 48);
+      return slug || `new-${Date.now().toString(36)}`;
+    }
+
+    function makeCourtId(name) {
+      const base = `court-${slugifyCourtName(name)}`;
+      if (!dataStore.courts.some(court => court.id === base)) return base;
+      return `${base}-${Date.now().toString(36)}`;
+    }
+
+    function storagePathFromUrl(url) {
+      const marker = `/storage/v1/object/public/${COURT_IMAGE_BUCKET}/`;
+      const index = String(url || "").indexOf(marker);
+      return index >= 0 ? decodeURIComponent(url.slice(index + marker.length)) : "";
+    }
+
+    async function uploadCourtImage(file, courtId, previousImage = "") {
+      if (!file) return previousImage || "";
+      if (!supabaseClient?.storage) throw new Error("이미지 업로드를 위한 Supabase Storage 설정이 없습니다.");
+      if (!file.type.startsWith("image/")) throw new Error("이미지 파일만 업로드할 수 있습니다.");
+      if (file.size > 5 * 1024 * 1024) throw new Error("이미지는 5MB 이하로 올려 주세요.");
+
+      const extension = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+      const path = `${courtId}/${Date.now().toString(36)}.${extension}`;
+      const { error } = await supabaseClient.storage
+        .from(COURT_IMAGE_BUCKET)
+        .upload(path, file, {
+          cacheControl: "31536000",
+          contentType: file.type,
+          upsert: false
+        });
+      if (error) throw error;
+
+      const { data } = supabaseClient.storage.from(COURT_IMAGE_BUCKET).getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    function previewCourtImage(file) {
+      const wrapper = document.querySelector("#addCourtPreview");
+      const image = wrapper?.querySelector("img");
+      if (!wrapper || !image) return;
+
+      if (pendingCourtPreviewUrl) URL.revokeObjectURL(pendingCourtPreviewUrl);
+      pendingCourtPreviewUrl = file ? URL.createObjectURL(file) : "";
+      if (pendingCourtPreviewUrl) {
+        image.src = pendingCourtPreviewUrl;
+        wrapper.classList.remove("hidden");
+      } else {
+        image.removeAttribute("src");
+        wrapper.classList.add("hidden");
+      }
+    }
+
+    function showCourtImagePreview(src) {
+      const wrapper = document.querySelector("#addCourtPreview");
+      const image = wrapper?.querySelector("img");
+      if (!wrapper || !image) return;
+
+      if (pendingCourtPreviewUrl) {
+        URL.revokeObjectURL(pendingCourtPreviewUrl);
+        pendingCourtPreviewUrl = "";
+      }
+      if (src) {
+        image.src = src;
+        wrapper.classList.remove("hidden");
+      } else {
+        image.removeAttribute("src");
+        wrapper.classList.add("hidden");
+      }
     }
 
     function renderAuthStatus() {
@@ -4408,7 +4573,7 @@
       document.querySelector("#courtCards").innerHTML = places.map(place => {
         const items = schedules.filter(s => s.place === place);
         const next = items.find(s => new Date(s.date + "T00:00:00") >= today) || items[0];
-        const court = courts.find(item => item.name === place) || next?.court || {};
+        const court = courts.find(item => item.name === place || item.canonicalName === place) || next?.court || {};
         const image = court.image || courtImage(place);
         const courtType = court.type || "Outdoor Court";
         const subLocation = court.location || "인천 연수구 송도동";
@@ -4423,6 +4588,11 @@
                   ${items.length} bookings
                 </span>
               </div>
+              ${court.id ? `
+                <button class="absolute left-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-primary shadow-sm backdrop-blur transition hover:bg-white" type="button" data-edit-court="${court.id}" aria-label="${place} 코트 수정">
+                  ${icon("edit", "text-[18px]")}
+                </button>
+              ` : ""}
             </div>
 
             <div class="p-4 md:p-5 flex flex-col flex-1">
@@ -4747,6 +4917,46 @@
           <span>${member.name}</span>
         </label>
       `).join("");
+    }
+
+    function openAddCourt(courtId = "") {
+      try {
+        requireOfficialWriteAccess();
+      } catch (error) {
+        alert(error.message);
+        return;
+      }
+
+      const court = courtId ? dataStore.courts.find(item => String(item.id) === String(courtId)) : null;
+      courtFormMode = court ? "edit" : "create";
+      editingCourtId = court?.id || "";
+
+      const sheet = document.querySelector("#addCourtSheet");
+      const form = document.querySelector("#addCourtForm");
+      form.reset();
+      document.querySelector("#addCourtSheetTitle").textContent = court ? "코트 수정" : "코트 추가";
+      document.querySelector("#addCourtSubmit").innerHTML = `<span class="material-symbols-outlined text-[18px]">${court ? "save" : "add_location_alt"}</span> ${court ? "저장" : "추가"}`;
+      document.querySelector("#deleteCourtButton").classList.toggle("hidden", !court);
+      document.querySelector("#addCourtName").value = court?.name || "";
+      document.querySelector("#addCourtType").value = court?.type || "";
+      document.querySelector("#addCourtLocation").value = court?.location || "";
+      document.querySelector("#addCourtCanonicalName").value = court?.canonicalName || "";
+      showCourtImagePreview(court?.image || "");
+      sheet.classList.remove("hidden");
+      sheet.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      document.querySelector("#addCourtName").focus();
+    }
+
+    function closeAddCourt() {
+      const sheet = document.querySelector("#addCourtSheet");
+      if (sheet.contains(document.activeElement)) document.activeElement.blur();
+      sheet.classList.add("hidden");
+      sheet.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      courtFormMode = "create";
+      editingCourtId = "";
+      showCourtImagePreview("");
     }
 
     function openAddSchedule(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth(), schedule = null) {
@@ -5412,6 +5622,75 @@
       refreshViews();
     }
 
+    function createCourtFromForm(form, existingCourt = null) {
+      const formData = new FormData(form);
+      const name = formData.get("name").trim();
+      if (!name) throw new Error("코트명을 입력해 주세요.");
+
+      const id = existingCourt?.id || makeCourtId(name);
+      return {
+        id,
+        name,
+        image: existingCourt?.image || "",
+        type: formData.get("type").trim() || "Outdoor Court",
+        location: formData.get("location").trim() || "인천",
+        canonicalName: formData.get("canonicalName").trim() || name
+      };
+    }
+
+    async function saveCourt(form) {
+      requireOfficialWriteAccess();
+      const existingCourt = courtFormMode === "edit"
+        ? dataStore.courts.find(court => String(court.id) === String(editingCourtId))
+        : null;
+      const court = createCourtFromForm(form, existingCourt);
+      const file = form.elements.imageFile?.files?.[0] || null;
+      court.image = await uploadCourtImage(file, court.id, existingCourt?.image || court.image);
+
+      const { data, error } = await supabaseClient
+        .from("courts")
+        .upsert(toSupabaseCourt(court), { onConflict: "id" })
+        .select()
+        .single();
+      if (error) throw error;
+
+      const storedCourt = fromSupabaseCourt(data);
+      const existingIndex = dataStore.courts.findIndex(item => String(item.id) === String(storedCourt.id));
+      if (existingIndex >= 0) {
+        dataStore.courts[existingIndex] = storedCourt;
+      } else {
+        dataStore.courts.push(storedCourt);
+      }
+      refreshViews();
+      closeAddCourt();
+    }
+
+    async function deleteCourt(courtId) {
+      requireOfficialWriteAccess();
+      const court = dataStore.courts.find(item => String(item.id) === String(courtId));
+      if (!court) return;
+      if (dataStore.schedules.some(schedule => String(schedule.courtId) === String(court.id))) {
+        throw new Error("이 코트를 사용하는 일정이 있어서 삭제할 수 없습니다. 먼저 해당 일정을 다른 코트로 옮겨 주세요.");
+      }
+      if (!confirm(`${court.name} 코트를 삭제할까요?`)) return;
+
+      const { error } = await supabaseClient
+        .from("courts")
+        .delete()
+        .eq("id", String(court.id));
+      if (error) throw error;
+
+      const path = storagePathFromUrl(court.image);
+      if (path) {
+        const { error: storageError } = await supabaseClient.storage.from(COURT_IMAGE_BUCKET).remove([path]);
+        if (storageError) console.warn("Court image could not be removed.", storageError);
+      }
+
+      dataStore.courts = dataStore.courts.filter(item => String(item.id) !== String(court.id));
+      refreshViews();
+      closeAddCourt();
+    }
+
         async function addSchedule(schedule) {
           if (remoteWritesEnabled()) {
         requireOfficialWriteAccess();
@@ -5936,6 +6215,18 @@
         return;
       }
 
+      const addCourtButton = event.target.closest("[data-add-court]");
+      if (addCourtButton) {
+        openAddCourt();
+        return;
+      }
+
+      const editCourtButton = event.target.closest("[data-edit-court]");
+      if (editCourtButton) {
+        openAddCourt(editCourtButton.dataset.editCourt);
+        return;
+      }
+
       const editButton = event.target.closest("[data-edit-current]");
       if (editButton) {
         editCurrentDetail();
@@ -6077,6 +6368,16 @@
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
+    document.querySelector("#closeAddCourt").addEventListener("click", closeAddCourt);
+    document.querySelector("#cancelAddCourt").addEventListener("click", closeAddCourt);
+    document.querySelector("#addCourtBackdrop").addEventListener("click", closeAddCourt);
+    document.querySelector("#deleteCourtButton").addEventListener("click", () => {
+      if (!editingCourtId) return;
+      deleteCourt(editingCourtId).catch(error => alert(error.message));
+    });
+    document.querySelector("#addCourtImageFile").addEventListener("change", event => {
+      previewCourtImage(event.target.files?.[0] || null);
+    });
     document.querySelector("#closeAddEvent").addEventListener("click", closeAddEvent);
     document.querySelector("#cancelAddEvent").addEventListener("click", closeAddEvent);
     document.querySelector("#addEventBackdrop").addEventListener("click", closeAddEvent);
@@ -6088,6 +6389,8 @@
         closeAttendeeSheet();
       } else if (event.key === "Escape" && !document.querySelector("#addEventSheet").classList.contains("hidden")) {
         closeAddEvent();
+      } else if (event.key === "Escape" && !document.querySelector("#addCourtSheet").classList.contains("hidden")) {
+        closeAddCourt();
       } else if (event.key === "Escape" && !document.querySelector("#addScheduleSheet").classList.contains("hidden")) {
         closeAddSchedule();
       }
@@ -6123,6 +6426,21 @@
         closeAddEvent();
       } catch (error) {
         alert(error.message);
+      }
+    });
+    document.querySelector("#addCourtForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const submitButton = document.querySelector("#addCourtSubmit");
+      const originalHTML = submitButton.innerHTML;
+      submitButton.disabled = true;
+      submitButton.innerHTML = `<span class="material-symbols-outlined text-[18px]">hourglass_top</span> 저장 중`;
+      try {
+        await saveCourt(event.currentTarget);
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalHTML;
       }
     });
     document.querySelector("#attendeeForm").addEventListener("submit", event => {
