@@ -1977,9 +1977,6 @@
             </section>
 
             <section id="selectedDatePanel" class="dash-card hidden p-4 md:p-5">
-              <!-- 모바일 드래그 핸들바 인디케이터 -->
-              <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-panel-dismiss-zone></div>
-
               <div class="mb-4 flex items-start justify-between gap-3" data-panel-dismiss-zone>
                 <div class="min-w-0">
                   <h3 id="selectedDateTitle">Selected Matches</h3>
@@ -2113,7 +2110,6 @@
   <section id="addScheduleSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addScheduleBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="일정 추가 닫기"></button>
     <div data-sheet-panel class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
-      <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-sheet-dismiss-zone aria-hidden="true"></div>
       <div class="mb-5 flex items-center justify-between gap-4" data-sheet-dismiss-zone>
         <div>
           <p class="text-xs font-medium uppercase tracking-wide text-primary">Local Schedule</p>
@@ -2241,7 +2237,6 @@
   <section id="addEventSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addEventBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="다른 일정 추가 닫기"></button>
     <div data-sheet-panel class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
-      <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-sheet-dismiss-zone aria-hidden="true"></div>
       <div class="mb-5 flex items-center justify-between gap-4" data-sheet-dismiss-zone>
         <div>
           <p class="text-xs font-medium uppercase tracking-wide text-primary">Calendar Event</p>
@@ -4392,7 +4387,7 @@
           : empty
             ? "bg-[#f5f5f7] text-[#86868b]"
             : item.regular
-              ? "bg-[rgba(0,104,93,0.08)] text-primary"
+              ? "border border-tertiary/20 bg-tertiary-fixed/50 text-tertiary"
               : "bg-[rgba(0,104,93,0.12)] text-primary";
 
       const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
@@ -4421,6 +4416,17 @@
       `;
     }
 
+    function memberAttendeeNameClass(name) {
+      if (name === MY_NAME) return "truncate font-black text-primary";
+      return MALE_MEMBER_NAMES.has(name)
+        ? "truncate font-bold text-sky-700"
+        : "truncate font-bold text-rose-700";
+    }
+
+    function memberAttendeeNameHTML(name) {
+      return `<span class="${memberAttendeeNameClass(name)}">${escapeHTML(name)}</span>`;
+    }
+
     function scheduleAttendeesHTML(item) {
       if (!item.attendees.length) {
         return `<span>참석자 없음</span>`;
@@ -4430,13 +4436,7 @@
         const suffix = index < item.attendees.length - 1
           ? `<span class="text-on-surface-variant/60">, </span>`
           : "";
-        if (name === MY_NAME) {
-          return `<span class="font-black text-primary">${escapeHTML(name)}</span>${suffix}`;
-        }
-        const genderClass = MALE_MEMBER_NAMES.has(name)
-          ? "font-bold text-sky-700"
-          : "font-bold text-rose-700";
-        return `<span class="${genderClass}">${escapeHTML(name)}</span>${suffix}`;
+        return `${memberAttendeeNameHTML(name)}${suffix}`;
       }).join("");
     }
 
@@ -4543,8 +4543,8 @@
           <div class="group flex cursor-pointer items-center gap-2 sm:gap-3 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-2.5 sm:p-3 transition hover:bg-[#fafafa]" data-member-id="${memberId}" role="button" tabindex="0" aria-label="${escapeHTML(name)} 프로필 보기">
             <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
             <div class="min-w-0 flex-1">
-              <div class="text-xs sm:text-sm font-bold text-on-surface flex items-center flex-wrap gap-1 leading-tight">
-                <span class="truncate">${name}</span>
+              <div class="min-w-0 text-xs sm:text-sm leading-tight">
+                ${memberAttendeeNameHTML(name)}
               </div>
             </div>
             <button class="inline-flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant opacity-100 transition hover:bg-error-container hover:text-on-error-container md:opacity-0 md:group-hover:opacity-100" type="button" data-remove-attendee="${memberId}" aria-label="${name} 참석자 제거">
