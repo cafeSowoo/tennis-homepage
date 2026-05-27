@@ -1770,6 +1770,12 @@
         will-change: transform, opacity;
       }
 
+      #dashboard #selectedDatePanel #selectedDateList .app-empty {
+        min-height: 251px;
+        padding-top: 23px;
+        padding-bottom: 23px;
+      }
+
       #dashboard #selectedDatePanel #selectedDateList article {
         touch-action: pan-y;
       }
@@ -2542,7 +2548,12 @@
       return `
         <span class="truncate">${forecast.label}</span>
         <span class="tabular-nums">${tempLabel}</span>
-        <span class="material-symbols-outlined text-[13px] leading-none text-primary" aria-hidden="true">umbrella</span>
+        <svg class="h-[14px] w-[14px] shrink-0 text-[#1d1d1f]" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 36c0-18.2 12.5-30 28-30s28 11.8 28 30" />
+          <path d="M4 36c4.7-3.2 9.3-3.2 14 0 4.7-3.2 9.3-3.2 14 0 4.7-3.2 9.3-3.2 14 0 4.7-3.2 9.3-3.2 14 0" />
+          <path d="M18 36c1.5-15 6.2-25 14-30 7.8 5 12.5 15 14 30" />
+          <path d="M32 6v42c0 6.6 4.2 10 9 10 4.5 0 8-3.1 8-7" />
+        </svg>
         <span class="tabular-nums">${precipitationLabel}</span>
       `;
     }
@@ -3156,6 +3167,29 @@
       const [, m, d] = item.date.split("-");
       const day = item.day || dayNameFromDate(item.date);
       return `${Number(m)}월 ${Number(d)}일 (${day})`;
+    }
+
+    function weekendDayClass(day) {
+      if (day === "토") return "text-sky-600";
+      if (day === "일") return "text-rose-600";
+      return "";
+    }
+
+    function dateLabelHTML(item) {
+      const [, m, d] = item.date.split("-");
+      const day = item.day || dayNameFromDate(item.date);
+      const dayClass = weekendDayClass(day);
+      const dayHTML = dayClass
+        ? `<span class="${dayClass}">(${day})</span>`
+        : `(${escapeHTML(day)})`;
+      return `${Number(m)}월 ${Number(d)}일 ${dayHTML}`;
+    }
+
+    function weekendDayTextHTML(value) {
+      return escapeHTML(value).replace(/\((토|일)\)/g, (_, day) => {
+        const dayClass = weekendDayClass(day);
+        return dayClass ? `<span class="${dayClass}">(${day})</span>` : `(${day})`;
+      });
     }
 
     function monthLabel(monthValue) {
@@ -4161,7 +4195,7 @@
         panel.classList.remove("active-animate");
       }
 
-      document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
+      document.querySelector("#selectedDateTitle").innerHTML = `${dateLabelHTML(sample)} 일정`;
       document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
         ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
@@ -4279,7 +4313,7 @@
                 ${icon(iconName, "text-[20px]")}
               </div>
               <div class="min-w-0">
-                <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${item.title}</h4>
+                <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${weekendDayTextHTML(item.title)}</h4>
                 <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
                   ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${schedulePlaceLabel(item)}</span>
                 </p>
@@ -4772,8 +4806,7 @@
           document.querySelector("#scheduleGroups").innerHTML = Object.entries(groups).map(([date, rows]) => `
         <section>
           <div class="mb-4 flex items-center justify-between gap-3">
-            <h3>${dateLabel(rows[0].item)}</h3>
-            <span class="app-count-badge">${rows.length}개 일정 · 참석 ${rows.reduce((n, row) => n + (row.type === "schedule" ? row.item.attendees.length : 0), 0)}명</span>
+            <h3>${dateLabelHTML(rows[0].item)}</h3>
           </div>
           <div class="space-y-2.5">${[...rows]
             .sort((a, b) => compareCalendarItemsByTime(a.item, b.item))
@@ -5448,7 +5481,7 @@
             </div>`
           : "";
 
-        document.querySelector("#selectedDateTitle").textContent = `${dateLabel(sample)} 일정`;
+        document.querySelector("#selectedDateTitle").innerHTML = `${dateLabelHTML(sample)} 일정`;
         document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
         list.innerHTML = items.length || eventItems.length
           ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
