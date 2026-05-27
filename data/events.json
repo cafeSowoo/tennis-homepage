@@ -1,5 +1,15 @@
 [
   {
+    "id": "event-bookclub-2026-05-23",
+    "date": "2026-05-23",
+    "title": "5월 23일(토) 독서모임 3:00-5:00",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "category": "bookclub",
+    "location": "독서모임",
+    "source": "seed"
+  },
+  {
     "id": "event-bookclub-2026-06-06",
     "date": "2026-06-06",
     "title": "6월 6일(토) 독서모임 15-17시",

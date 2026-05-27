@@ -5,7 +5,7 @@
     "day": "금",
     "time": "오후 12:00 ~ 오후 3:00",
     "title": "5월1일(금) 12-15 승기송도지소",
-    "courtId": "court-seunggi-songdo-short",
+    "courtId": "court-seunggi-songdo",
     "attendeeIds": [
       "member-shin-kyoungeun",
       "member-kim-taehwan",
@@ -19,13 +19,14 @@
     "day": "금",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "05.01(금) 새아침 4번코트 20~22시",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-park-jiyoung",
       "member-song-younghee",
       "member-lee-minkyung",
       "member-han-inho"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 2,
@@ -33,13 +34,14 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월 4일(월) 20-22시 새아침 4번",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-kim-jiseok",
       "member-shin-kyoungeun",
       "member-lee-heeji",
       "member-cho-hyeongcheol"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 3,
@@ -47,12 +49,13 @@
     "day": "수",
     "time": "오후 6:00 ~ 오후 8:00",
     "title": "(마감)5월6일(수) 달축B 18~20시",
-    "courtId": "court-moonlight-festival-b",
+    "courtId": "court-moonlight-festival",
     "attendeeIds": [
       "member-kim-taehwan",
       "member-cho-hyeongcheol",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-festival-b"
   },
   {
     "id": 4,
@@ -60,13 +63,14 @@
     "day": "토",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월9일(토) 20-22시 새아침4코트",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-shin-kyoungeun",
       "member-park-jiyoung",
       "member-yoon-inseon",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 5,
@@ -103,13 +107,14 @@
     "day": "일",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "05.10(일) 새아침 4번코트 20~22시",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-kim-taehwan",
       "member-park-jiyoung",
       "member-han-inho",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 8,
@@ -117,12 +122,13 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월 11일(월) 20-22시 새아침 4번",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-kim-taehwan",
       "member-lee-sangbaek",
       "member-han-inho"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 9,
@@ -130,13 +136,14 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월12일 (화) 20시~22시 달빛 12번",
-    "courtId": "court-moonlight-12",
+    "courtId": "court-moonlight",
     "attendeeIds": [
       "member-min-mungi",
       "member-yoon-inseon",
       "member-lee-heeji",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-12"
   },
   {
     "id": 10,
@@ -170,13 +177,14 @@
     "day": "금",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월15일(금) 20-22 새아침3번",
-    "courtId": "court-newmorning-3",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-kim-taehwan",
       "member-park-jiyoung",
       "member-song-younghee",
       "member-han-inho"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": 12,
@@ -215,13 +223,14 @@
     "day": "수",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월 20일(수) 20시~22시 새아침 2번코트",
-    "courtId": "court-newmorning-2",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-min-mungi",
       "member-kim-taehwan",
       "member-yoon-inseon",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-2"
   },
   {
     "id": 15,
@@ -229,13 +238,14 @@
     "day": "금",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월22일 (금) 20시~22시 달빛 8번",
-    "courtId": "court-moonlight-8",
+    "courtId": "court-moonlight",
     "attendeeIds": [
       "member-shin-kyoungeun",
       "member-kim-taehwan",
       "member-lee-sangbaek",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-8"
   },
   {
     "id": 16,
@@ -276,11 +286,12 @@
     "day": "월",
     "time": "오후 4:00 ~ 오후 6:00",
     "title": "5월 25일(월) 새아침 4코트 16-18시",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-lee-sangbaek",
       "member-cho-hyeongcheol"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 19,
@@ -288,13 +299,14 @@
     "day": "월",
     "time": "오후 6:00 ~ 오후 8:00",
     "title": "5월25일(월) 18-20 새아침 4번",
-    "courtId": "court-newmorning-4",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-song-younghee",
       "member-lee-minkyung",
       "member-lee-sangbaek",
       "member-cho-hyeongcheol"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 20,
@@ -302,12 +314,13 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월 25일(월) 20시~22시 새아침 3코트",
-    "courtId": "court-newmorning-3",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-lee-sangbaek",
       "member-park-jiyoung",
       "member-han-inho"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": 21,
@@ -315,12 +328,13 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월26일 (화) 20시~22시 달빛 12번코트",
-    "courtId": "court-moonlight-12",
+    "courtId": "court-moonlight",
     "attendeeIds": [
       "member-shin-kyoungeun",
       "member-kim-taehwan",
       "member-park-changeon"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-12"
   },
   {
     "id": 32,
@@ -339,12 +353,13 @@
     "day": "수",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월27일 (수) 20~22시 달빛 12번",
-    "courtId": "court-moonlight-12",
+    "courtId": "court-moonlight",
     "attendeeIds": [
       "member-min-mungi",
       "member-kim-taehwan",
       "member-cho-hyeongcheol"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-12"
   },
   {
     "id": 23,
@@ -352,8 +367,9 @@
     "day": "금",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월 29일(금) 20시~22시 새아침 4코트",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 24,
@@ -361,13 +377,14 @@
     "day": "토",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "5월30일(토) 20-22시 달빛테니스장 8번 하드코트",
-    "courtId": "court-moonlight-tennis-8-hard",
+    "courtId": "court-moonlight",
     "attendeeIds": [
       "member-park-jiyoung",
       "member-yoon-inseon",
       "member-cho-hyeongcheol",
       "member-heo-sujeong"
-    ]
+    ],
+    "courtUnitId": "court-moonlight-8"
   },
   {
     "id": 25,
@@ -375,7 +392,7 @@
     "day": "일",
     "time": "오전 9:00 ~ 오후 12:00",
     "title": "5월 31일 (일) 09시-12시 승기사업소",
-    "courtId": "court-seunggi",
+    "courtId": "court-seunggi-songdo",
     "attendeeIds": [
       "member-kim-jiseok",
       "member-yoon-inseon",
@@ -399,10 +416,11 @@
     "day": "일",
     "time": "오후 4:00 ~ 오후 6:00",
     "title": "5월31일(일) 16-18 새아침 3번",
-    "courtId": "court-newmorning-3",
+    "courtId": "court-newmorning",
     "attendeeIds": [
       "member-cho-hyeongcheol"
-    ]
+    ],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": "20260601-newmorning-4-20-22",
@@ -410,8 +428,9 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "06. 01(월) 새아침 4코트 20-22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260602-newmorning-4-20-22",
@@ -419,8 +438,9 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 2일(화) 새아침 4코트 20-22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260603-newmorning-1-20-22",
@@ -428,8 +448,9 @@
     "day": "수",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 3일 (수) 새아침 1코트 20시~22시",
-    "courtId": "court-newmorning-1",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-1"
   },
   {
     "id": "20260603-newmorning-4-20-22",
@@ -437,8 +458,9 @@
     "day": "수",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "06.03(수) 새아침 4코트 20-22",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260606-newmorning-4-20-22",
@@ -446,8 +468,9 @@
     "day": "토",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 6일(토) 새아침 4코트 20-22",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260608-newmorning-3-20-22",
@@ -455,8 +478,9 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월8일(월) 새아침3 20-22",
-    "courtId": "court-newmorning-3",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": "20260608-newmorning-4-20-22",
@@ -464,8 +488,9 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 8일 (월) 새아침 4코트 20시-22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 33,
@@ -484,8 +509,9 @@
     "day": "토",
     "time": "오후 4:00 ~ 오후 6:00",
     "title": "6월13일(토) 새아침3 16-18",
-    "courtId": "court-newmorning-3",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": "20260614-manseok-a-19-21",
@@ -493,8 +519,9 @@
     "day": "일",
     "time": "오후 7:00 ~ 오후 9:00",
     "title": "6월14일 (일) 만석동A코트 19시~21시",
-    "courtId": "court-manseok-a",
-    "attendeeIds": []
+    "courtId": "court-manseok",
+    "attendeeIds": [],
+    "courtUnitId": "court-manseok-a"
   },
   {
     "id": "local-1779264375857",
@@ -505,7 +532,8 @@
     "courtId": "court-jfield",
     "attendeeIds": [],
     "regular": true,
-    "source": "supabase"
+    "source": "supabase",
+    "courtUnitId": "court-jfield-d"
   },
   {
     "id": "20260616-newmorning-3-20-22",
@@ -513,8 +541,9 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 16일 (화) 새아침 3코트 20시~22시",
-    "courtId": "court-newmorning-3",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-3"
   },
   {
     "id": "20260616-newmorning-4-20-22",
@@ -522,8 +551,9 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 16일 (화) 새아침 4코트 20시~22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 34,
@@ -542,8 +572,9 @@
     "day": "일",
     "time": "오후 7:00 ~ 오후 9:00",
     "title": "6월 21일 (일) 만석동 A코트 19시~21시",
-    "courtId": "court-manseok-a",
-    "attendeeIds": []
+    "courtId": "court-manseok",
+    "attendeeIds": [],
+    "courtUnitId": "court-manseok-a"
   },
   {
     "id": "20260622-newmorning-4-20-22",
@@ -551,8 +582,9 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "06.22(월) 새아침 4코트 20-22",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260623-newmorning-4-20-22",
@@ -560,8 +592,9 @@
     "day": "화",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 23일 (화) 새아침 4코트 20시~22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 35,
@@ -580,8 +613,9 @@
     "day": "토",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 27일 (토) 새아침 4코트 20시~22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260628-newmorning-4-20-22",
@@ -589,8 +623,9 @@
     "day": "일",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 28일(일) 새아침 4코트 20-22",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": "20260629-newmorning-4-20-22",
@@ -598,8 +633,9 @@
     "day": "월",
     "time": "오후 8:00 ~ 오후 10:00",
     "title": "6월 29일 (월) 새아침 4코트 20시~22시",
-    "courtId": "court-newmorning-4",
-    "attendeeIds": []
+    "courtId": "court-newmorning",
+    "attendeeIds": [],
+    "courtUnitId": "court-newmorning-4"
   },
   {
     "id": 36,

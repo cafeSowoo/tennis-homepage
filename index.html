@@ -17,6 +17,7 @@
       const paths = [
         "data/members.json",
         "data/courts.json",
+        "data/court-units.json",
         "data/schedules.json",
         "data/events.json",
         "data/discussions.json"
@@ -2091,6 +2092,10 @@
             <select id="addScheduleCourt" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="courtId" required></select>
           </label>
           <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
+            하위코트
+            <select id="addScheduleCourtUnit" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="courtUnitId"></select>
+          </label>
+          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
             시작
             <input id="addScheduleStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="startTime" type="time" value="20:00" required>
           </label>
@@ -2308,9 +2313,10 @@
     const today = new Date(`${todayIso}T00:00:00`);
         const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", detailReturnTo: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const authState = { session: null, user: null, initialized: false };
-    const dataStore = { members: [], courts: [], schedules: [], events: [], discussions: [] };
+    const dataStore = { members: [], courts: [], courtUnits: [], schedules: [], events: [], discussions: [] };
     let members = [];
     let courts = [];
+    let courtUnits = [];
     let schedules = [];
     let calendarEvents = [];
     let discussions = [];
@@ -2552,9 +2558,10 @@
         return;
       }
 
-      const [memberRows, courtRows, scheduleRows, eventRows, discussionRows] = await Promise.all([
+      const [memberRows, courtRows, courtUnitRows, scheduleRows, eventRows, discussionRows] = await Promise.all([
         fetchJSON("data/members.json"),
         fetchJSON("data/courts.json"),
+        fetchJSON("data/court-units.json"),
         fetchJSON("data/schedules.json"),
         fetchJSON("data/events.json"),
         fetchJSON("data/discussions.json")
@@ -2566,6 +2573,7 @@
       fileDiscussions = discussionRows;
       dataStore.members = memberRows;
       dataStore.courts = courtRows;
+      dataStore.courtUnits = courtUnitRows;
       syncStoredLocalData(deletedIds);
       rebuildDataIndexes();
     }
@@ -2578,6 +2586,7 @@
         time: row.time,
         title: row.title,
         courtId: row.court_id,
+        courtUnitId: row.court_unit_id || undefined,
         attendeeIds: row.attendee_ids || [],
         regular: row.regular || undefined,
         closed: row.closed || undefined,
@@ -2595,6 +2604,7 @@
         time: row.time,
         title: row.title,
         court_id: row.courtId,
+        court_unit_id: row.courtUnitId || null,
         attendee_ids: row.attendeeIds || [],
         regular: Boolean(row.regular),
         closed: Boolean(row.closed),
@@ -2658,6 +2668,16 @@
       };
     }
 
+    function fromSupabaseCourtUnit(row) {
+      return {
+        id: row.id,
+        courtId: row.court_id,
+        label: row.label,
+        surface: row.surface,
+        sortOrder: row.sort_order || 0
+      };
+    }
+
     function fromSupabaseDiscussion(row) {
       return {
         id: row.id,
@@ -2683,19 +2703,21 @@
     }
 
     async function loadSupabaseData() {
-      const [membersResult, courtsResult, schedulesResult, eventsResult, discussionsResult] = await Promise.all([
+      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
         supabaseClient.from("courts").select("*").order("name"),
+        supabaseClient.from("court_units").select("*").order("court_id").order("sort_order").order("label"),
         supabaseClient.from("schedules").select("*").order("date").order("time"),
         supabaseClient.from("events").select("*").order("date").order("start_time", { nullsFirst: true }),
         supabaseClient.from("discussions").select("*").order("created_at")
       ]);
 
-      const failed = [membersResult, courtsResult, schedulesResult, eventsResult, discussionsResult].find(result => result.error);
+      const failed = [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult].find(result => result.error);
       if (failed) throw failed.error;
 
       dataStore.members = membersResult.data || [];
       dataStore.courts = (courtsResult.data || []).map(fromSupabaseCourt);
+      dataStore.courtUnits = (courtUnitsResult.data || []).map(fromSupabaseCourtUnit);
           dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
           dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
           dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
@@ -2848,13 +2870,16 @@
     function rebuildDataIndexes() {
       const memberById = new Map(dataStore.members.map(member => [member.id, member]));
       const courtById = new Map(dataStore.courts.map(court => [court.id, court]));
+      const courtUnitById = new Map((dataStore.courtUnits || []).map(unit => [unit.id, unit]));
       const attendeeOverrides = ALLOW_REMOTE_WRITES ? {} : loadAttendeeOverrides();
 
       members = dataStore.members;
       courts = dataStore.courts;
+      courtUnits = dataStore.courtUnits || [];
       discussions = dataStore.discussions;
       schedules = dataStore.schedules.map((schedule, index) => {
         const court = courtById.get(schedule.courtId) || {};
+        const courtUnit = courtUnitById.get(schedule.courtUnitId) || null;
         const overrideIds = attendeeOverrides[String(schedule.id)];
         const attendeeIds = Array.isArray(overrideIds) ? overrideIds : schedule.attendeeIds;
         const attendees = Array.isArray(attendeeIds)
@@ -2866,6 +2891,8 @@
           id: schedule.id ?? index,
           attendeeIds,
           place: court.name || schedule.place || "미정",
+          courtUnit,
+          placeDetail: courtLabel(court, courtUnit),
           court,
           attendees
         };
@@ -2885,6 +2912,27 @@
       byDate = schedules.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
       eventsByDate = calendarEvents.reduce((acc, item) => ((acc[item.date] ||= []).push(item), acc), {});
       upcoming = schedules.filter(schedule => new Date(schedule.date + "T00:00:00") >= today);
+    }
+
+    function courtUnitsForCourt(courtId) {
+      return courtUnits
+        .filter(unit => String(unit.courtId) === String(courtId))
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0) || String(a.label).localeCompare(String(b.label), "ko"));
+    }
+
+    function courtUnitLabel(unit) {
+      if (!unit) return "";
+      const suffix = unit.surface ? ` ${unit.surface}` : "";
+      return `${unit.label}${suffix}`;
+    }
+
+    function courtLabel(court, unit = null) {
+      if (!court?.name) return "미정";
+      return unit ? `${court.name} ${courtUnitLabel(unit)}` : court.name;
+    }
+
+    function schedulePlaceLabel(item) {
+      return item?.placeDetail || item?.place || "미정";
     }
 
     function refreshViews() {
@@ -3383,11 +3431,12 @@
       return `${period} ${displayHour}:${minuteText}`;
     }
 
-    function buildScheduleTitle({ date, day, startTime, endTime, courtName }) {
+    function buildScheduleTitle({ date, day, startTime, endTime, courtName, courtUnitName = "" }) {
       const [, month, dateNumber] = date.split("-");
       const start = formatKoreanTime(startTime).replace("오전 ", "").replace("오후 ", "");
       const end = formatKoreanTime(endTime).replace("오전 ", "").replace("오후 ", "");
-      return `${Number(month)}월 ${Number(dateNumber)}일(${day}) ${courtName} ${start}-${end}`;
+      const place = [courtName, courtUnitName].filter(Boolean).join(" ");
+      return `${Number(month)}월 ${Number(dateNumber)}일(${day}) ${place} ${start}-${end}`;
     }
 
     function startHour(item) {
@@ -3472,7 +3521,7 @@
           const lead = kind === "today" ? "오늘" : "내일";
           const summary = rows
             .slice(0, 3)
-            .map(row => `${scheduleTimeRangeLabel(row)} ${row.place}`)
+            .map(row => `${scheduleTimeRangeLabel(row)} ${schedulePlaceLabel(row)}`)
             .join("\n");
           const extraCount = rows.length - 3;
           return `${lead} 참석 일정 ${rows.length}개\n${summary}${extraCount > 0 ? `\n외 ${extraCount}개` : ""}`;
@@ -3655,8 +3704,8 @@
           ].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
         }
 
-        function isYonseiSchedule(item) {
-      return item.courtId === "court-yonsei-tennis" || item.place === "연세 테니스장";
+    function isYonseiSchedule(item) {
+      return item.courtId === "court-yonsei-tennis" || item.place === "연세테니스" || item.place === "연세 테니스장";
     }
 
     function isBookClubSchedule(item) {
@@ -3812,8 +3861,8 @@
           }
 
           return `
-            <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(item)} ${item.place}">
-              ${calendarTimeLabel(item)} · ${item.place}
+            <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(item)} ${schedulePlaceLabel(item)}">
+              ${calendarTimeLabel(item)} · ${schedulePlaceLabel(item)}
             </span>
           `;
         }).join("");
@@ -4066,7 +4115,7 @@
               <div class="min-w-0">
                 <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${item.title}</h4>
                 <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
-                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${item.place}</span>
+                  ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${schedulePlaceLabel(item)}</span>
                 </p>
                 <p class="mt-1 flex min-w-0 items-center gap-1 text-xs text-[#86868b]">
                   ${icon("group", "text-[14px] shrink-0")} <span class="min-w-0 truncate">${attendeeListHTML}</span>
@@ -4238,7 +4287,7 @@
                   <div class="space-y-1 w-full md:w-auto">
                     <h2 class="text-xl md:text-2xl font-semibold text-[#1d1d1f] leading-tight">${item.title}</h2>
                     <p class="mt-2 flex items-center gap-2 text-sm text-[#86868b]">
-                      ${icon("location_on", "text-[18px] text-primary")} ${item.place}
+                      ${icon("location_on", "text-[18px] text-primary")} ${schedulePlaceLabel(item)}
                     </p>
 
                     <div class="flex flex-col gap-1.5 text-xs text-[#86868b] md:hidden mt-3 pt-3 border-t border-[rgba(0,0,0,0.06)]">
@@ -4518,7 +4567,7 @@
 
     function matches(item) {
       const q = state.query.toLowerCase();
-      const text = [item.title, item.place, item.time, dateLabel(item), ...item.attendees].join(" ").toLowerCase();
+      const text = [item.title, item.place, item.placeDetail, item.time, dateLabel(item), ...item.attendees].join(" ").toLowerCase();
       return (!q || text.includes(q)) &&
         (state.place === "all" || item.place === state.place) &&
         (state.person === "all" || item.attendees.includes(state.person));
@@ -4611,7 +4660,7 @@
                 <div class="flex gap-2 flex-wrap">
                   ${next
                     ? `<button class="btn-outline px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs" data-detail-id="${next.id}">
-                        ${icon("event_available", "text-[12px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}
+                        ${icon("event_available", "text-[12px] text-primary")} ${dateLabel(next).replace("2026-", "")}, ${timeStart(next)}${next.courtUnit ? ` · ${courtUnitLabel(next.courtUnit)}` : ""}
                        </button>`
                     : `<span class="text-xs text-[#86868b]">예정된 일정이 없습니다.</span>`}
                 </div>
@@ -4624,7 +4673,7 @@
                 ${items.slice(0, 6).map(s => `
                   <div class="shrink-0 w-[85px] md:w-auto rounded-lg bg-[#f5f5f7] p-2 md:p-2.5 border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,104,93,0.2)] transition-colors cursor-pointer" data-detail-id="${s.id}">
                     <p class="text-primary font-semibold text-[10px] md:text-[11px]">${dateLabel(s).replace("5월 ", "5/").replace("6월 ", "6/").split(" (")[0]}</p>
-                    <p class="mt-0.5 text-[#86868b] text-[9px] md:text-[10px]">${s.attendees.length}명 참여</p>
+                    <p class="mt-0.5 text-[#86868b] text-[9px] md:text-[10px]">${s.courtUnit ? `${courtUnitLabel(s.courtUnit)} · ` : ""}${s.attendees.length}명</p>
                   </div>
                 `).join("")}
               </div>
@@ -4911,12 +4960,27 @@
       document.querySelector("#addScheduleCourt").innerHTML = courts.map(court => `
         <option value="${court.id}">${court.name}</option>
       `).join("");
+      renderAddScheduleCourtUnitOptions();
       document.querySelector("#addScheduleMembers").innerHTML = members.map(member => `
         <label class="flex items-center gap-2 rounded-md bg-surface-container-lowest px-2.5 py-2 text-xs font-bold text-on-surface shadow-sm">
           <input class="h-4 w-4 accent-primary" name="attendeeIds" type="checkbox" value="${member.id}">
           <span>${member.name}</span>
         </label>
       `).join("");
+    }
+
+    function renderAddScheduleCourtUnitOptions(selectedUnitId = "") {
+      const courtId = document.querySelector("#addScheduleCourt")?.value || courts[0]?.id || "";
+      const units = courtUnitsForCourt(courtId);
+      const select = document.querySelector("#addScheduleCourtUnit");
+      if (!select) return;
+
+      select.innerHTML = [
+        `<option value="">선택 안 함</option>`,
+        ...units.map(unit => `<option value="${unit.id}">${courtUnitLabel(unit)}</option>`)
+      ].join("");
+      select.disabled = units.length === 0;
+      select.value = units.some(unit => unit.id === selectedUnitId) ? selectedUnitId : "";
     }
 
     function openAddCourt(courtId = "") {
@@ -4972,6 +5036,7 @@
       document.querySelector("#addScheduleEnd").value = schedule ? toTwentyFourHourLabel(timeEnd(schedule)) : "22:00";
       const firstCourt = courts[0]?.id || "";
       document.querySelector("#addScheduleCourt").value = schedule?.courtId || firstCourt;
+      renderAddScheduleCourtUnitOptions(schedule?.courtUnitId || "");
       document.querySelector("#addScheduleTitle").value = schedule?.title || "";
       form.querySelector('input[name="regular"]').checked = Boolean(schedule?.regular);
       form.querySelector('input[name="closed"]').checked = Boolean(schedule?.closed);
@@ -4990,6 +5055,7 @@
 
     function closeAddSchedule() {
       const sheet = document.querySelector("#addScheduleSheet");
+      if (sheet.contains(document.activeElement)) document.activeElement.blur();
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -5020,6 +5086,7 @@
 
     function closeAddEvent() {
       const sheet = document.querySelector("#addEventSheet");
+      if (sheet.contains(document.activeElement)) document.activeElement.blur();
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -5557,7 +5624,9 @@
       const formData = new FormData(form);
       const date = formData.get("date");
       const courtId = formData.get("courtId");
+      const courtUnitId = formData.get("courtUnitId") || "";
       const court = courts.find(item => item.id === courtId);
+      const courtUnit = courtUnits.find(item => item.id === courtUnitId && item.courtId === courtId);
       const startTime = formData.get("startTime");
       const endTime = formData.get("endTime");
       if (startTime >= endTime) {
@@ -5570,7 +5639,8 @@
         day,
         startTime,
         endTime,
-        courtName: court?.name || "미정"
+        courtName: court?.name || "미정",
+        courtUnitName: courtUnitLabel(courtUnit)
       });
 
       return {
@@ -5580,6 +5650,7 @@
         time: `${formatKoreanTime(startTime)} ~ ${formatKoreanTime(endTime)}`,
         title,
         courtId,
+        courtUnitId: courtUnit?.id || undefined,
         attendeeIds,
         regular: formData.get("regular") === "on" || undefined,
         closed: formData.get("closed") === "on" || undefined,
@@ -5863,6 +5934,7 @@
 
     function closeAttendeeSheet() {
       const sheet = document.querySelector("#attendeeSheet");
+      if (sheet.contains(document.activeElement)) document.activeElement.blur();
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -6377,6 +6449,9 @@
     });
     document.querySelector("#addCourtImageFile").addEventListener("change", event => {
       previewCourtImage(event.target.files?.[0] || null);
+    });
+    document.querySelector("#addScheduleCourt").addEventListener("change", () => {
+      renderAddScheduleCourtUnitOptions();
     });
     document.querySelector("#closeAddEvent").addEventListener("click", closeAddEvent);
     document.querySelector("#cancelAddEvent").addEventListener("click", closeAddEvent);

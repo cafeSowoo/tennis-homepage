@@ -5,7 +5,8 @@ For the current operating direction, Supabase is the official source of truth.
 See `../docs/storage-policy.md` for the full storage policy.
 
 - `members.json`: member records. Schedules reference members by `member.id`.
-- `courts.json`: court records. Schedules reference courts by `court.id`.
+- `courts.json`: parent court venue records. Schedules reference courts by `court.id`.
+- `court-units.json`: optional sub-court records such as court numbers or A/B labels. Schedules can reference these by `courtUnitId`.
 - `schedules.json`: schedule records. UI display fields such as `place` and attendee names are hydrated in `index.html`.
 - `events.json`: non-tennis calendar events. Use this for personal, work, book club, family, or other dates that should appear on the dashboard calendar.
 - `discussions.json`: match discussion records. Discussion rows reference schedules by `schedule.id` and members by `member.id`. Use `displayTime` when the source only provides a human-readable timestamp.

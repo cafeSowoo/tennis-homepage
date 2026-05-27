@@ -13,6 +13,14 @@ create table if not exists public.courts (
   canonical_name text
 );
 
+create table if not exists public.court_units (
+  id text primary key,
+  court_id text not null references public.courts(id) on delete cascade,
+  label text not null,
+  surface text,
+  sort_order integer default 0
+);
+
 create table if not exists public.schedules (
   id text primary key,
   date date not null,
@@ -20,6 +28,7 @@ create table if not exists public.schedules (
   time text not null,
   title text not null,
   court_id text references public.courts(id),
+  court_unit_id text references public.court_units(id),
   attendee_ids text[] not null default '{}',
   regular boolean,
   closed boolean,
@@ -54,12 +63,14 @@ create table if not exists public.discussions (
 
 alter table public.members enable row level security;
 alter table public.courts enable row level security;
+alter table public.court_units enable row level security;
 alter table public.schedules enable row level security;
 alter table public.events enable row level security;
 alter table public.discussions enable row level security;
 
 drop policy if exists "public read members" on public.members;
 drop policy if exists "public read courts" on public.courts;
+drop policy if exists "public read court units" on public.court_units;
 drop policy if exists "public read schedules" on public.schedules;
 drop policy if exists "public read events" on public.events;
 drop policy if exists "public read discussions" on public.discussions;
@@ -72,6 +83,9 @@ drop policy if exists "owner delete schedules" on public.schedules;
 drop policy if exists "owner insert courts" on public.courts;
 drop policy if exists "owner update courts" on public.courts;
 drop policy if exists "owner delete courts" on public.courts;
+drop policy if exists "owner insert court units" on public.court_units;
+drop policy if exists "owner update court units" on public.court_units;
+drop policy if exists "owner delete court units" on public.court_units;
 drop policy if exists "owner insert events" on public.events;
 drop policy if exists "owner update events" on public.events;
 drop policy if exists "owner delete events" on public.events;
@@ -81,6 +95,7 @@ drop policy if exists "owner delete discussions" on public.discussions;
 
 create policy "public read members" on public.members for select using (true);
 create policy "public read courts" on public.courts for select using (true);
+create policy "public read court units" on public.court_units for select using (true);
 create policy "public read schedules" on public.schedules for select using (true);
 create policy "public read events" on public.events for select using (true);
 create policy "public read discussions" on public.discussions for select using (true);
@@ -100,6 +115,25 @@ create policy "owner update courts"
 
 create policy "owner delete courts"
   on public.courts
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner insert court units"
+  on public.court_units
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner update court units"
+  on public.court_units
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete court units"
+  on public.court_units
   for delete
   to authenticated
   using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
@@ -162,9 +196,9 @@ create policy "owner delete discussions"
   using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
 
 grant usage on schema public to anon, authenticated;
-grant select on public.members, public.courts, public.schedules, public.events, public.discussions to anon, authenticated;
-revoke insert, update, delete, truncate on public.members, public.courts, public.schedules, public.events, public.discussions from anon, authenticated;
-grant insert, update, delete on public.courts, public.schedules, public.events, public.discussions to authenticated;
+grant select on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions to anon, authenticated;
+revoke insert, update, delete, truncate on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions from anon, authenticated;
+grant insert, update, delete on public.courts, public.court_units, public.schedules, public.events, public.discussions to authenticated;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
