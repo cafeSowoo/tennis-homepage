@@ -948,6 +948,45 @@
       background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, #fff 100%);
     }
 
+    .attendee-chip {
+      display: flex;
+      min-width: 0;
+      height: 2.25rem;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.375rem;
+      border: 1px solid rgba(188, 201, 198, 0.4);
+      background: #fff;
+      padding-inline: 0.375rem;
+      color: var(--app-text);
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .attendee-option input:checked + .attendee-chip.is-me {
+      border-color: #00796f;
+      background: #00796f;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 121, 111, 0.18);
+    }
+
+    .attendee-option input:checked + .attendee-chip.is-male {
+      border-color: #2f8aa3;
+      background: #2f8aa3;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(47, 138, 163, 0.16);
+    }
+
+    .attendee-option input:checked + .attendee-chip.is-female {
+      border-color: #c05a78;
+      background: #c05a78;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(192, 90, 120, 0.16);
+    }
+
     .apple-ui .app-icon-btn {
       display: inline-flex;
       align-items: center;
@@ -5343,10 +5382,12 @@
         <option value="${court.id}">${court.name}</option>
       `).join("");
       renderAddScheduleCourtUnitOptions();
-      document.querySelector("#addScheduleMembers").innerHTML = members.map(member => `
-        <label class="min-w-0">
-          <input class="peer sr-only" name="attendeeIds" type="checkbox" value="${member.id}">
-          <span class="flex h-9 min-w-0 items-center justify-center rounded-md border border-outline-variant/40 bg-surface-container-lowest px-1.5 text-center text-xs font-bold text-on-surface shadow-sm transition peer-checked:border-[#0c8d80] peer-checked:bg-[#0c8d80] peer-checked:text-white">
+      document.querySelector("#addScheduleMembers").innerHTML = members.map(member => {
+        const toneClass = member.name === MY_NAME ? "is-me" : MALE_MEMBER_NAMES.has(member.name) ? "is-male" : "is-female";
+        return `
+        <label class="attendee-option min-w-0">
+          <input class="sr-only" name="attendeeIds" type="checkbox" value="${member.id}">
+          <span class="attendee-chip ${toneClass}">
             <span class="truncate">${member.name}</span>
           </span>
         </label>
