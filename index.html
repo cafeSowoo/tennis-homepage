@@ -1830,6 +1830,25 @@
       cursor: not-allowed;
       opacity: 0.45;
     }
+
+    @media (max-width: 767px) {
+      #addScheduleSheet [data-sheet-panel],
+      #addEventSheet [data-sheet-panel] {
+        touch-action: pan-y;
+        will-change: transform;
+      }
+
+      #addScheduleSheet [data-sheet-panel].is-sheet-dragging,
+      #addEventSheet [data-sheet-panel].is-sheet-dragging {
+        transition: none !important;
+      }
+
+      #addScheduleSheet [data-sheet-dismiss-zone],
+      #addEventSheet [data-sheet-dismiss-zone] {
+        touch-action: none;
+        cursor: grab;
+      }
+    }
   </style>
 </head>
 <body class="apple-ui min-h-screen bg-[#f5f5f7] font-body-md text-body-md text-[#1d1d1f] antialiased">
@@ -2093,8 +2112,9 @@
 
   <section id="addScheduleSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addScheduleBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="일정 추가 닫기"></button>
-    <div class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
-      <div class="mb-5 flex items-center justify-between gap-4">
+    <div data-sheet-panel class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
+      <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-sheet-dismiss-zone aria-hidden="true"></div>
+      <div class="mb-5 flex items-center justify-between gap-4" data-sheet-dismiss-zone>
         <div>
           <p class="text-xs font-medium uppercase tracking-wide text-primary">Local Schedule</p>
           <h3 id="addScheduleSheetTitle" class="mt-1 text-xl font-semibold text-[#1d1d1f]">일정 추가</h3>
@@ -2220,8 +2240,9 @@
 
   <section id="addEventSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addEventBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="다른 일정 추가 닫기"></button>
-    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
-      <div class="mb-5 flex items-center justify-between gap-4">
+    <div data-sheet-panel class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
+      <div class="mx-auto mb-3 h-1.5 w-12 rounded-full bg-outline-variant/60 md:hidden" data-sheet-dismiss-zone aria-hidden="true"></div>
+      <div class="mb-5 flex items-center justify-between gap-4" data-sheet-dismiss-zone>
         <div>
           <p class="text-xs font-medium uppercase tracking-wide text-primary">Calendar Event</p>
           <h3 id="addEventSheetTitle" class="mt-1 text-xl font-semibold text-[#1d1d1f]">다른 일정 추가</h3>
@@ -2360,6 +2381,9 @@
     let suppressCalendarClick = false;
     let detailHistoryActive = false;
     let datePanelHistoryActive = false;
+    let sheetHistoryActive = false;
+    let activeSheetType = "";
+    let suppressSheetPopState = false;
     let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
@@ -3021,10 +3045,8 @@
     function openDetailNavigation() {
       state.detailReturnTo = computeDetailReturnTo();
       switchView("detail");
-      if (state.detailReturnTo === "dashboard-date") {
-        history.pushState({ tennisHomeView: "detail", returnTo: state.detailReturnTo }, "");
-        detailHistoryActive = true;
-      }
+      history.pushState({ tennisHomeView: "detail", returnTo: state.detailReturnTo }, "");
+      detailHistoryActive = true;
     }
 
     function returnFromDetail({ fromHistory = false } = {}) {
@@ -3075,7 +3097,42 @@
       clearSelectedDatePanel({ immediate, rerenderCalendar });
     }
 
+    function isSheetOpen(sheetId) {
+      const sheet = document.querySelector(sheetId);
+      return Boolean(sheet && !sheet.classList.contains("hidden"));
+    }
+
+    function openSheetHistory(type) {
+      history.pushState({ tennisHomeView: "sheet", sheetType: type }, "");
+      sheetHistoryActive = true;
+      activeSheetType = type;
+    }
+
+    function resetSheetPanelTransform(panel) {
+      if (!panel) return;
+      panel.classList.remove("is-sheet-dragging");
+      panel.style.transition = "";
+      panel.style.transform = "";
+      panel.style.webkitTransform = "";
+      panel.style.opacity = "";
+    }
+
     function handleAppPopState() {
+      if (suppressSheetPopState) {
+        suppressSheetPopState = false;
+        return;
+      }
+
+      if (isSheetOpen("#addScheduleSheet")) {
+        closeAddSchedule({ fromHistory: true });
+        return;
+      }
+
+      if (isSheetOpen("#addEventSheet")) {
+        closeAddEvent({ fromHistory: true });
+        return;
+      }
+
       if (document.querySelector("#detail.active")) {
         returnFromDetail({ fromHistory: true });
         return;
@@ -4691,22 +4748,8 @@
         function renderUpcoming() {
           const quickOverview = document.querySelector("#quickOverview");
           if (!quickOverview) return;
-          const next = nextScheduleFrom();
           const myUpcoming = schedules.filter(schedule => schedule.date >= todayIso && isMySchedule(schedule));
-          const nextSummary = next
-            ? `${dateLabel(next)} · ${scheduleTimeRangeLabel(next)}`
-            : "예정된 테니스 일정 없음";
-          const cards = [
-            `
-              <button class="dash-overview-card shrink-0 snap-center" type="button" ${next ? `data-detail-id="${next.id}"` : "data-add-schedule"}>
-                <div class="dash-overview-row">
-                  <p class="dash-overview-label">Next</p>
-                  <p class="dash-overview-title truncate">${next ? escapeHTML(next.place) : "새 일정 추가"}</p>
-                </div>
-                <p class="dash-overview-meta truncate">${escapeHTML(nextSummary)}</p>
-              </button>
-            `,
-            ...(myUpcoming.length ? myUpcoming.map((schedule, index) => `
+          const cards = myUpcoming.length ? myUpcoming.map((schedule, index) => `
               <button class="dash-overview-card is-mine shrink-0 snap-center" type="button" data-detail-id="${schedule.id}">
                 <div class="dash-overview-row">
                   <p class="dash-overview-label">My ${String(index + 1).padStart(2, "0")}</p>
@@ -4714,7 +4757,7 @@
                 </div>
                 <p class="dash-overview-meta truncate">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
-            `) : [`
+            `).join("") : `
               <button class="dash-overview-card shrink-0 snap-center" type="button" data-view-link="schedule">
                 <div class="dash-overview-row">
                   <p class="dash-overview-label">My 00</p>
@@ -4722,8 +4765,7 @@
                 </div>
                 <p class="dash-overview-meta truncate">내 참석 예정 없음</p>
               </button>
-            `])
-          ].join("");
+            `;
 
           quickOverview.innerHTML = `
             <button class="hidden md:absolute md:left-3 md:top-1/2 md:z-10 md:flex md:h-9 md:w-9 md:-translate-y-1/2 md:items-center md:justify-center md:rounded-full md:border md:border-outline-variant/40 md:bg-surface-container-lowest/85 md:backdrop-blur-md md:text-on-surface-variant md:shadow-float md:opacity-0 md:pointer-events-none md:transition-all md:duration-200 md:hover:bg-surface-container-high md:hover:text-primary md:hover:scale-105" type="button" data-overview-scroll="-1" aria-label="이전 내 일정">
@@ -5253,14 +5295,33 @@
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      openSheetHistory("schedule");
     }
 
-    function closeAddSchedule() {
+    function closeAddSchedule({ fromHistory = false, retainHistory = false } = {}) {
       const sheet = document.querySelector("#addScheduleSheet");
+      if (sheet.classList.contains("hidden")) return;
+
+      if (!fromHistory && !retainHistory && sheetHistoryActive && activeSheetType === "schedule") {
+        history.back();
+        return;
+      }
+
+      if (!fromHistory && retainHistory && sheetHistoryActive && activeSheetType === "schedule") {
+        suppressSheetPopState = true;
+        sheetHistoryActive = false;
+        activeSheetType = "";
+        history.back();
+      } else if (activeSheetType === "schedule") {
+        sheetHistoryActive = false;
+        activeSheetType = "";
+      }
+
+      resetSheetPanelTransform(sheet.querySelector("[data-sheet-panel]"));
       if (sheet.contains(document.activeElement)) document.activeElement.blur();
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      if (!isSheetOpen("#addEventSheet")) document.body.style.overflow = "";
       scheduleFormMode = "create";
       editingScheduleId = "";
     }
@@ -5285,14 +5346,33 @@
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      openSheetHistory("event");
     }
 
-    function closeAddEvent() {
+    function closeAddEvent({ fromHistory = false, retainHistory = false } = {}) {
       const sheet = document.querySelector("#addEventSheet");
+      if (sheet.classList.contains("hidden")) return;
+
+      if (!fromHistory && !retainHistory && sheetHistoryActive && activeSheetType === "event") {
+        history.back();
+        return;
+      }
+
+      if (!fromHistory && retainHistory && sheetHistoryActive && activeSheetType === "event") {
+        suppressSheetPopState = true;
+        sheetHistoryActive = false;
+        activeSheetType = "";
+        history.back();
+      } else if (activeSheetType === "event") {
+        sheetHistoryActive = false;
+        activeSheetType = "";
+      }
+
+      resetSheetPanelTransform(sheet.querySelector("[data-sheet-panel]"));
       if (sheet.contains(document.activeElement)) document.activeElement.blur();
       sheet.classList.add("hidden");
       sheet.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
+      if (!isSheetOpen("#addScheduleSheet")) document.body.style.overflow = "";
       eventFormMode = "create";
       editingEventId = "";
     }
@@ -5509,6 +5589,121 @@
           isPanelSwiping = false;
         }, 180);
       }, 180);
+    }
+
+    function setupSheetSwipeDismiss({ sheetId, onDismiss }) {
+      const sheet = document.querySelector(sheetId);
+      if (!sheet) return;
+
+      const panel = sheet.querySelector("[data-sheet-panel]");
+      if (!panel) return;
+
+      const isMobileSheet = () => window.matchMedia("(max-width: 767px)").matches;
+      const dismissThreshold = () => Math.max(72, Math.min(140, panel.offsetHeight * 0.16));
+      let touchDrag = null;
+      let suppressClick = false;
+
+      const restorePanel = () => {
+        if (sheet.classList.contains("hidden")) return;
+        panel.classList.remove("is-sheet-dragging");
+        panel.style.transition = "transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.18s ease";
+        panel.style.transform = "translateY(0)";
+        panel.style.webkitTransform = "translateY(0)";
+        panel.style.opacity = "1";
+        window.setTimeout(() => {
+          if (!sheet.classList.contains("hidden")) resetSheetPanelTransform(panel);
+        }, 180);
+      };
+
+      const beginDismiss = dy => {
+        panel.classList.add("is-sheet-dragging");
+        panel.style.transition = "none";
+        panel.style.transform = `translateY(${Math.max(0, dy)}px)`;
+        panel.style.webkitTransform = `translateY(${Math.max(0, dy)}px)`;
+        panel.style.opacity = String(Math.max(0.72, 1 - dy / 320));
+      };
+
+      panel.addEventListener("click", event => {
+        if (!suppressClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        suppressClick = false;
+      }, true);
+
+      panel.addEventListener("touchstart", event => {
+        if (!isMobileSheet() || sheet.classList.contains("hidden")) return;
+        if (event.touches.length !== 1) return;
+        if (event.target.closest("input, select, textarea, button, a, label")) return;
+
+        const touch = event.touches[0];
+        const onDismissZone = event.target.closest("[data-sheet-dismiss-zone]");
+        const startScrollTop = panel.scrollTop;
+
+        touchDrag = {
+          startX: touch.clientX,
+          startY: touch.clientY,
+          mode: null,
+          canDismiss: Boolean(onDismissZone) || startScrollTop <= 0
+        };
+      }, { passive: true });
+
+      panel.addEventListener("touchmove", event => {
+        if (!touchDrag || event.touches.length !== 1) return;
+
+        const touch = event.touches[0];
+        const dx = touch.clientX - touchDrag.startX;
+        const dy = touch.clientY - touchDrag.startY;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        if (!touchDrag.mode) {
+          if (absDx < 5 && absDy < 5) return;
+          if (absDx > absDy * 1.15) {
+            touchDrag = null;
+            return;
+          }
+          if (dy > 0 && absDy > absDx * 1.15 && touchDrag.canDismiss) {
+            touchDrag.mode = "dismiss";
+          } else {
+            touchDrag = null;
+            return;
+          }
+        }
+
+        if (event.cancelable) event.preventDefault();
+        beginDismiss(Math.max(0, dy));
+      }, { passive: false });
+
+      panel.addEventListener("touchend", event => {
+        if (!touchDrag) return;
+
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - touchDrag.startX;
+        const dy = touch.clientY - touchDrag.startY;
+        const mode = touchDrag.mode;
+        touchDrag = null;
+        panel.classList.remove("is-sheet-dragging");
+
+        if (mode !== "dismiss") return;
+
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          suppressClick = true;
+          window.setTimeout(() => { suppressClick = false; }, 250);
+        }
+
+        if (dy >= dismissThreshold()) {
+          resetSheetPanelTransform(panel);
+          onDismiss();
+        } else {
+          restorePanel();
+        }
+      }, { passive: true });
+
+      panel.addEventListener("touchcancel", () => {
+        if (!touchDrag) return;
+        touchDrag = null;
+        restorePanel();
+      }, { passive: true });
     }
 
     function setupSelectedDatePanelSwipe() {
@@ -6653,6 +6848,8 @@
     document.querySelector("#nextMonth").addEventListener("click", () => changeCalendarMonth(1));
     setupCalendarSwipe();
     setupSelectedDatePanelSwipe();
+    setupSheetSwipeDismiss({ sheetId: "#addScheduleSheet", onDismiss: closeAddSchedule });
+    setupSheetSwipeDismiss({ sheetId: "#addEventSheet", onDismiss: closeAddEvent });
     window.addEventListener("resize", updatePanelGeometry, { passive: true });
     window.addEventListener("scroll", updatePanelGeometry, { passive: true });
     window.addEventListener("popstate", handleAppPopState);
@@ -6711,11 +6908,12 @@
         if (scheduleFormMode === "edit" && editingScheduleId) {
           const { id, source, createdAt, ...updates } = schedule;
           await updateSchedule(editingScheduleId, updates);
+          closeAddSchedule({ retainHistory: true });
         } else {
           await addSchedule(schedule);
+          closeAddSchedule({ retainHistory: true });
           openDetailNavigation();
         }
-        closeAddSchedule();
       } catch (error) {
         alert(error.message);
       }
