@@ -29,6 +29,7 @@ create table if not exists public.schedules (
   title text not null,
   court_id text references public.courts(id),
   court_unit_id text references public.court_units(id),
+  host_id text references public.members(id),
   attendee_ids text[] not null default '{}',
   regular boolean,
   closed boolean,
@@ -36,6 +37,8 @@ create table if not exists public.schedules (
   source text default 'supabase',
   created_at timestamptz default now()
 );
+
+alter table public.schedules add column if not exists host_id text references public.members(id);
 
 create table if not exists public.events (
   id text primary key,

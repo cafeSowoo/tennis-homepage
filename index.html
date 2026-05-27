@@ -334,6 +334,23 @@
       opacity: 1;
       transform: none;
     }
+    .host-calendar-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(151, 66, 43, 0.24);
+      background: #fff7ed;
+      color: #9a3412;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(154, 52, 18, 0.12);
+    }
+    .host-chip-prefix {
+      margin-right: 0.25rem;
+      color: #9a3412;
+      font-weight: 900;
+    }
     @keyframes pulse-glow {
       0%, 100% { transform: scale(1); opacity: 0.65; }
       50% { transform: scale(1.35); opacity: 1; }
@@ -912,6 +929,16 @@
       background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, #fff 100%);
     }
 
+    .apple-ui .app-list-card.is-host {
+      border-color: rgba(151, 66, 43, 0.26);
+      background: linear-gradient(180deg, rgba(255, 247, 237, 0.88) 0%, #fff 100%);
+    }
+
+    .apple-ui .app-list-card.is-mine.is-host {
+      border-color: rgba(0, 104, 93, 0.24);
+      background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, rgba(255, 247, 237, 0.72) 100%);
+    }
+
     .apple-ui .app-icon-btn {
       display: inline-flex;
       align-items: center;
@@ -1286,6 +1313,10 @@
     #dashboard .dash-overview-card.is-mine {
       background: linear-gradient(180deg, rgba(0, 104, 93, 0.06) 0%, rgba(0, 104, 93, 0.02) 100%);
       border-color: rgba(0, 104, 93, 0.14);
+    }
+
+    #dashboard .dash-overview-card.is-host .dash-overview-label {
+      color: #9a3412;
     }
 
     #dashboard .dash-overview-label {
@@ -2154,14 +2185,24 @@
           <div id="addScheduleMembers" class="scrollbar-none grid max-h-44 grid-cols-4 gap-1.5 overflow-y-auto rounded-lg border border-outline-variant/60 bg-surface-container-low p-3 sm:grid-cols-5"></div>
         </fieldset>
 
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
-            <input class="h-4 w-4 shrink-0 accent-primary" name="regular" type="checkbox">
-            정기모임
+        <div class="grid grid-cols-3 gap-2">
+          <label class="min-w-0">
+            <input class="peer sr-only" name="host" type="checkbox">
+            <span class="flex h-10 min-w-0 items-center justify-center rounded-md border border-outline-variant/40 bg-surface-container-lowest px-2 text-center text-xs font-bold text-on-surface shadow-sm transition peer-checked:border-[#0c8d80] peer-checked:bg-[#0c8d80] peer-checked:text-white">
+              <span class="truncate">Host</span>
+            </span>
           </label>
-          <label class="flex min-w-0 items-center gap-2 rounded-lg border border-outline-variant/60 bg-surface px-3 py-2.5 text-sm font-bold text-on-surface">
-            <input class="h-4 w-4 shrink-0 accent-primary" name="closed" type="checkbox">
-            마감
+          <label class="min-w-0">
+            <input class="peer sr-only" name="regular" type="checkbox">
+            <span class="flex h-10 min-w-0 items-center justify-center rounded-md border border-outline-variant/40 bg-surface-container-lowest px-2 text-center text-xs font-bold text-on-surface shadow-sm transition peer-checked:border-[#0c8d80] peer-checked:bg-[#0c8d80] peer-checked:text-white">
+              <span class="truncate">정기모임</span>
+            </span>
+          </label>
+          <label class="min-w-0">
+            <input class="peer sr-only" name="closed" type="checkbox">
+            <span class="flex h-10 min-w-0 items-center justify-center rounded-md border border-outline-variant/40 bg-surface-container-lowest px-2 text-center text-xs font-bold text-on-surface shadow-sm transition peer-checked:border-[#0c8d80] peer-checked:bg-[#0c8d80] peer-checked:text-white">
+              <span class="truncate">마감</span>
+            </span>
           </label>
         </div>
 
@@ -2639,6 +2680,7 @@
         title: row.title,
         courtId: row.court_id,
         courtUnitId: row.court_unit_id || undefined,
+        hostId: row.host_id || undefined,
         attendeeIds: row.attendee_ids || [],
         regular: row.regular || undefined,
         closed: row.closed || undefined,
@@ -2657,6 +2699,7 @@
         title: row.title,
         court_id: row.courtId,
         court_unit_id: row.courtUnitId || null,
+        host_id: row.hostId || null,
         attendee_ids: row.attendeeIds || [],
         regular: Boolean(row.regular),
         closed: Boolean(row.closed),
@@ -2937,10 +2980,12 @@
         const attendees = Array.isArray(attendeeIds)
           ? attendeeIds.map(id => memberById.get(id)?.name).filter(Boolean)
           : [...(schedule.attendees || [])];
+        const host = schedule.hostId ? memberById.get(schedule.hostId) : null;
 
         return {
           ...schedule,
           id: schedule.id ?? index,
+          hostName: host?.name || schedule.hostName || "",
           attendeeIds,
           place: court.name || schedule.place || "미정",
           courtUnit,
@@ -3744,6 +3789,14 @@
           return item.attendees.includes(MY_NAME);
         }
 
+        function isMyHostSchedule(item) {
+          const memberId = myMemberId();
+          return Boolean(
+            (memberId && String(item.hostId || "") === String(memberId)) ||
+            item.hostName === MY_NAME
+          );
+        }
+
         function isoFromDateLocal(date) {
           return [
             date.getFullYear(),
@@ -4131,6 +4184,7 @@
         const isToday = iso === todayIso;
         const isPast = iso < todayIso;
         const hasMySchedule = dateSchedules.some(isMySchedule);
+        const hasMyHostSchedule = dateSchedules.some(isMyHostSchedule);
 
         const eventChips = calendarItems.slice(0, 2).map(({ type, item }) => {
           if (type === "event") return calendarEventChip(item);
@@ -4148,10 +4202,11 @@
           if (isMySchedule(item)) {
             chipClass += " ring-2 ring-primary/45 ring-offset-1 ring-offset-surface-container-lowest";
           }
+          const hostPrefix = isMyHostSchedule(item) ? `<span class="host-chip-prefix">Host · </span>` : "";
 
           return `
             <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(item)} ${schedulePlaceLabel(item)}">
-              ${calendarTimeLabel(item)} · ${schedulePlaceLabel(item)}
+              ${hostPrefix}${calendarTimeLabel(item)} · ${schedulePlaceLabel(item)}
             </span>
           `;
         }).join("");
@@ -4179,7 +4234,8 @@
             dotType = "dot-tertiary";
           }
           const myDotClass = isMySchedule(item) ? "my-schedule-dot" : "";
-          return `<span class="pulse-dot ${dotType} ${myDotClass}"></span>`;
+          const hostTitle = isMyHostSchedule(item) ? ` title="${MY_NAME} Host 일정"` : "";
+          return `<span class="pulse-dot ${dotType} ${myDotClass}"${hostTitle}></span>`;
         }).join("");
 
         const dotIndicator = calendarItems.length > 0
@@ -4189,6 +4245,10 @@
           ? `<span class="absolute right-2 top-2 z-10 hidden h-5 w-5 items-center justify-center rounded-full bg-primary text-white shadow-sm ring-2 ring-surface-container-lowest md:flex" title="${MY_NAME} 참석 일정" aria-label="${MY_NAME} 참석 일정">
               <span class="text-[11px] font-black leading-none">✓</span>
             </span>`
+          : "";
+        const myHostBadge = hasMyHostSchedule
+          ? `<span class="host-calendar-badge absolute ${hasMySchedule ? "right-8" : "right-2"} top-2 z-10 hidden h-5 px-1.5 text-[9px] uppercase tracking-wide md:flex" title="${MY_NAME} Host 일정" aria-label="${MY_NAME} Host 일정">Host</span>
+             <span class="host-calendar-badge absolute right-1.5 top-1.5 z-10 h-5 w-5 text-[10px] md:hidden" title="${MY_NAME} Host 일정" aria-label="${MY_NAME} Host 일정">H</span>`
           : "";
 
 
@@ -4207,6 +4267,7 @@
           <button class="calendar-day ${calendarItems.length ? "active-day" : ""} ${isPast ? "is-past" : ""} ${state.selectedDate === iso ? "selected-date" : ""} relative aspect-square h-auto md:aspect-auto md:h-32 rounded-lg ${cellClass} p-2 text-left transition-all duration-200" data-date="${iso}" aria-label="${day}일 ${calendarItems.length}개 일정">
             <span class="${numberClass} absolute top-1 left-1/2 -translate-x-1/2 md:top-2 md:left-2 md:translate-x-0 inline-flex h-6 w-6 items-center justify-center rounded-full font-label-md text-label-md">${day}</span>
             ${myScheduleBadge}
+            ${myHostBadge}
             ${dotIndicator}
             <div class="absolute bottom-2 left-2 right-2 space-y-1.5 hidden md:block">
               ${eventChips}
@@ -4379,6 +4440,7 @@
       const isBookClub = isBookClubSchedule(item);
       const isYonsei = isYonseiSchedule(item);
       const isMine = item.attendees.includes(MY_NAME);
+      const isHost = isMyHostSchedule(item);
 
       const iconClass = isBookClub
         ? "border border-amber-200 bg-amber-50 text-amber-800"
@@ -4395,14 +4457,17 @@
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
-        <article class="app-list-card ${isMine ? "is-mine" : ""}">
+        <article class="app-list-card ${isMine ? "is-mine" : ""} ${isHost ? "is-host" : ""}">
           <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
               <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClass}">
                 ${icon(iconName, "text-[20px]")}
               </div>
               <div class="min-w-0">
-                <h4 class="truncate text-[15px] font-semibold text-[#1d1d1f]">${weekendDayTextHTML(item.title)}</h4>
+                <div class="flex min-w-0 items-center gap-2">
+                  <h4 class="min-w-0 truncate text-[15px] font-semibold text-[#1d1d1f]">${weekendDayTextHTML(item.title)}</h4>
+                  ${isHost ? `<span class="host-calendar-badge h-5 shrink-0 px-1.5 text-[9px] uppercase tracking-wide">Host</span>` : ""}
+                </div>
                 <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
                   ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${schedulePlaceLabel(item)}</span>
                 </p>
@@ -4514,6 +4579,7 @@
       const attendeeCount = item.attendees.length;
       const spotsLeft = Math.max(0, capacity - attendeeCount);
       const myAttending = isMySchedule(item);
+      const myHosting = isMyHostSchedule(item);
       const visibleEmptySlots = attendeeCount < 4
         ? Math.min(spotsLeft, 4 - attendeeCount)
         : Math.min(spotsLeft, 1);
@@ -4571,15 +4637,19 @@
               <div class="relative h-32 md:h-48 w-full overflow-hidden bg-[#f5f5f7]">
                 <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
-                <div class="absolute bottom-3 left-4 md:bottom-4 md:left-5">
+                <div class="absolute bottom-3 left-4 flex flex-wrap items-center gap-2 md:bottom-4 md:left-5">
                   <span class="rounded-full bg-white/90 backdrop-blur px-3 py-1 text-[11px] font-medium text-[#1d1d1f]">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
+                  ${myHosting ? `<span class="rounded-full border border-orange-200 bg-orange-50/95 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-orange-800 shadow-sm">Host</span>` : ""}
                 </div>
               </div>
 
               <div class="p-4 md:p-6">
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                   <div class="space-y-1 w-full md:w-auto">
-                    <h2 class="text-xl md:text-2xl font-semibold text-[#1d1d1f] leading-tight">${item.title}</h2>
+                    <div class="flex min-w-0 flex-wrap items-center gap-2">
+                      <h2 class="min-w-0 text-xl md:text-2xl font-semibold text-[#1d1d1f] leading-tight">${item.title}</h2>
+                      ${myHosting ? `<span class="host-calendar-badge h-6 px-2 text-[10px] uppercase tracking-wide">Host</span>` : ""}
+                    </div>
                     <p class="mt-2 flex items-center gap-2 text-sm text-[#86868b]">
                       ${icon("location_on", "text-[18px] text-primary")} ${schedulePlaceLabel(item)}
                     </p>
@@ -4646,14 +4716,14 @@
             <!-- Join Action Card -->
             <article class="sticky-detail-bar app-card md:p-5">
                   <div class="hidden md:block">
-                    <h3 class="mb-1 text-lg font-semibold text-[#1d1d1f]">${myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
-                    <p class="mb-5 text-sm text-[#86868b] leading-relaxed">${myAttending ? "이 일정에 참석자로 등록되어 있습니다." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
+                    <h3 class="mb-1 text-lg font-semibold text-[#1d1d1f]">${myHosting ? "내 Host 일정" : myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
+                    <p class="mb-5 text-sm text-[#86868b] leading-relaxed">${myHosting ? "내가 예약을 관리하는 일정입니다." : myAttending ? "이 일정에 참석자로 등록되어 있습니다." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
                   </div>
 
                   <div class="flex flex-row md:flex-col items-center justify-between gap-4 w-full">
                     <div class="md:hidden flex flex-col justify-center">
-                      <span class="text-[10px] font-medium uppercase tracking-wide text-[#86868b] leading-none">${myAttending ? "Status" : "Match"}</span>
-                      <span class="text-sm font-semibold text-[#1d1d1f] leading-tight mt-0.5">${myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
+                      <span class="text-[10px] font-medium uppercase tracking-wide text-[#86868b] leading-none">${myHosting ? "Host" : myAttending ? "Status" : "Match"}</span>
+                      <span class="text-sm font-semibold text-[#1d1d1f] leading-tight mt-0.5">${myHosting ? "관리 일정" : myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
                     </div>
 
                     <div class="flex flex-1 md:w-full items-center gap-2 md:flex-col justify-end">
@@ -4785,16 +4855,19 @@
         function renderUpcoming() {
           const quickOverview = document.querySelector("#quickOverview");
           if (!quickOverview) return;
-          const myUpcoming = schedules.filter(schedule => schedule.date >= todayIso && isMySchedule(schedule));
-          const cards = myUpcoming.length ? myUpcoming.map((schedule, index) => `
-              <button class="dash-overview-card is-mine shrink-0 snap-center" type="button" data-detail-id="${schedule.id}">
+          const myUpcoming = schedules.filter(schedule => schedule.date >= todayIso && (isMySchedule(schedule) || isMyHostSchedule(schedule)));
+          const cards = myUpcoming.length ? myUpcoming.map((schedule, index) => {
+            const hostOnly = isMyHostSchedule(schedule) && !isMySchedule(schedule);
+            return `
+              <button class="dash-overview-card ${hostOnly ? "is-host" : "is-mine"} shrink-0 snap-center" type="button" data-detail-id="${schedule.id}">
                 <div class="dash-overview-row">
-                  <p class="dash-overview-label">My ${String(index + 1).padStart(2, "0")}</p>
+                  <p class="dash-overview-label">${hostOnly ? "Host" : "My"} ${String(index + 1).padStart(2, "0")}</p>
                   <p class="dash-overview-title truncate">${escapeHTML(schedule.place)}</p>
                 </div>
                 <p class="dash-overview-meta truncate">${escapeHTML(`${dateLabel(schedule)} · ${scheduleTimeRangeLabel(schedule)}`)}</p>
               </button>
-            `).join("") : `
+            `;
+          }).join("") : `
               <button class="dash-overview-card shrink-0 snap-center" type="button" data-view-link="schedule">
                 <div class="dash-overview-row">
                   <p class="dash-overview-label">My 00</p>
@@ -5322,6 +5395,7 @@
       document.querySelector("#addScheduleTitle").value = schedule?.title || "";
       form.querySelector('input[name="regular"]').checked = Boolean(schedule?.regular);
       form.querySelector('input[name="closed"]').checked = Boolean(schedule?.closed);
+      form.querySelector('input[name="host"]').checked = schedule ? isMyHostSchedule(schedule) : false;
       const selectedAttendeeIds = schedule ? attendeeIdsForSchedule(schedule) : [];
       const myMember = members.find(member => member.name === MY_NAME);
       if (!schedule && myMember) selectedAttendeeIds.push(myMember.id);
@@ -6076,6 +6150,7 @@
         throw new Error("종료 시간은 시작 시간보다 늦어야 합니다.");
       }
       const attendeeIds = formData.getAll("attendeeIds");
+      const hostId = formData.get("host") === "on" ? myMemberId() : undefined;
       const day = dayNameFromDate(date);
       const title = formData.get("title").trim() || buildScheduleTitle({
         date,
@@ -6094,6 +6169,7 @@
         title,
         courtId,
         courtUnitId: courtUnit?.id || undefined,
+        hostId,
         attendeeIds,
         regular: formData.get("regular") === "on" || undefined,
         closed: formData.get("closed") === "on" || undefined,
