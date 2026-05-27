@@ -2035,7 +2035,7 @@
     <section id="member-detail" class="view">
       <div class="mb-5">
         <div class="app-crumb">
-          <button type="button" data-view-link="members">Members</button>
+          <button type="button" data-member-detail-back aria-label="Members로 돌아가기">Members</button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
           <span id="memberDetailCrumbTitle" class="is-current">Member Profile</span>
         </div>
@@ -2380,6 +2380,8 @@
     let calendarDrag = null;
     let suppressCalendarClick = false;
     let detailHistoryActive = false;
+    let memberDetailHistoryActive = false;
+    let suppressMemberDetailPopState = false;
     let datePanelHistoryActive = false;
     let sheetHistoryActive = false;
     let activeSheetType = "";
@@ -3067,6 +3069,31 @@
       switchView("schedule");
     }
 
+    function dismissMemberDetailHistory() {
+      if (!memberDetailHistoryActive) return;
+      suppressMemberDetailPopState = true;
+      memberDetailHistoryActive = false;
+      history.back();
+    }
+
+    function openMemberDetailNavigation(memberId) {
+      state.selectedMemberId = String(memberId);
+      switchView("member-detail");
+      history.pushState({ tennisHomeView: "member-detail", memberId: state.selectedMemberId }, "");
+      memberDetailHistoryActive = true;
+    }
+
+    function returnFromMemberDetail({ fromHistory = false } = {}) {
+      if (!fromHistory && memberDetailHistoryActive) {
+        history.back();
+        return;
+      }
+
+      memberDetailHistoryActive = false;
+      state.selectedMemberId = "";
+      switchView("members");
+    }
+
     function openDatePanelHistory() {
       if (window.innerWidth >= 768 || !state.selectedDate) return;
 
@@ -3130,6 +3157,16 @@
 
       if (isSheetOpen("#addEventSheet")) {
         closeAddEvent({ fromHistory: true });
+        return;
+      }
+
+      if (suppressMemberDetailPopState) {
+        suppressMemberDetailPopState = false;
+        return;
+      }
+
+      if (document.querySelector("#member-detail.active")) {
+        returnFromMemberDetail({ fromHistory: true });
         return;
       }
 
@@ -6525,6 +6562,11 @@
           closeDatePanel({ immediate: true });
         }
 
+        if (view !== "member-detail" && document.querySelector("#member-detail.active")) {
+          dismissMemberDetailHistory();
+          state.selectedMemberId = "";
+        }
+
         if (view !== "detail") {
           state.detailReturnTo = "schedule";
           if (view !== "dashboard") {
@@ -6781,6 +6823,12 @@
         return;
       }
 
+      const memberDetailBack = event.target.closest("[data-member-detail-back]");
+      if (memberDetailBack) {
+        returnFromMemberDetail();
+        return;
+      }
+
       const detailButton = event.target.closest("[data-detail-id]");
       if (detailButton) {
         state.selectedId = detailButton.dataset.detailId;
@@ -6797,8 +6845,7 @@
       }
       const memberDetailButton = event.target.closest("[data-member-id]");
       if (memberDetailButton) {
-        state.selectedMemberId = memberDetailButton.dataset.memberId;
-        switchView("member-detail");
+        openMemberDetailNavigation(memberDetailButton.dataset.memberId);
         return;
       }
       const overviewScrollButton = event.target.closest("[data-overview-scroll]");
@@ -6964,8 +7011,7 @@
       const memberTarget = event.target.closest("[data-member-id]");
       if (memberTarget && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        state.selectedMemberId = memberTarget.dataset.memberId;
-        switchView("member-detail");
+        openMemberDetailNavigation(memberTarget.dataset.memberId);
       }
     });
     document.querySelectorAll(".member-sort").forEach(btn => btn.addEventListener("click", () => {
