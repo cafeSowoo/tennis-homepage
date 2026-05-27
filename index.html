@@ -967,6 +967,17 @@
 
     .apple-ui .app-chip:hover:not(.is-active) { background: var(--app-fill); }
 
+    .apple-ui .member-filter-control {
+      max-width: 7.5rem;
+      padding: 0.375rem 0.625rem;
+      font-size: 0.75rem;
+    }
+
+    .apple-ui .member-sort-control {
+      padding: 0.375rem 0.625rem;
+      font-size: 0.75rem;
+    }
+
     .apple-ui .app-crumb {
       display: flex;
       align-items: center;
@@ -1820,7 +1831,7 @@
 
   <nav id="sideNav" class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col gap-base backdrop-blur-xl py-md md:flex">
     <div class="mb-lg px-margin-mobile">
-      <button type="button" class="brand-home flex w-full items-center gap-3" aria-label="Dashboard로 이동">
+      <button type="button" class="brand-home flex w-full items-center gap-3" aria-label="홈으로 이동">
         <img class="h-12 w-12 shrink-0 object-contain" src="assets/logo.png" alt="">
         <div>
           <h1 class="sr-only">아직도 성장중</h1>
@@ -1833,16 +1844,16 @@
     <div class="nav-container flex flex-1 flex-col gap-sm text-label-md font-label-md relative">
       <div id="navIndicator" class="absolute left-2.5 w-[calc(100%-20px)] h-12 rounded-lg bg-primary-container/20 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"></div>
       <button class="nav-item active mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="dashboard">
-        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>Dashboard
+        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>홈
       </button>
       <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="schedule">
-        <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>Schedule
+        <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>일정
       </button>
       <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="courts">
-        <span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>Courts
+        <span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>코트
       </button>
       <button class="nav-item mx-2.5 flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-on-surface-variant hover:text-on-surface" data-view="members">
-        <span class="material-symbols-outlined" data-icon="group">group</span>Members
+        <span class="material-symbols-outlined" data-icon="group">group</span>멤버
       </button>
     </div>
 
@@ -1855,14 +1866,11 @@
 
   <header class="fixed left-0 right-0 top-0 z-[70] flex h-[54px] items-center justify-between backdrop-blur-xl px-margin-mobile md:left-64 md:h-16 md:px-margin-desktop">
     <div class="flex items-center gap-sm">
-      <button id="mobileMenu" class="app-icon-btn flex md:hidden" type="button" aria-label="메뉴">
-        <span class="material-symbols-outlined" data-icon="menu">menu</span>
-      </button>
       <label class="relative hidden sm:block">
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b]" data-icon="search">search</span>
         <input id="globalSearch" class="w-64 rounded-full py-2 pl-10 pr-4 outline-none transition-colors" placeholder="Search..." type="search">
       </label>
-      <button type="button" class="brand-home flex items-center gap-2 sm:hidden" aria-label="Dashboard로 이동">
+      <button type="button" class="brand-home flex items-center gap-2 sm:hidden" aria-label="홈으로 이동">
         <img class="h-7 w-7 shrink-0 object-contain" src="assets/logo.png" alt="" aria-hidden="true">
         <img class="brand-wordmark h-8 w-auto max-w-[168px] object-contain" src="assets/brand-wordmark.svg" alt="아직도 성장중">
       </button>
@@ -1884,7 +1892,7 @@
       <div class="dashboard-summary flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
           <div class="dashboard-heading-row flex justify-between">
-            <h2 class="dashboard-title app-page-title">Dashboard</h2>
+            <h2 class="dashboard-title app-page-title">홈</h2>
             <a class="weather-card group shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" href="https://www.accuweather.com/ko/kr/songdo-4-sa-dong/3558154/current-weather/3558154" target="_blank" rel="noopener" aria-label="AccuWeather 송도4동 현재 날씨 보기">
               <div class="flex items-center gap-1.5">
                 <div class="weather-icon inline-flex shrink-0 items-center justify-center">
@@ -1964,8 +1972,7 @@
     <section id="schedule" class="view">
       <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 class="app-page-title">Schedule</h2>
-          <p class="app-page-subtitle">테니스 매치와 일반 일정</p>
+          <h2 class="app-page-title">일정</h2>
         </div>
         <div class="grid grid-cols-2 gap-2 md:flex md:flex-row md:flex-wrap">
           <button class="btn-primary min-w-0 justify-center px-3 py-2 text-sm md:px-4" type="button" data-add-schedule>
@@ -1984,9 +1991,9 @@
     <section id="detail" class="view">
       <div class="mb-5 flex items-center justify-between gap-3">
         <div class="app-crumb">
-          <button type="button" id="detailBackLink" class="detail-back-link inline-flex items-center gap-1" data-detail-back="schedule" aria-label="Schedule로 돌아가기">
+          <button type="button" id="detailBackLink" class="detail-back-link inline-flex items-center gap-1" data-detail-back="schedule" aria-label="일정으로 돌아가기">
             <span class="material-symbols-outlined text-[18px] md:hidden">arrow_back</span>
-            <span id="detailBackLabel">Schedule</span>
+            <span id="detailBackLabel">일정</span>
           </button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
           <span id="detailCrumbTitle" class="is-current">Match Details</span>
@@ -2003,7 +2010,7 @@
     <section id="member-detail" class="view">
       <div class="mb-5">
         <div class="app-crumb">
-          <button type="button" data-view-link="members">Members</button>
+          <button type="button" data-view-link="members">멤버</button>
           <span class="material-symbols-outlined text-sm">chevron_right</span>
           <span id="memberDetailCrumbTitle" class="is-current">Member Profile</span>
         </div>
@@ -2012,12 +2019,11 @@
     </section>
 
     <section id="courts" class="view">
-      <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-center md:justify-between">
+      <div class="mb-5 flex items-center justify-between gap-3 md:mb-6">
         <div>
-          <h2 class="app-page-title">Courts</h2>
-          <p class="app-page-subtitle">코트별 예약 현황</p>
+          <h2 class="app-page-title">코트</h2>
         </div>
-        <button class="btn-primary w-full justify-center py-3 text-sm font-bold md:w-auto md:px-4 md:py-2.5" type="button" data-add-court>
+        <button class="btn-primary shrink-0 justify-center px-3 py-2 text-xs font-bold md:px-4 md:py-2.5 md:text-sm" type="button" data-add-court>
           <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
           코트 추가
         </button>
@@ -2026,15 +2032,14 @@
     </section>
 
     <section id="members" class="view">
-      <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 class="app-page-title">Members</h2>
-          <p class="app-page-subtitle">클럽 멤버 디렉토리</p>
+      <div class="mb-5 flex items-center justify-between gap-3 md:mb-6">
+        <div class="shrink-0">
+          <h2 class="app-page-title">멤버</h2>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <select id="memberMonthFilter" class="app-segment" aria-label="멤버 랭킹 집계 기간"></select>
-          <button class="member-sort app-chip is-active" data-sort="count" type="button">참석순</button>
-          <button class="member-sort app-chip" data-sort="name" type="button">이름순</button>
+        <div class="flex min-w-0 flex-wrap items-center justify-end gap-1.5">
+          <select id="memberMonthFilter" class="app-segment member-filter-control" aria-label="멤버 랭킹 집계 기간"></select>
+          <button class="member-sort app-chip member-sort-control is-active" data-sort="count" type="button">참석순</button>
+          <button class="member-sort app-chip member-sort-control" data-sort="name" type="button">이름순</button>
         </div>
       </div>
       <div id="memberGrid" class="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
@@ -2045,19 +2050,19 @@
   <nav id="bottomNav" class="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-around backdrop-blur-xl px-margin-mobile md:hidden">
     <button class="nav-item active flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="dashboard">
       <span class="material-symbols-outlined transition-transform duration-200" data-icon="dashboard">dashboard</span>
-      <span class="text-[10px] font-bold">Dashboard</span>
+      <span class="text-[10px] font-bold">홈</span>
     </button>
     <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="schedule">
       <span class="material-symbols-outlined transition-transform duration-200" data-icon="calendar_today">calendar_today</span>
-      <span class="text-[10px] font-bold">Schedule</span>
+      <span class="text-[10px] font-bold">일정</span>
     </button>
     <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="courts">
       <span class="material-symbols-outlined transition-transform duration-200" data-icon="sports_tennis">sports_tennis</span>
-      <span class="text-[10px] font-bold">Courts</span>
+      <span class="text-[10px] font-bold">코트</span>
     </button>
     <button class="nav-item flex flex-col items-center justify-center gap-1 py-1 text-on-surface-variant hover:text-on-surface w-1/4 transition-all duration-200" data-view="members">
       <span class="material-symbols-outlined transition-transform duration-200" data-icon="group">group</span>
-      <span class="text-[10px] font-bold">Members</span>
+      <span class="text-[10px] font-bold">멤버</span>
     </button>
   </nav>
 
@@ -2236,15 +2241,16 @@
               <option value="other">기타</option>
             </select>
           </label>
-          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            시작
-            <input id="addEventStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="startTime" type="time">
-          </label>
-          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            종료
-            <input id="addEventEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" name="endTime" type="time">
-          </label>
         </div>
+        <input id="addEventStart" name="startTime" type="hidden" value="20:00">
+        <input id="addEventEnd" name="endTime" type="hidden" value="22:00">
+
+        <section class="space-y-2" aria-label="시간대 선택">
+          <p class="text-[14px] font-bold leading-5 text-on-surface">시간대 선택</p>
+          <div class="scrollbar-none touch-pan-x overflow-x-auto overscroll-x-contain">
+            <div id="eventTimeAxis" class="min-w-[920px]"></div>
+          </div>
+        </section>
 
         <label class="space-y-1.5 text-sm font-bold text-on-surface">
           제목
@@ -2990,15 +2996,15 @@
       }
 
       if (returnTo === "dashboard") {
-        backLabel.textContent = "Dashboard";
+        backLabel.textContent = "홈";
         backLink.dataset.detailBack = "dashboard";
-        backLink.setAttribute("aria-label", "Dashboard로 돌아가기");
+        backLink.setAttribute("aria-label", "홈으로 돌아가기");
         return;
       }
 
-      backLabel.textContent = "Schedule";
+      backLabel.textContent = "일정";
       backLink.dataset.detailBack = "schedule";
-      backLink.setAttribute("aria-label", "Schedule로 돌아가기");
+      backLink.setAttribute("aria-label", "일정으로 돌아가기");
     }
 
     function openDetailNavigation() {
@@ -3461,24 +3467,40 @@
       return Math.min(SCHEDULE_TIME_END_HOUR, Math.max(SCHEDULE_TIME_START_HOUR, hour));
     }
 
-    function selectedScheduleHours() {
-      const startEl = document.querySelector("#addScheduleStart");
-      const endEl = document.querySelector("#addScheduleEnd");
+    function selectedTimePickerHours(startSelector, endSelector) {
+      const startEl = document.querySelector(startSelector);
+      const endEl = document.querySelector(endSelector);
       const start = clampScheduleHour(hourFromInput(startEl?.value));
       const end = clampScheduleHour(hourFromInput(endEl?.value || formatHourInput(start + 1)));
       return end > start ? { start, end } : { start, end: Math.min(SCHEDULE_TIME_END_HOUR, start + 1) };
     }
 
-    function setScheduleTimeRange(start, end) {
-      const normalizedStart = clampScheduleHour(Math.min(start, end - 1));
-      const normalizedEnd = clampScheduleHour(Math.max(end, normalizedStart + 1));
-      document.querySelector("#addScheduleStart").value = formatHourInput(normalizedStart);
-      document.querySelector("#addScheduleEnd").value = formatHourInput(normalizedEnd);
-      renderScheduleTimePicker();
-      scrollScheduleTimePickerToSelection();
+    function selectedScheduleHours() {
+      return selectedTimePickerHours("#addScheduleStart", "#addScheduleEnd");
     }
 
-    function scheduleTimeSlotHTML(hour, selected) {
+    function selectedEventHours() {
+      return selectedTimePickerHours("#addEventStart", "#addEventEnd");
+    }
+
+    function setTimePickerRange(startSelector, endSelector, render, scroll, start, end) {
+      const normalizedStart = clampScheduleHour(Math.min(start, end - 1));
+      const normalizedEnd = clampScheduleHour(Math.max(end, normalizedStart + 1));
+      document.querySelector(startSelector).value = formatHourInput(normalizedStart);
+      document.querySelector(endSelector).value = formatHourInput(normalizedEnd);
+      render();
+      scroll();
+    }
+
+    function setScheduleTimeRange(start, end) {
+      setTimePickerRange("#addScheduleStart", "#addScheduleEnd", renderScheduleTimePicker, scrollScheduleTimePickerToSelection, start, end);
+    }
+
+    function setEventTimeRange(start, end) {
+      setTimePickerRange("#addEventStart", "#addEventEnd", renderEventTimePicker, scrollEventTimePickerToSelection, start, end);
+    }
+
+    function timeSlotHTML(hour, selected, activeClass) {
       const isActive = hour >= selected.start && hour < selected.end;
       const isStart = hour === selected.start;
       const isEnd = hour === selected.end - 1;
@@ -3492,7 +3514,7 @@
               : ""
         : "rounded-md";
       const classes = isActive
-        ? `bg-[#0c8d80] text-white shadow-sm ${rounded}`
+        ? `${activeClass} text-white shadow-sm ${rounded}`
         : "bg-white text-on-surface-variant hover:bg-[rgba(0,104,93,0.08)]";
       const slotLabel = isStart
         ? formatHourInput(hour)
@@ -3507,11 +3529,10 @@
       `;
     }
 
-    function renderScheduleTimePicker() {
-      const axis = document.querySelector("#scheduleTimeAxis");
+    function renderTimePicker(axisSelector, selected, activeClass) {
+      const axis = document.querySelector(axisSelector);
       if (!axis) return;
 
-      const selected = selectedScheduleHours();
       const labels = Array.from({ length: SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR + 1 }, (_, index) => SCHEDULE_TIME_START_HOUR + index);
       const slots = Array.from({ length: SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR }, (_, index) => SCHEDULE_TIME_START_HOUR + index);
 
@@ -3528,33 +3549,52 @@
           }).join("")}
         </div>
         <div class="grid gap-0.5 rounded-xl bg-outline-variant/25 p-1" style="grid-template-columns: repeat(${slots.length}, minmax(44px, 1fr));">
-          ${slots.map(hour => scheduleTimeSlotHTML(hour, selected)).join("")}
+          ${slots.map(hour => timeSlotHTML(hour, selected, activeClass)).join("")}
         </div>
       `;
-
-      const label = document.querySelector("#scheduleTimeRangeLabel");
-      if (label) label.textContent = `${formatHourInput(selected.start)} ~ ${formatHourInput(selected.end)}`;
     }
 
-    function scrollScheduleTimePickerToSelection() {
-      const axis = document.querySelector("#scheduleTimeAxis");
+    function renderScheduleTimePicker() {
+      renderTimePicker("#scheduleTimeAxis", selectedScheduleHours(), "bg-[#0c8d80]");
+    }
+
+    function renderEventTimePicker() {
+      renderTimePicker("#eventTimeAxis", selectedEventHours(), "bg-sky-500");
+    }
+
+    function scrollTimePickerToSelection(axisSelector, selected) {
+      const axis = document.querySelector(axisSelector);
       const scroller = axis?.parentElement;
       if (!axis || !scroller) return;
 
-      const selected = selectedScheduleHours();
       const slotWidth = axis.scrollWidth / (SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR);
       const slotIndex = selected.start - SCHEDULE_TIME_START_HOUR;
       scroller.scrollLeft = Math.max(0, slotWidth * slotIndex - scroller.clientWidth / 3);
     }
 
-    function handleScheduleTimeSlotClick(hour) {
-      const selected = selectedScheduleHours();
+    function scrollScheduleTimePickerToSelection() {
+      scrollTimePickerToSelection("#scheduleTimeAxis", selectedScheduleHours());
+    }
+
+    function scrollEventTimePickerToSelection() {
+      scrollTimePickerToSelection("#eventTimeAxis", selectedEventHours());
+    }
+
+    function handleTimeSlotClick(hour, selected, setRange) {
       const selectedLength = selected.end - selected.start;
       if (selectedLength === 1 && hour !== selected.start) {
-        setScheduleTimeRange(Math.min(hour, selected.start), Math.max(hour, selected.start) + 1);
+        setRange(Math.min(hour, selected.start), Math.max(hour, selected.start) + 1);
         return;
       }
-      setScheduleTimeRange(hour, hour + 1);
+      setRange(hour, hour + 1);
+    }
+
+    function handleScheduleTimeSlotClick(hour) {
+      handleTimeSlotClick(hour, selectedScheduleHours(), setScheduleTimeRange);
+    }
+
+    function handleEventTimeSlotClick(hour) {
+      handleTimeSlotClick(hour, selectedEventHours(), setEventTimeRange);
     }
 
     function buildScheduleTitle({ date, day, startTime, endTime, courtName, courtUnitName = "" }) {
@@ -5180,7 +5220,6 @@
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
-      document.querySelector("#addScheduleTitle").focus();
     }
 
     function closeAddSchedule() {
@@ -5203,15 +5242,16 @@
       document.querySelector("#addEventSubmit").innerHTML = `<span class="material-symbols-outlined text-[18px]">${event ? "save" : "event_available"}</span> ${event ? "저장" : "추가"}`;
       document.querySelector("#addEventDate").value = event?.date || dateValue;
       document.querySelector("#addEventCategory").value = event?.category || "personal";
-      document.querySelector("#addEventStart").value = event?.startTime || "";
-      document.querySelector("#addEventEnd").value = event?.endTime || "";
+      document.querySelector("#addEventStart").value = event?.startTime || "20:00";
+      document.querySelector("#addEventEnd").value = event?.endTime || "22:00";
+      renderEventTimePicker();
+      window.setTimeout(scrollEventTimePickerToSelection, 0);
       document.querySelector("#addEventTitle").value = event?.title || "";
       document.querySelector("#addEventLocation").value = event?.location || "";
       document.querySelector("#addEventNote").value = event?.note || "";
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
-      document.querySelector("#addEventTitle").focus();
     }
 
     function closeAddEvent() {
@@ -5802,7 +5842,15 @@
       const date = formData.get("date");
       const startTime = formData.get("startTime");
       const endTime = formData.get("endTime");
-      if (startTime && endTime && startTime >= endTime) {
+      const startMinutes = timeToMinutes(startTime);
+      const endMinutes = timeToMinutes(endTime);
+      if (!/^([01][0-9]|2[0-3]):00$/.test(startTime) || !/^([01][0-9]|2[0-4]):00$/.test(endTime)) {
+        throw new Error("시간은 08:00처럼 정각 형식으로 입력해 주세요.");
+      }
+      if (startMinutes < 8 * 60 || endMinutes > 24 * 60) {
+        throw new Error("일정 시간은 08:00부터 24:00까지만 선택할 수 있습니다.");
+      }
+      if (startMinutes >= endMinutes) {
         throw new Error("종료 시간은 시작 시간보다 늦어야 합니다.");
       }
 
@@ -5811,8 +5859,8 @@
         date,
         title: formData.get("title").trim(),
         category: formData.get("category") || "personal",
-        startTime: startTime || undefined,
-        endTime: endTime || undefined,
+        startTime,
+        endTime,
         location: formData.get("location").trim() || undefined,
         note: formData.get("note").trim() || undefined,
         source: "local",
@@ -6563,7 +6611,7 @@
       state.memberMonth = event.target.value;
       renderMembers();
     });
-    document.querySelector("#mobileMenu").addEventListener("click", () => document.body.classList.add("mobile-nav-open"));
+    document.querySelector("#mobileMenu")?.addEventListener("click", () => document.body.classList.add("mobile-nav-open"));
     document.querySelectorAll(".brand-home").forEach(button => {
       button.addEventListener("click", goHomeDashboard);
     });
@@ -6597,6 +6645,11 @@
       const slot = event.target.closest("[data-time-slot]");
       if (!slot) return;
       handleScheduleTimeSlotClick(Number(slot.dataset.timeSlot));
+    });
+    document.querySelector("#eventTimeAxis").addEventListener("click", event => {
+      const slot = event.target.closest("[data-time-slot]");
+      if (!slot) return;
+      handleEventTimeSlotClick(Number(slot.dataset.timeSlot));
     });
     document.querySelector("#resetScheduleTimeRange")?.addEventListener("click", () => {
       setScheduleTimeRange(20, 22);
@@ -6687,9 +6740,9 @@
     document.querySelectorAll(".member-sort").forEach(btn => btn.addEventListener("click", () => {
       state.memberSort = btn.dataset.sort;
       document.querySelectorAll(".member-sort").forEach(b => {
-        b.className = "member-sort app-chip";
+        b.className = "member-sort app-chip member-sort-control";
       });
-      btn.className = "member-sort app-chip is-active";
+      btn.className = "member-sort app-chip member-sort-control is-active";
       renderMembers();
     }));
 
