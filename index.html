@@ -424,6 +424,18 @@
         inset 0 -1px 0px rgba(255, 255, 255, 0.1);
       transform: translateY(1px);
     }
+    #addScheduleSubmit {
+      background: linear-gradient(180deg, #12a493 0%, #0c8d80 100%);
+      border-color: rgba(12, 141, 128, 0.22);
+      box-shadow:
+        0 2px 4px rgba(12, 141, 128, 0.14),
+        0 4px 8px rgba(12, 141, 128, 0.1),
+        inset 0 1.5px 0px rgba(255, 255, 255, 0.26),
+        inset 0 -1.5px 0px rgba(0, 0, 0, 0.12);
+    }
+    #addScheduleSubmit:hover {
+      background: linear-gradient(180deg, #18b2a0 0%, #109686 100%);
+    }
 
     .btn-secondary {
       background: linear-gradient(180deg, #dfff4f 0%, #ceed3e 100%);
@@ -2070,7 +2082,7 @@
 
   <section id="addScheduleSheet" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
     <button id="addScheduleBackdrop" class="absolute inset-0 bg-black/35" type="button" aria-label="일정 추가 닫기"></button>
-    <div class="absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
+    <div class="scrollbar-none absolute inset-x-0 bottom-0 max-h-[92vh] overflow-y-auto rounded-t-[1.25rem] bg-white p-5 md:left-1/2 md:top-1/2 md:bottom-auto md:max-h-[86vh] md:w-full md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.25rem] md:p-6">
       <div class="mb-5 flex items-center justify-between gap-4">
         <div>
           <p class="text-xs font-medium uppercase tracking-wide text-primary">Local Schedule</p>
@@ -2096,23 +2108,23 @@
             <select id="addScheduleCourtUnit" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="courtUnitId"></select>
           </label>
           <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            시작
-            <input id="addScheduleStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="startTime" type="time" value="20:00" required>
-          </label>
-          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            종료
-            <input id="addScheduleEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="endTime" type="time" value="22:00" required>
+            제목
+            <input id="addScheduleTitle" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="title" placeholder="자동 생성" type="text">
           </label>
         </div>
+        <input id="addScheduleStart" name="startTime" type="hidden" value="20:00">
+        <input id="addScheduleEnd" name="endTime" type="hidden" value="22:00">
 
-        <label class="space-y-1.5 text-sm font-bold text-on-surface">
-          제목
-          <input id="addScheduleTitle" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="title" placeholder="비워두면 날짜, 시간, 구장으로 자동 생성됩니다." type="text">
-        </label>
+        <section class="space-y-2" aria-label="시간대 선택">
+          <p class="text-[14px] font-bold leading-5 text-on-surface">시간대 선택</p>
+          <div class="scrollbar-none touch-pan-x overflow-x-auto overscroll-x-contain">
+            <div id="scheduleTimeAxis" class="min-w-[920px]"></div>
+          </div>
+        </section>
 
         <fieldset class="space-y-2">
           <legend class="text-sm font-bold text-on-surface">참석자</legend>
-          <div id="addScheduleMembers" class="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-outline-variant/60 bg-surface-container-low p-3 sm:grid-cols-3"></div>
+          <div id="addScheduleMembers" class="scrollbar-none grid max-h-44 grid-cols-4 gap-1.5 overflow-y-auto rounded-lg border border-outline-variant/60 bg-surface-container-low p-3 sm:grid-cols-5"></div>
         </fieldset>
 
         <div class="grid grid-cols-2 gap-2">
@@ -2306,6 +2318,8 @@
         const COURT_IMAGE_BUCKET = "court-images";
         const SONGDO_WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=37.3827&longitude=126.6430&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=14&timezone=Asia%2FSeoul";
     const MATCH_CAPACITY = 16;
+    const SCHEDULE_TIME_START_HOUR = 8;
+    const SCHEDULE_TIME_END_HOUR = 24;
     const supabaseClient = SUPABASE_CONFIG.supabaseUrl && SUPABASE_CONFIG.supabaseAnonKey && window.supabase
       ? window.supabase.createClient(SUPABASE_CONFIG.supabaseUrl, SUPABASE_CONFIG.supabaseAnonKey)
       : null;
@@ -3370,6 +3384,7 @@
     }
 
     function scheduleStartMinutes(item) {
+      if (timeStart(item) === "24:00") return 24 * 60;
       const match = timeStart(item).match(/(오전|오후)\s*(\d{1,2}):(\d{2})/);
       if (!match) return 0;
       const [, period, hourText, minuteText] = match;
@@ -3424,11 +3439,122 @@
     }
 
     function formatKoreanTime(value) {
+      if (value === "24:00") return "24:00";
       const [hourText, minuteText] = value.split(":");
       const hour = Number(hourText);
       const period = hour < 12 ? "오전" : "오후";
       const displayHour = hour % 12 || 12;
       return `${period} ${displayHour}:${minuteText}`;
+    }
+
+    function formatHourInput(hour) {
+      return `${String(hour).padStart(2, "0")}:00`;
+    }
+
+    function hourFromInput(value) {
+      const [hourText] = String(value || "").split(":");
+      const hour = Number(hourText);
+      return Number.isFinite(hour) ? hour : SCHEDULE_TIME_START_HOUR;
+    }
+
+    function clampScheduleHour(hour) {
+      return Math.min(SCHEDULE_TIME_END_HOUR, Math.max(SCHEDULE_TIME_START_HOUR, hour));
+    }
+
+    function selectedScheduleHours() {
+      const startEl = document.querySelector("#addScheduleStart");
+      const endEl = document.querySelector("#addScheduleEnd");
+      const start = clampScheduleHour(hourFromInput(startEl?.value));
+      const end = clampScheduleHour(hourFromInput(endEl?.value || formatHourInput(start + 1)));
+      return end > start ? { start, end } : { start, end: Math.min(SCHEDULE_TIME_END_HOUR, start + 1) };
+    }
+
+    function setScheduleTimeRange(start, end) {
+      const normalizedStart = clampScheduleHour(Math.min(start, end - 1));
+      const normalizedEnd = clampScheduleHour(Math.max(end, normalizedStart + 1));
+      document.querySelector("#addScheduleStart").value = formatHourInput(normalizedStart);
+      document.querySelector("#addScheduleEnd").value = formatHourInput(normalizedEnd);
+      renderScheduleTimePicker();
+      scrollScheduleTimePickerToSelection();
+    }
+
+    function scheduleTimeSlotHTML(hour, selected) {
+      const isActive = hour >= selected.start && hour < selected.end;
+      const isStart = hour === selected.start;
+      const isEnd = hour === selected.end - 1;
+      const rounded = isActive
+        ? isStart && isEnd
+          ? "rounded-lg"
+          : isStart
+            ? "rounded-l-lg"
+            : isEnd
+              ? "rounded-r-lg"
+              : ""
+        : "rounded-md";
+      const classes = isActive
+        ? `bg-[#0c8d80] text-white shadow-sm ${rounded}`
+        : "bg-white text-on-surface-variant hover:bg-[rgba(0,104,93,0.08)]";
+      const slotLabel = isStart
+        ? formatHourInput(hour)
+        : isEnd
+          ? formatHourInput(hour + 1)
+          : "";
+
+      return `
+        <button class="h-7 min-w-[44px] border border-outline-variant/40 text-xs font-bold transition ${classes}" type="button" data-time-slot="${hour}" aria-pressed="${isActive}" aria-label="${formatHourInput(hour)}부터 ${formatHourInput(hour + 1)}까지">
+          ${slotLabel}
+        </button>
+      `;
+    }
+
+    function renderScheduleTimePicker() {
+      const axis = document.querySelector("#scheduleTimeAxis");
+      if (!axis) return;
+
+      const selected = selectedScheduleHours();
+      const labels = Array.from({ length: SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR + 1 }, (_, index) => SCHEDULE_TIME_START_HOUR + index);
+      const slots = Array.from({ length: SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR }, (_, index) => SCHEDULE_TIME_START_HOUR + index);
+
+      axis.innerHTML = `
+        <div class="relative h-5">
+          ${labels.map((hour, index) => {
+            const position = (index / (labels.length - 1)) * 100;
+            const alignment = index === 0
+              ? "translate-x-0 text-left"
+              : index === labels.length - 1
+                ? "-translate-x-full text-right"
+                : "-translate-x-1/2 text-center";
+            return `<div class="absolute top-0 whitespace-nowrap text-xs font-bold text-on-surface-variant ${alignment}" style="left: ${position}%;">${formatHourInput(hour)}</div>`;
+          }).join("")}
+        </div>
+        <div class="grid gap-0.5 rounded-xl bg-outline-variant/25 p-1" style="grid-template-columns: repeat(${slots.length}, minmax(44px, 1fr));">
+          ${slots.map(hour => scheduleTimeSlotHTML(hour, selected)).join("")}
+        </div>
+      `;
+
+      const label = document.querySelector("#scheduleTimeRangeLabel");
+      if (label) label.textContent = `${formatHourInput(selected.start)} ~ ${formatHourInput(selected.end)}`;
+    }
+
+    function scrollScheduleTimePickerToSelection() {
+      const axis = document.querySelector("#scheduleTimeAxis");
+      const scroller = axis?.parentElement;
+      if (!axis || !scroller) return;
+
+      const selected = selectedScheduleHours();
+      const slotWidth = axis.scrollWidth / (SCHEDULE_TIME_END_HOUR - SCHEDULE_TIME_START_HOUR);
+      const slotIndex = selected.start - SCHEDULE_TIME_START_HOUR;
+      scroller.scrollLeft = Math.max(0, slotWidth * slotIndex - scroller.clientWidth / 3);
+    }
+
+    function handleScheduleTimeSlotClick(hour) {
+      const selected = selectedScheduleHours();
+      const selectedLength = selected.end - selected.start;
+      if (selectedLength === 1 && hour !== selected.start) {
+        setScheduleTimeRange(Math.min(hour, selected.start), Math.max(hour, selected.start) + 1);
+        return;
+      }
+      setScheduleTimeRange(hour, hour + 1);
     }
 
     function buildScheduleTitle({ date, day, startTime, endTime, courtName, courtUnitName = "" }) {
@@ -4962,9 +5088,11 @@
       `).join("");
       renderAddScheduleCourtUnitOptions();
       document.querySelector("#addScheduleMembers").innerHTML = members.map(member => `
-        <label class="flex items-center gap-2 rounded-md bg-surface-container-lowest px-2.5 py-2 text-xs font-bold text-on-surface shadow-sm">
-          <input class="h-4 w-4 accent-primary" name="attendeeIds" type="checkbox" value="${member.id}">
-          <span>${member.name}</span>
+        <label class="min-w-0">
+          <input class="peer sr-only" name="attendeeIds" type="checkbox" value="${member.id}">
+          <span class="flex h-9 min-w-0 items-center justify-center rounded-md border border-outline-variant/40 bg-surface-container-lowest px-1.5 text-center text-xs font-bold text-on-surface shadow-sm transition peer-checked:border-[#0c8d80] peer-checked:bg-[#0c8d80] peer-checked:text-white">
+            <span class="truncate">${member.name}</span>
+          </span>
         </label>
       `).join("");
     }
@@ -5034,6 +5162,8 @@
       document.querySelector("#addScheduleDate").value = schedule?.date || dateValue;
       document.querySelector("#addScheduleStart").value = schedule ? toTwentyFourHourLabel(timeStart(schedule)) : "20:00";
       document.querySelector("#addScheduleEnd").value = schedule ? toTwentyFourHourLabel(timeEnd(schedule)) : "22:00";
+      renderScheduleTimePicker();
+      window.setTimeout(scrollScheduleTimePickerToSelection, 0);
       const firstCourt = courts[0]?.id || "";
       document.querySelector("#addScheduleCourt").value = schedule?.courtId || firstCourt;
       renderAddScheduleCourtUnitOptions(schedule?.courtUnitId || "");
@@ -5629,7 +5759,15 @@
       const courtUnit = courtUnits.find(item => item.id === courtUnitId && item.courtId === courtId);
       const startTime = formData.get("startTime");
       const endTime = formData.get("endTime");
-      if (startTime >= endTime) {
+      const startMinutes = timeToMinutes(startTime);
+      const endMinutes = timeToMinutes(endTime);
+      if (!/^([01][0-9]|2[0-3]):00$/.test(startTime) || !/^([01][0-9]|2[0-4]):00$/.test(endTime)) {
+        throw new Error("시간은 08:00처럼 정각 형식으로 입력해 주세요.");
+      }
+      if (startMinutes < 8 * 60 || endMinutes > 24 * 60) {
+        throw new Error("예약 시간은 08:00부터 24:00까지만 선택할 수 있습니다.");
+      }
+      if (startMinutes >= endMinutes) {
         throw new Error("종료 시간은 시작 시간보다 늦어야 합니다.");
       }
       const attendeeIds = formData.getAll("attendeeIds");
@@ -6452,6 +6590,16 @@
     });
     document.querySelector("#addScheduleCourt").addEventListener("change", () => {
       renderAddScheduleCourtUnitOptions();
+    });
+    document.querySelector("#addScheduleStart").addEventListener("change", renderScheduleTimePicker);
+    document.querySelector("#addScheduleEnd").addEventListener("change", renderScheduleTimePicker);
+    document.querySelector("#scheduleTimeAxis").addEventListener("click", event => {
+      const slot = event.target.closest("[data-time-slot]");
+      if (!slot) return;
+      handleScheduleTimeSlotClick(Number(slot.dataset.timeSlot));
+    });
+    document.querySelector("#resetScheduleTimeRange")?.addEventListener("click", () => {
+      setScheduleTimeRange(20, 22);
     });
     document.querySelector("#closeAddEvent").addEventListener("click", closeAddEvent);
     document.querySelector("#cancelAddEvent").addEventListener("click", closeAddEvent);
