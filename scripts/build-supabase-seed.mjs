@@ -33,10 +33,10 @@ console.log(courtUnits.map(unit =>
   `  (${sql(unit.id)}, ${sql(unit.courtId)}, ${sql(unit.label)}, ${sql(unit.surface)}, ${unit.sortOrder ?? 0})`
 ).join(",\n") + "\non conflict (id) do update set court_id = excluded.court_id, label = excluded.label, surface = excluded.surface, sort_order = excluded.sort_order;");
 
-console.log("insert into public.schedules (id, date, day, time, title, court_id, court_unit_id, attendee_ids, regular, closed, important, source, created_at) values");
+console.log("insert into public.schedules (id, date, day, time, title, court_id, court_unit_id, host_id, attendee_ids, regular, closed, important, source, created_at) values");
 console.log(schedules.map(schedule =>
-  `  (${sql(schedule.id)}, ${sql(schedule.date)}, ${sql(schedule.day)}, ${sql(schedule.time)}, ${sql(schedule.title)}, ${sql(schedule.courtId)}, ${sql(schedule.courtUnitId)}, ${textArray(schedule.attendeeIds)}, ${bool(schedule.regular)}, ${bool(schedule.closed)}, ${bool(schedule.important)}, ${sql(schedule.source || "seed")}, ${sql(schedule.createdAt)})`
-).join(",\n") + "\non conflict (id) do update set date = excluded.date, day = excluded.day, time = excluded.time, title = excluded.title, court_id = excluded.court_id, court_unit_id = excluded.court_unit_id, attendee_ids = excluded.attendee_ids, regular = excluded.regular, closed = excluded.closed, important = excluded.important;");
+  `  (${sql(schedule.id)}, ${sql(schedule.date)}, ${sql(schedule.day)}, ${sql(schedule.time)}, ${sql(schedule.title)}, ${sql(schedule.courtId)}, ${sql(schedule.courtUnitId)}, ${sql(schedule.hostId)}, ${textArray(schedule.attendeeIds)}, ${bool(schedule.regular)}, ${bool(schedule.closed)}, ${bool(schedule.important)}, ${sql(schedule.source || "seed")}, ${sql(schedule.createdAt)})`
+).join(",\n") + "\non conflict (id) do update set date = excluded.date, day = excluded.day, time = excluded.time, title = excluded.title, court_id = excluded.court_id, court_unit_id = excluded.court_unit_id, host_id = excluded.host_id, attendee_ids = excluded.attendee_ids, regular = excluded.regular, closed = excluded.closed, important = excluded.important;");
 
 if (events.length) {
   console.log("insert into public.events (id, date, title, category, start_time, end_time, all_day, location, note, source, created_at) values");
