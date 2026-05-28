@@ -64,12 +64,20 @@ create table if not exists public.discussions (
   created_at timestamptz default now()
 );
 
+create table if not exists public.schedule_declines (
+  schedule_id text not null references public.schedules(id) on delete cascade,
+  member_id text not null references public.members(id) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (schedule_id, member_id)
+);
+
 alter table public.members enable row level security;
 alter table public.courts enable row level security;
 alter table public.court_units enable row level security;
 alter table public.schedules enable row level security;
 alter table public.events enable row level security;
 alter table public.discussions enable row level security;
+alter table public.schedule_declines enable row level security;
 
 drop policy if exists "public read members" on public.members;
 drop policy if exists "public read courts" on public.courts;
@@ -95,6 +103,9 @@ drop policy if exists "owner delete events" on public.events;
 drop policy if exists "owner insert discussions" on public.discussions;
 drop policy if exists "owner update discussions" on public.discussions;
 drop policy if exists "owner delete discussions" on public.discussions;
+drop policy if exists "public read schedule declines" on public.schedule_declines;
+drop policy if exists "owner insert schedule declines" on public.schedule_declines;
+drop policy if exists "owner delete schedule declines" on public.schedule_declines;
 
 create policy "public read members" on public.members for select using (true);
 create policy "public read courts" on public.courts for select using (true);
@@ -102,6 +113,7 @@ create policy "public read court units" on public.court_units for select using (
 create policy "public read schedules" on public.schedules for select using (true);
 create policy "public read events" on public.events for select using (true);
 create policy "public read discussions" on public.discussions for select using (true);
+create policy "public read schedule declines" on public.schedule_declines for select using (true);
 
 create policy "owner insert courts"
   on public.courts
@@ -198,10 +210,23 @@ create policy "owner delete discussions"
   to authenticated
   using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
 
+create policy "owner insert schedule declines"
+  on public.schedule_declines
+  for insert
+  to authenticated
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
+create policy "owner delete schedule declines"
+  on public.schedule_declines
+  for delete
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
 grant usage on schema public to anon, authenticated;
-grant select on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions to anon, authenticated;
-revoke insert, update, delete, truncate on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions from anon, authenticated;
+grant select on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions, public.schedule_declines to anon, authenticated;
+revoke insert, update, delete, truncate on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions, public.schedule_declines from anon, authenticated;
 grant insert, update, delete on public.courts, public.court_units, public.schedules, public.events, public.discussions to authenticated;
+grant insert, delete on public.schedule_declines to authenticated;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (

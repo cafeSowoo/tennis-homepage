@@ -325,6 +325,11 @@
       background-color: #f43f5e;
       box-shadow: 0 0 6px rgba(244, 63, 94, 0.55);
     }
+    .pulse-dot.dot-declined {
+      background-color: #a1a1aa;
+      box-shadow: none;
+      opacity: 1;
+    }
     .pulse-dot.my-schedule-dot {
       width: 8px;
       height: 8px;
@@ -1607,9 +1612,33 @@
       box-shadow: none !important;
     }
 
+    .app-list-card.is-declined,
+    #dashboard #selectedDateList article.is-declined {
+      background: #f4f4f5 !important;
+      border-color: #d4d4d8 !important;
+      box-shadow: none !important;
+    }
+
+    .app-list-card.is-declined h4,
+    .app-list-card.is-declined p,
+    .app-list-card.is-declined span {
+      color: #71717a !important;
+    }
+
+    .app-list-card.is-declined .host-calendar-badge {
+      border-color: #d4d4d8 !important;
+      background: #e4e4e7 !important;
+      color: #71717a !important;
+    }
+
     #dashboard #selectedDateList article:hover {
       background: #fafafa !important;
       box-shadow: none !important;
+    }
+
+    .apple-ui .app-list-card.is-declined:hover,
+    #dashboard #selectedDateList article.is-declined:hover {
+      background: #f4f4f5 !important;
     }
 
     #dashboard [data-view-link="schedule"] {
@@ -2471,18 +2500,20 @@
     const today = new Date(`${todayIso}T00:00:00`);
         const state = { query: "", place: "all", person: "all", scheduleWindow: "upcoming", memberSort: "count", memberMonth: "all", selectedId: 0, selectedEventId: "", selectedMemberId: "", detailType: "schedule", detailReturnTo: "schedule", selectedDate: "", currentMonth: todayIso.slice(0, 7) };
     const authState = { session: null, user: null, initialized: false };
-    const dataStore = { members: [], courts: [], courtUnits: [], schedules: [], events: [], discussions: [] };
+    const dataStore = { members: [], courts: [], courtUnits: [], schedules: [], events: [], discussions: [], scheduleDeclines: [] };
     let members = [];
     let courts = [];
     let courtUnits = [];
     let schedules = [];
     let calendarEvents = [];
     let discussions = [];
+    let scheduleDeclines = [];
     let people = [];
     let places = [];
     let byDate = {};
     let eventsByDate = {};
     let upcoming = [];
+    let declinedScheduleIds = new Set();
     let viewRenderRequest = 0;
     let calendarAddMenuCloseTimer = 0;
     let fileSchedules = [];
@@ -2872,17 +2903,34 @@
       };
     }
 
+    function fromSupabaseScheduleDecline(row) {
+      return {
+        scheduleId: row.schedule_id,
+        memberId: row.member_id,
+        createdAt: row.created_at
+      };
+    }
+
+    function toSupabaseScheduleDecline(row) {
+      return {
+        schedule_id: String(row.scheduleId),
+        member_id: String(row.memberId),
+        created_at: row.createdAt || new Date().toISOString()
+      };
+    }
+
     async function loadSupabaseData() {
-      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult] = await Promise.all([
+      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
         supabaseClient.from("courts").select("*").order("name"),
         supabaseClient.from("court_units").select("*").order("court_id").order("sort_order").order("label"),
         supabaseClient.from("schedules").select("*").order("date").order("time"),
         supabaseClient.from("events").select("*").order("date").order("start_time", { nullsFirst: true }),
-        supabaseClient.from("discussions").select("*").order("created_at")
+        supabaseClient.from("discussions").select("*").order("created_at"),
+        supabaseClient.from("schedule_declines").select("*").order("created_at")
       ]);
 
-      const failed = [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult].find(result => result.error);
+      const failed = [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult].find(result => result.error);
       if (failed) throw failed.error;
 
       dataStore.members = membersResult.data || [];
@@ -2891,6 +2939,7 @@
           dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
           dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
           dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
+          dataStore.scheduleDeclines = (declinesResult.data || []).map(fromSupabaseScheduleDecline);
           if (!ALLOW_REMOTE_WRITES) applyClientLocalData();
           rebuildDataIndexes();
         }
@@ -2949,6 +2998,10 @@
 
     function saveDeletedScheduleIds(rows) {
       localStorage.setItem(DELETED_SCHEDULES_KEY, JSON.stringify([...new Set(rows.map(String))]));
+    }
+
+    function isDeclinedSchedule(item) {
+      return Boolean(item?.id) && declinedScheduleIds.has(String(item.id));
     }
 
     function loadAttendeeOverrides() {
@@ -3047,6 +3100,13 @@
       courts = dataStore.courts;
       courtUnits = dataStore.courtUnits || [];
       discussions = dataStore.discussions;
+      scheduleDeclines = dataStore.scheduleDeclines || [];
+      const currentMemberId = myMemberId();
+      declinedScheduleIds = new Set(
+        scheduleDeclines
+          .filter(row => currentMemberId && String(row.memberId) === String(currentMemberId))
+          .map(row => String(row.scheduleId))
+      );
       schedules = dataStore.schedules.map((schedule, index) => {
         const court = courtById.get(schedule.courtId) || {};
         const courtUnit = courtUnitById.get(schedule.courtUnitId) || null;
@@ -3141,7 +3201,7 @@
 
       const returnTo = state.detailReturnTo || "schedule";
       if (returnTo === "dashboard-date" && state.selectedDate) {
-        backLabel.textContent = `${dateLabel({ date: state.selectedDate, day: dayNameFromDate(state.selectedDate) })} 일정`;
+        backLabel.textContent = dateLabel({ date: state.selectedDate, day: dayNameFromDate(state.selectedDate) });
         backLink.dataset.detailBack = "dashboard-date";
         backLink.setAttribute("aria-label", "날짜 일정 목록으로 돌아가기");
         return;
@@ -4171,9 +4231,10 @@
 
     function calendarEventChip(event) {
       const category = calendarEventCategory(event);
+      const timeLabel = calendarTimeLabel(event);
       return `
-        <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${category.chip} shadow-sm" title="${escapeHTML(event.title)}">
-          ${eventTimeLabel(event)} · ${escapeHTML(event.title)}
+        <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${category.chip} shadow-sm" title="${escapeHTML(`${eventTimeLabel(event)} · ${event.title}`)}">
+          ${timeLabel} · ${escapeHTML(event.title)}
         </span>
       `;
     }
@@ -4264,17 +4325,20 @@
         const eventChips = calendarItems.slice(0, 2).map(({ type, item }) => {
           if (type === "event") return calendarEventChip(item);
 
-          let chipClass = "bg-secondary-container text-on-secondary-container";
-          if (item.closed) {
-            chipClass = "bg-error-container text-on-error-container";
-          } else if (isBookClubSchedule(item)) {
-            chipClass = "border border-amber-300 bg-amber-50 text-amber-800";
-          } else if (isYonseiSchedule(item)) {
-            chipClass = "border border-indigo-300 bg-indigo-50 text-indigo-700";
-          } else if (item.regular) {
-            chipClass = "bg-tertiary-container text-on-tertiary-container";
+          const isDeclined = isDeclinedSchedule(item);
+          let chipClass = isDeclined ? "border border-zinc-300 bg-zinc-100 text-zinc-500" : "bg-secondary-container text-on-secondary-container";
+          if (!isDeclined) {
+            if (item.closed) {
+              chipClass = "bg-error-container text-on-error-container";
+            } else if (isBookClubSchedule(item)) {
+              chipClass = "border border-amber-300 bg-amber-50 text-amber-800";
+            } else if (isYonseiSchedule(item)) {
+              chipClass = "border border-indigo-300 bg-indigo-50 text-indigo-700";
+            } else if (item.regular) {
+              chipClass = "bg-tertiary-container text-on-tertiary-container";
+            }
           }
-          if (isMySchedule(item)) {
+          if (!isDeclined && isMySchedule(item)) {
             chipClass += " ring-2 ring-primary/45 ring-offset-1 ring-offset-surface-container-lowest";
           }
           return `
@@ -4297,7 +4361,9 @@
           }
 
           let dotType = "dot-primary";
-          if (item.important) {
+          if (isDeclinedSchedule(item)) {
+            dotType = "dot-declined";
+          } else if (item.important) {
             dotType = "dot-important";
           } else if (isBookClubSchedule(item)) {
             dotType = "dot-bookclub";
@@ -4306,7 +4372,7 @@
           } else if (item.regular) {
             dotType = "dot-tertiary";
           }
-          const myDotClass = isMySchedule(item) ? "my-schedule-dot" : "";
+          const myDotClass = !isDeclinedSchedule(item) && isMySchedule(item) ? "my-schedule-dot" : "";
           const hostTitle = isMyHostSchedule(item) ? ` title="${MY_NAME} Host 일정"` : "";
           return `<span class="pulse-dot ${dotType} ${myDotClass}"${hostTitle}></span>`;
         }).join("");
@@ -4511,23 +4577,26 @@
       const isYonsei = isYonseiSchedule(item);
       const isMine = item.attendees.includes(MY_NAME);
       const isHost = isMyHostSchedule(item);
+      const isDeclined = isDeclinedSchedule(item);
 
-      const iconClass = isBookClub
-        ? "border border-amber-200 bg-amber-50 text-amber-800"
-        : isYonsei
-          ? "border border-indigo-200 bg-indigo-50 text-indigo-700"
-          : empty
-            ? "bg-[#f5f5f7] text-[#86868b]"
-            : item.regular
-              ? "border border-tertiary/20 bg-tertiary-fixed/50 text-tertiary"
-              : "bg-[rgba(0,104,93,0.12)] text-primary";
+      const iconClass = isDeclined
+        ? "border border-zinc-300 bg-zinc-200 text-zinc-500"
+        : isBookClub
+          ? "border border-amber-200 bg-amber-50 text-amber-800"
+          : isYonsei
+            ? "border border-indigo-200 bg-indigo-50 text-indigo-700"
+            : empty
+              ? "bg-[#f5f5f7] text-[#86868b]"
+              : item.regular
+                ? "border border-tertiary/20 bg-tertiary-fixed/50 text-tertiary"
+                : "bg-[rgba(0,104,93,0.12)] text-primary";
 
-      const iconName = isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
+      const iconName = isDeclined ? "event_busy" : isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
       const attendeeListHTML = scheduleAttendeesHTML(item);
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
-        <article class="app-list-card ${isMine ? "is-mine" : ""} ${isHost ? "is-host" : ""}">
+        <article class="app-list-card ${isMine ? "is-mine" : ""} ${isHost ? "is-host" : ""} ${isDeclined ? "is-declined" : ""}">
           <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
               <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClass}">
@@ -4644,12 +4713,13 @@
 
     function renderDetail(item = schedules[state.selectedId] || schedules[0]) {
       if (!item) return;
-      document.querySelector("#detailCrumbTitle").textContent = "Match Details";
+      document.querySelector("#detailCrumbTitle").textContent = "Details";
       const capacity = MATCH_CAPACITY;
       const attendeeCount = item.attendees.length;
       const spotsLeft = Math.max(0, capacity - attendeeCount);
       const myAttending = isMySchedule(item);
       const myHosting = isMyHostSchedule(item);
+      const myDeclined = isDeclinedSchedule(item);
       const visibleEmptySlots = attendeeCount < 4
         ? Math.min(spotsLeft, 4 - attendeeCount)
         : Math.min(spotsLeft, 1);
@@ -4708,7 +4778,6 @@
                 <img src="${item.court?.image || courtImage(item.place, item.courtId)}" alt="${item.place} 전경" class="w-full h-full object-cover" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
                 <div class="absolute bottom-3 left-4 flex flex-wrap items-center gap-2 md:bottom-4 md:left-5">
-                  <span class="rounded-full bg-white/90 backdrop-blur px-3 py-1 text-[11px] font-medium text-[#1d1d1f]">${item.regular ? "정기 매치" : "일반 복식 매치"}</span>
                   ${myHosting ? `<span class="rounded-full bg-transparent px-3 py-1 text-[11px] font-black uppercase tracking-wide text-orange-800">Host</span>` : ""}
                 </div>
               </div>
@@ -4779,20 +4848,15 @@
           <aside class="flex flex-col gap-gutter lg:col-span-4">
             <!-- Join Action Card -->
             <article class="sticky-detail-bar app-card md:p-5">
-                  <div class="hidden md:block">
-                    <h3 class="mb-4 text-lg font-semibold text-[#1d1d1f]">${myHosting ? "내 Host 일정" : myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
-                  </div>
-
-                  <div class="flex flex-row md:flex-col items-center justify-between gap-4 w-full">
-                    <div class="md:hidden flex flex-col justify-center">
-                      <span class="text-[10px] font-medium uppercase tracking-wide text-[#86868b] leading-none">${myHosting ? "Host" : myAttending ? "Status" : "Match"}</span>
-                      <span class="text-sm font-semibold text-[#1d1d1f] leading-tight mt-0.5">${myHosting ? "관리 일정" : myAttending ? "참석 확정" : spotsLeft ? `${spotsLeft}자리 남음` : "모집 마감"}</span>
-                    </div>
-
-                    <div class="flex flex-1 md:w-full items-center gap-2 md:flex-col justify-end">
-                      <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
+                  <div class="flex flex-row items-center justify-between gap-4 w-full">
+                    <div class="flex flex-1 md:w-full items-center gap-2 justify-end">
+                      <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
                         ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px]")}
                         <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
+                      </button>
+                      <button class="btn-outline flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold ${myDeclined ? "bg-zinc-100 text-zinc-600" : ""}" type="button" ${myDeclined ? "data-clear-decline-current" : "data-decline-current"} aria-label="${myDeclined ? "불참 취소" : "불참"}">
+                        ${icon(myDeclined ? "event_available" : "person_off", "text-[16px]")}
+                        <span>${myDeclined ? "불참 취소" : "불참"}</span>
                       </button>
                     </div>
                   </div>
@@ -6541,13 +6605,87 @@
         async function joinCurrentSchedule() {
           const memberId = myMemberId();
           if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
+          const schedule = findScheduleById(state.selectedId);
+          if (schedule && isDeclinedSchedule(schedule)) await persistScheduleDecline(schedule.id, false);
           await addAttendee(memberId);
+          if (schedule && attendeeIdsForSchedule(schedule).includes(memberId)) refreshViews();
         }
 
         async function leaveCurrentSchedule() {
           const memberId = myMemberId();
           if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
           await removeAttendee(memberId);
+        }
+
+        async function declineCurrentSchedule() {
+          const schedule = findScheduleById(state.selectedId);
+          if (!schedule) return;
+
+          await persistScheduleDecline(schedule.id, true);
+          const memberId = myMemberId();
+          const attendeeIds = attendeeIdsForSchedule(schedule);
+          if (memberId && attendeeIds.includes(memberId)) {
+            try {
+              await persistScheduleAttendees(schedule.id, attendeeIds.filter(id => id !== memberId));
+            } catch (error) {
+              console.warn("Attendee removal after decline failed.", error);
+            }
+          }
+
+          state.selectedId = schedule.id;
+          refreshViews();
+        }
+
+        async function clearCurrentScheduleDecline() {
+          const schedule = findScheduleById(state.selectedId);
+          if (!schedule) return;
+          await persistScheduleDecline(schedule.id, false);
+          state.selectedId = schedule.id;
+          refreshViews();
+        }
+
+        async function persistScheduleDecline(scheduleId, declined) {
+          const memberId = myMemberId();
+          if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
+          if (!remoteWritesEnabled()) {
+            throw new Error("불참 저장은 Supabase 연결과 공식 쓰기 권한이 필요합니다.");
+          }
+
+          requireOfficialWriteAccess();
+
+          if (declined) {
+            const row = {
+              scheduleId,
+              memberId,
+              createdAt: new Date().toISOString()
+            };
+            const { data, error } = await supabaseClient
+              .from("schedule_declines")
+              .upsert(toSupabaseScheduleDecline(row), { onConflict: "schedule_id,member_id" })
+              .select()
+              .single();
+            if (error) throw error;
+
+            dataStore.scheduleDeclines = [
+              ...(dataStore.scheduleDeclines || []).filter(item =>
+                !(String(item.scheduleId) === String(scheduleId) && String(item.memberId) === String(memberId))
+              ),
+              fromSupabaseScheduleDecline(data)
+            ];
+          } else {
+            const { error } = await supabaseClient
+              .from("schedule_declines")
+              .delete()
+              .eq("schedule_id", String(scheduleId))
+              .eq("member_id", String(memberId));
+            if (error) throw error;
+
+            dataStore.scheduleDeclines = (dataStore.scheduleDeclines || []).filter(item =>
+              !(String(item.scheduleId) === String(scheduleId) && String(item.memberId) === String(memberId))
+            );
+          }
+
+          rebuildDataIndexes();
         }
 
         function focusDiscussionComposer() {
@@ -6927,6 +7065,18 @@
           const leaveCurrentButton = event.target.closest("[data-leave-current]");
           if (leaveCurrentButton) {
             leaveCurrentSchedule().catch(error => alert(error.message));
+            return;
+          }
+
+          const declineCurrentButton = event.target.closest("[data-decline-current]");
+          if (declineCurrentButton) {
+            declineCurrentSchedule().catch(error => alert(error.message));
+            return;
+          }
+
+          const clearDeclineCurrentButton = event.target.closest("[data-clear-decline-current]");
+          if (clearDeclineCurrentButton) {
+            clearCurrentScheduleDecline().catch(error => alert(error.message));
             return;
           }
 
