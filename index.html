@@ -4718,10 +4718,10 @@
                   <div class="space-y-1 w-full md:w-auto">
                     <div class="flex min-w-0 flex-wrap items-center gap-2">
                       <h2 class="min-w-0 text-xl md:text-2xl font-semibold text-[#1d1d1f] leading-tight">${item.title}</h2>
-                      ${myHosting ? `<span class="host-calendar-badge h-6 px-2 text-[10px] uppercase tracking-wide">Host</span>` : ""}
                     </div>
-                    <p class="mt-2 flex items-center gap-2 text-sm text-[#86868b]">
-                      ${icon("location_on", "text-[18px] text-primary")} ${schedulePlaceLabel(item)}
+                    <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-[#86868b]">
+                      ${icon("location_on", "text-[18px] text-primary")} <span>${schedulePlaceLabel(item)}</span>
+                      ${myHosting ? `<span class="host-calendar-badge h-5 px-2 text-[10px] uppercase tracking-wide">Host</span>` : ""}
                     </p>
 
                     <div class="flex flex-col gap-1.5 text-xs text-[#86868b] md:hidden mt-3 pt-3 border-t border-[rgba(0,0,0,0.06)]">
@@ -4734,11 +4734,6 @@
                     </div>
                   </div>
 
-                  <div class="detail-meta-card hidden md:block min-w-[200px] p-4 text-right">
-                    <div class="mb-1 text-[11px] font-medium uppercase tracking-wide text-[#86868b]">Date & Time</div>
-                    <div class="text-base font-semibold text-[#1d1d1f]">${dateLabel(item)}</div>
-                    <div class="mt-1 text-sm text-[#86868b]">${timeStart(item)} - ${timeEnd(item)}</div>
-                  </div>
                 </div>
 
                 <!-- Overlap Alert Banners -->
@@ -4749,7 +4744,6 @@
                 <div>
                   <div class="mb-4 flex items-center justify-between gap-4">
                     <h3 class="text-base md:text-lg font-semibold text-[#1d1d1f]">Players (${attendeeCount}/${capacity})</h3>
-                    <span class="rounded-full ${spotsLeft ? "bg-[rgba(0,104,93,0.08)] text-primary" : "bg-[#f5f5f7] text-[#86868b]"} px-2.5 py-0.5 text-[10px] md:text-xs font-medium">${spotsLeft ? `${spotsLeft} spot left` : "Full"}</span>
                   </div>
                   <div class="grid grid-cols-2 gap-2 sm:gap-4">
                     ${playerCards || ""}
@@ -4773,7 +4767,7 @@
                 </div>
                 <div class="relative w-full">
                   <textarea class="w-full resize-none rounded-xl border border-outline-variant bg-surface p-3 pr-12 text-xs sm:text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" data-discussion-input placeholder="Leave a message for the players..." rows="2"></textarea>
-                  <button class="absolute bottom-2 right-2 rounded-full p-2 bg-primary text-on-primary shadow hover:bg-primary-container hover:text-on-primary-container transition-all" type="button" data-send-discussion>
+                  <button class="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary p-0 text-on-primary shadow transition-all hover:bg-primary-container hover:text-on-primary-container sm:h-9 sm:w-9" type="button" data-send-discussion>
                     ${icon("send", "text-[14px] sm:text-[16px]")}
                   </button>
                 </div>
@@ -4786,8 +4780,7 @@
             <!-- Join Action Card -->
             <article class="sticky-detail-bar app-card md:p-5">
                   <div class="hidden md:block">
-                    <h3 class="mb-1 text-lg font-semibold text-[#1d1d1f]">${myHosting ? "내 Host 일정" : myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
-                    <p class="mb-5 text-sm text-[#86868b] leading-relaxed">${myHosting ? "내가 예약을 관리하는 일정입니다." : myAttending ? "이 일정에 참석자로 등록되어 있습니다." : spotsLeft ? "참석 가능하면 바로 내 이름을 추가하세요." : "이 매치는 현재 모집 완료되었습니다."}</p>
+                    <h3 class="mb-4 text-lg font-semibold text-[#1d1d1f]">${myHosting ? "내 Host 일정" : myAttending ? "내 참석 확정" : spotsLeft ? "참석하기" : "Match Full"}</h3>
                   </div>
 
                   <div class="flex flex-row md:flex-col items-center justify-between gap-4 w-full">
@@ -4800,9 +4793,6 @@
                       <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
                         ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px]")}
                         <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
-                      </button>
-                      <button class="hidden md:block w-full btn-outline py-3 text-sm" type="button" data-contact-organizer>
-                        댓글로 문의
                       </button>
                     </div>
                   </div>
