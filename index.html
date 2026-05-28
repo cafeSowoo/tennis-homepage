@@ -566,6 +566,17 @@
         inset 0 2px 4px rgba(255, 255, 255, 0.5),
         inset 0 -2px 4px rgba(0, 0, 0, 0.3);
     }
+    .avatar-photo {
+      background: #ffffff !important;
+      color: transparent !important;
+      text-shadow: none;
+    }
+    .avatar-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     /* 랭킹 뱃지 입체감 앰보싱 스타일 */
     .avatar-rank-1 {
@@ -1663,6 +1674,11 @@
       box-shadow: none !important;
     }
 
+    #dashboard #selectedDateList article.is-mine:not(.is-declined) {
+      border-color: rgba(0, 104, 93, 0.22) !important;
+      background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, #fff 100%) !important;
+    }
+
     .app-list-card.is-declined,
     #dashboard #selectedDateList article.is-declined {
       background: #f4f4f5 !important;
@@ -1685,6 +1701,10 @@
     #dashboard #selectedDateList article:hover {
       background: #fafafa !important;
       box-shadow: none !important;
+    }
+
+    #dashboard #selectedDateList article.is-mine:not(.is-declined):hover {
+      background: linear-gradient(180deg, rgba(0, 104, 93, 0.07) 0%, #fff 100%) !important;
     }
 
     .apple-ui .app-list-card.is-declined:hover,
@@ -3467,8 +3487,10 @@
     function initHeaderAvatar() {
       const headerAvatar = document.querySelector("#headerProfileAvatar");
       if (!headerAvatar) return;
-      headerAvatar.className = `avatar-tactile ml-2 hidden h-10 w-10 items-center justify-center overflow-hidden text-xs font-black text-white transition-all hover:scale-105 sm:flex ${getAvatarClassForMember(MY_NAME)}`;
-      headerAvatar.textContent = initials(MY_NAME);
+      headerAvatar.className = "ml-2 hidden sm:flex";
+      headerAvatar.innerHTML = memberAvatarHTML(MY_NAME, {
+        className: "flex h-10 w-10 items-center justify-center overflow-hidden rounded-full text-xs font-black text-white transition-all hover:scale-105"
+      });
     }
 
     function findScheduleById(id) {
@@ -4732,8 +4754,41 @@
       }).join("");
     }
 
+    const MEMBER_AVATAR_SOURCES = {
+      "김지석": "assets/members/member-kim-jiseok.png",
+      "김태환": "assets/members/member-kim-taehwan.png",
+      "민문기": "assets/members/member-min-mungi.png",
+      "박지영": "assets/members/member-park-jiyoung.png",
+      "박창언": "assets/members/member-park-changeon.png",
+      "송영희": "assets/members/member-song-younghee.png",
+      "신경은": "assets/members/member-shin-kyoungeun.png",
+      "윤인선": "assets/members/member-yoon-inseon.png",
+      "윤준": "assets/members/member-yoon-jun.png",
+      "이민경": "assets/members/member-lee-minkyung.png",
+      "이상백": "assets/members/member-lee-sangbaek.png",
+      "이희지": "assets/members/member-lee-heeji.png",
+      "조형철": "assets/members/member-cho-hyeongcheol.png",
+      "최빛나": "assets/members/member-choi-bitna.png",
+      "한인호": "assets/members/member-han-inho.png",
+      "허수정": "assets/members/member-heo-sujeong.png"
+    };
+
     function initials(name) {
       return name.slice(0, 1);
+    }
+
+    function memberAvatarHTML(name, { className = "", attributes = "" } = {}) {
+      const avatarSrc = MEMBER_AVATAR_SOURCES[name];
+      const avatarClass = avatarSrc ? "avatar-tactile avatar-photo" : getAvatarClassForMember(name);
+      const label = escapeHTML(`${name} 프로필 사진`);
+
+      return `
+        <div class="${className} ${avatarClass}" ${attributes}>
+          ${avatarSrc
+            ? `<img src="${avatarSrc}" alt="${label}" loading="lazy">`
+            : initials(name)}
+        </div>
+      `;
     }
 
     function memberIdForName(name) {
@@ -4782,9 +4837,10 @@
             const authorMemberId = memberIdForName(author);
             return `
               <div class="flex gap-4 items-start">
-                <div class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm font-black text-white shadow-sm transition hover:scale-105 ${getAvatarClassForMember(author)}" data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기">
-                  ${initials(author)}
-                </div>
+                ${memberAvatarHTML(author, {
+                  className: "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm font-black text-white shadow-sm transition hover:scale-105",
+                  attributes: `data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기"`
+                })}
                 <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4 border border-outline-variant/10 shadow-sm">
                   <div class="mb-1.5 flex items-baseline justify-between gap-3">
                     <span class="cursor-pointer text-sm font-bold text-on-surface transition hover:text-primary" data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기">${escapeHTML(author)}</span>
@@ -4830,12 +4886,13 @@
 
       // Stitch bridge: Detail player card markup starts here.
       const playerCards = item.attendees.map((name, index) => {
-        const initial = initials(name);
         const memberId = memberIdForName(name);
 
         return `
           <div class="group flex cursor-pointer items-center gap-2 sm:gap-3 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-2.5 sm:p-3 transition hover:bg-[#fafafa]" data-member-id="${memberId}" role="button" tabindex="0" aria-label="${escapeHTML(name)} 프로필 보기">
-            <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(name)}">${initial}</div>
+            ${memberAvatarHTML(name, {
+              className: "flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm"
+            })}
             <div class="min-w-0 flex-1">
               <div class="min-w-0 text-xs sm:text-sm leading-tight">
                 ${memberAttendeeNameHTML(name)}
@@ -4919,9 +4976,9 @@
               ${renderDiscussionMessages(item)}
 
               <div class="flex items-start gap-3 md:gap-4">
-                <div class="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm ${getAvatarClassForMember(MY_NAME)}">
-                  ${initials(MY_NAME)}
-                </div>
+                ${memberAvatarHTML(MY_NAME, {
+                  className: "flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full text-xs sm:text-sm font-black text-white shadow-sm"
+                })}
                 <div class="relative w-full">
                   <textarea class="w-full resize-none rounded-xl border border-outline-variant bg-surface p-3 pr-12 text-xs sm:text-sm outline-none transition focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" data-discussion-input placeholder="Leave a message for the players..." rows="2"></textarea>
                   <button class="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary p-0 text-on-primary shadow transition-all hover:bg-primary-container hover:text-on-primary-container sm:h-9 sm:w-9" type="button" data-send-discussion>
@@ -5328,18 +5385,15 @@
     function renderMembers() {
       renderMemberMonthFilter();
       // Stitch bridge: Members directory HTML markup starts here.
-      document.querySelector("#memberGrid").innerHTML = memberStats().map((m, idx) => {
-        const initial = m.name.slice(0, 1);
-        const rank = idx + 1;
+      document.querySelector("#memberGrid").innerHTML = memberStats().map(m => {
         const memberId = memberIdForName(m.name) || m.name;
-        const genderCardClass = memberGenderCardClass(m.name);
         return `
           <article class="card-premium flex flex-col justify-between gap-2 sm:gap-3 p-3 sm:p-4 cursor-pointer" data-member-id="${memberId}">
             <div class="flex items-start gap-2.5 sm:gap-3">
               <div class="relative shrink-0">
-                <div class="member-avatar flex items-center justify-center rounded-full font-semibold ${getAvatarClassForMember(m.name, rank)}">
-                  ${initial}
-                </div>
+                ${memberAvatarHTML(m.name, {
+                  className: "member-avatar flex items-center justify-center rounded-full font-semibold"
+                })}
               </div>
               <div class="min-w-0 flex-1 pt-0.5">
                 <div class="flex min-w-0 flex-col gap-0.5">
@@ -5405,9 +5459,7 @@
       const upcomingMatches = memberSchedules.filter(s => s.date >= todayIso).sort(compareSchedulesByTime);
       const pastMatches = memberSchedules.filter(s => s.date < todayIso).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
 
-      const initial = name.slice(0, 1);
       const rank = overallRank;
-      const avatarClass = getAvatarClassForMember(name, rank);
       const genderTextClass = memberGenderTextClass(name);
       const genderStatusClass = memberGenderStatusClass(name);
       const genderProfileCardClass = memberGenderCardClass(name).replaceAll("hover:", "");
@@ -5427,9 +5479,9 @@
             <article class="app-card p-5 md:p-6">
               <div class="flex flex-col items-center text-center">
                 <div class="relative mb-4">
-                  <div class="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center font-semibold text-white text-3xl md:text-4xl ${avatarClass}">
-                    ${initial}
-                  </div>
+                  ${memberAvatarHTML(name, {
+                    className: "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center font-semibold text-white text-3xl md:text-4xl"
+                  })}
                 </div>
                 <h2 class="text-xl md:text-2xl font-semibold text-[#1d1d1f] mb-1">${escapeHTML(name)}</h2>
                 <span class="rounded-full bg-[#f5f5f7] px-3 py-1 text-xs font-medium text-[#86868b] uppercase tracking-wide mb-5">
