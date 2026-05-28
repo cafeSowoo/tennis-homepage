@@ -4415,7 +4415,7 @@
         panel.classList.remove("active-animate");
       }
 
-      document.querySelector("#selectedDateTitle").innerHTML = `${dateLabelHTML(sample)} 일정`;
+      document.querySelector("#selectedDateTitle").innerHTML = dateLabelHTML(sample);
       document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
       document.querySelector("#selectedDateList").innerHTML = items.length || eventItems.length
         ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
@@ -5391,7 +5391,8 @@
             <span class="truncate">${member.name}</span>
           </span>
         </label>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function renderAddScheduleCourtUnitOptions(selectedUnitId = "") {
@@ -5744,7 +5745,7 @@
             </div>`
           : "";
 
-        document.querySelector("#selectedDateTitle").innerHTML = `${dateLabelHTML(sample)} 일정`;
+        document.querySelector("#selectedDateTitle").innerHTML = dateLabelHTML(sample);
         document.querySelector("#selectedDateWeatherSummary").innerHTML = selectedDateWeatherSummaryHTML;
         list.innerHTML = items.length || eventItems.length
           ? `<div class="space-y-5">${eventHTML}${tennisHTML}</div>`
