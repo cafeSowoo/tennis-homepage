@@ -953,6 +953,57 @@
       background: linear-gradient(180deg, rgba(0, 104, 93, 0.05) 0%, #fff 100%);
     }
 
+    .schedule-rsvp-cycle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.75rem;
+      padding: 0.3125rem 0.625rem;
+      border-radius: 0.5rem;
+      border: 1px solid transparent;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .schedule-rsvp-cycle--pending {
+      border-color: #d4d4d8;
+      background: #f4f4f5;
+      color: #71717a;
+    }
+
+    .schedule-rsvp-cycle--attending {
+      border-color: rgba(0, 104, 93, 0.28);
+      background: rgba(0, 104, 93, 0.12);
+      color: #00685d;
+    }
+
+    .schedule-rsvp-cycle--declined {
+      border-color: #d4d4d8;
+      background: #e4e4e7;
+      color: #52525b;
+    }
+
+    .app-list-card.is-declined .schedule-rsvp-cycle--pending {
+      border-color: #d4d4d8 !important;
+      background: #f4f4f5 !important;
+      color: #71717a !important;
+    }
+
+    .app-list-card.is-declined .schedule-rsvp-cycle--attending {
+      border-color: rgba(0, 104, 93, 0.28) !important;
+      background: rgba(0, 104, 93, 0.12) !important;
+      color: #00685d !important;
+    }
+
+    .app-list-card.is-declined .schedule-rsvp-cycle--declined {
+      border-color: #d4d4d8 !important;
+      background: #e4e4e7 !important;
+      color: #52525b !important;
+    }
+
     .attendee-chip {
       display: flex;
       min-width: 0;
@@ -4571,6 +4622,39 @@
       });
     }
 
+    const SCHEDULE_RSVP_LABELS = {
+      pending: "미정",
+      attending: "참석",
+      declined: "불참"
+    };
+
+    function getScheduleRsvpState(schedule) {
+      if (!schedule) return "pending";
+      if (isDeclinedSchedule(schedule)) return "declined";
+      if (isMySchedule(schedule)) return "attending";
+      return "pending";
+    }
+
+    function nextScheduleRsvpState(current) {
+      if (current === "pending") return "attending";
+      if (current === "attending") return "declined";
+      return "pending";
+    }
+
+    function scheduleRsvpButtonHTML(item) {
+      if (!myMemberId()) return "";
+      const rsvpState = getScheduleRsvpState(item);
+      const label = SCHEDULE_RSVP_LABELS[rsvpState];
+      return `
+        <button
+          class="schedule-rsvp-cycle schedule-rsvp-cycle--${rsvpState} shrink-0"
+          type="button"
+          data-cycle-rsvp="${item.id}"
+          aria-label="참석 상태 ${label}, 탭하여 ${SCHEDULE_RSVP_LABELS[nextScheduleRsvpState(rsvpState)]}(으)로 변경"
+        >${label}</button>
+      `;
+    }
+
     function scheduleRow(item) {
       const empty = item.attendees.length === 0;
       const isBookClub = isBookClubSchedule(item);
@@ -4593,11 +4677,12 @@
 
       const iconName = isDeclined ? "event_busy" : isBookClub ? "menu_book" : empty ? "fitness_center" : "sports_tennis";
       const attendeeListHTML = scheduleAttendeesHTML(item);
+      const rsvpButtonHTML = scheduleRsvpButtonHTML(item);
 
       // Stitch bridge: Compact schedule match card markup starts here.
       return `
         <article class="app-list-card ${isMine ? "is-mine" : ""} ${isHost ? "is-host" : ""} ${isDeclined ? "is-declined" : ""}">
-          <button class="schedule-card-button block w-full p-4" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
+          <button class="schedule-card-button block w-full p-4 pb-2" type="button" data-detail-id="${item.id}" aria-label="${item.title} 상세 보기">
             <div class="flex min-w-0 items-center gap-4">
               <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClass}">
                 ${icon(iconName, "text-[20px]")}
@@ -4610,12 +4695,15 @@
                 <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-[#86868b]">
                   ${icon("schedule", "text-[16px] text-primary")} <span class="tabular-nums font-medium">${scheduleTimeRangeLabel(item)}</span> @ <span class="text-[#1d1d1f] font-medium">${schedulePlaceLabel(item)}</span>
                 </p>
-                <p class="mt-1 flex min-w-0 items-center gap-1 text-xs text-[#86868b]">
-                  ${icon("group", "text-[14px] shrink-0")} <span class="min-w-0 truncate">${attendeeListHTML}</span>
-                </p>
               </div>
             </div>
           </button>
+          <div class="flex min-w-0 items-center gap-2 px-4 pb-4 pt-0">
+            <p class="flex min-w-0 flex-1 items-center gap-1 text-xs text-[#86868b]">
+              ${icon("group", "text-[14px] shrink-0")} <span class="min-w-0 truncate">${attendeeListHTML}</span>
+            </p>
+            ${rsvpButtonHTML}
+          </div>
         </article>
       `;
     }
@@ -6644,6 +6732,54 @@
           refreshViews();
         }
 
+        async function cycleScheduleRsvp(scheduleId) {
+          const schedule = schedules.find(item => String(item.id) === String(scheduleId));
+          if (!schedule) return;
+
+          const memberId = myMemberId();
+          if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
+
+          const current = getScheduleRsvpState(schedule);
+          const next = nextScheduleRsvpState(current);
+
+          if (next === "attending") {
+            const spotsLeft = Math.max(0, MATCH_CAPACITY - schedule.attendees.length);
+            if (!spotsLeft && !isMySchedule(schedule)) {
+              throw new Error("참석 인원이 마감되었습니다.");
+            }
+            if (schedule.closed && !isMySchedule(schedule)) {
+              throw new Error("마감된 일정입니다.");
+            }
+            if (isDeclinedSchedule(schedule)) await persistScheduleDecline(schedule.id, false);
+            const attendeeIds = attendeeIdsForSchedule(schedule);
+            if (!attendeeIds.includes(memberId)) {
+              await persistScheduleAttendees(schedule.id, [...attendeeIds, memberId]);
+            } else {
+              refreshViews();
+            }
+            return;
+          }
+
+          if (next === "declined") {
+            await persistScheduleDecline(schedule.id, true);
+            const attendeeIds = attendeeIdsForSchedule(schedule);
+            if (attendeeIds.includes(memberId)) {
+              await persistScheduleAttendees(schedule.id, attendeeIds.filter(id => id !== memberId));
+            } else {
+              refreshViews();
+            }
+            return;
+          }
+
+          if (isDeclinedSchedule(schedule)) await persistScheduleDecline(schedule.id, false);
+          const attendeeIds = attendeeIdsForSchedule(schedule);
+          if (attendeeIds.includes(memberId)) {
+            await persistScheduleAttendees(schedule.id, attendeeIds.filter(id => id !== memberId));
+          } else {
+            refreshViews();
+          }
+        }
+
         async function persistScheduleDecline(scheduleId, declined) {
           const memberId = myMemberId();
           if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
@@ -7115,6 +7251,14 @@
       const memberDetailBack = event.target.closest("[data-member-detail-back]");
       if (memberDetailBack) {
         returnFromMemberDetail();
+        return;
+      }
+
+      const cycleRsvpButton = event.target.closest("[data-cycle-rsvp]");
+      if (cycleRsvpButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        cycleScheduleRsvp(cycleRsvpButton.dataset.cycleRsvp).catch(error => alert(error.message));
         return;
       }
 
