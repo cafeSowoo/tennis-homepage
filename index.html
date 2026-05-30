@@ -3782,6 +3782,13 @@
         String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
     }
 
+    function compareSchedulesByMyStatusThenTime(a, b) {
+      const aIsMine = isMySchedule(a);
+      const bIsMine = isMySchedule(b);
+      if (aIsMine !== bIsMine) return aIsMine ? -1 : 1;
+      return compareSchedulesByTime(a, b);
+    }
+
     function calendarItemStartMinutes(item) {
       if (item.time) return scheduleStartMinutes(item);
       if (!item.startTime) return 0;
@@ -3793,6 +3800,13 @@
       return a.date.localeCompare(b.date) ||
         calendarItemStartMinutes(a) - calendarItemStartMinutes(b) ||
         String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+    }
+
+    function compareDashboardCalendarItems(a, b) {
+      const aIsMine = Boolean(a.time && isMySchedule(a));
+      const bIsMine = Boolean(b.time && isMySchedule(b));
+      if (aIsMine !== bIsMine) return aIsMine ? -1 : 1;
+      return compareCalendarItemsByTime(a, b);
     }
 
     function toTwentyFourHourLabel(koreanTime) {
@@ -4384,12 +4398,12 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const iso = `${state.currentMonth}-${String(day).padStart(2, "0")}`;
-        const dateSchedules = [...(byDate[iso] || [])].sort(compareSchedulesByTime);
+        const dateSchedules = [...(byDate[iso] || [])].sort(compareSchedulesByMyStatusThenTime);
         const dateEvents = [...(eventsByDate[iso] || [])].sort(compareCalendarItemsByTime);
         const calendarItems = [
           ...dateSchedules.map(item => ({ type: "schedule", item })),
           ...dateEvents.map(item => ({ type: "event", item }))
-        ].sort((a, b) => compareCalendarItemsByTime(a.item, b.item));
+        ].sort((a, b) => compareDashboardCalendarItems(a.item, b.item));
         const isToday = iso === todayIso;
         const isPast = iso < todayIso;
         const hasMySchedule = dateSchedules.some(isMySchedule);
@@ -4524,7 +4538,7 @@
       // active-animate가 없거나 hidden인 경우 둘 다 hidden 상태(혹은 닫히는 도중)로 간주
       const wasHidden = panel.classList.contains("hidden") || !panel.classList.contains("active-animate");
 
-      const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
+      const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByMyStatusThenTime);
       const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
       const sample = items[0] || eventItems[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
       const tennisHTML = items.length
@@ -5921,7 +5935,7 @@
 
         renderCalendar();
 
-        const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByTime);
+        const items = [...(byDate[state.selectedDate] || [])].sort(compareSchedulesByMyStatusThenTime);
         const eventItems = [...(eventsByDate[state.selectedDate] || [])].sort(compareCalendarItemsByTime);
         const sample = items[0] || eventItems[0] || { date: state.selectedDate, day: ["일","월","화","수","목","금","토"][new Date(`${state.selectedDate}T00:00:00`).getDay()] };
 
