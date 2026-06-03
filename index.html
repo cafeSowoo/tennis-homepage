@@ -3375,6 +3375,13 @@
       return Boolean(sheet && !sheet.classList.contains("hidden"));
     }
 
+    function isAnyModalSheetOpen() {
+      return isSheetOpen("#addScheduleSheet")
+        || isSheetOpen("#addEventSheet")
+        || isSheetOpen("#addCourtSheet")
+        || isSheetOpen("#attendeeSheet");
+    }
+
     function openSheetHistory(type) {
       history.pushState({ tennisHomeView: "sheet", sheetType: type }, "");
       sheetHistoryActive = true;
@@ -7178,6 +7185,7 @@
     document.addEventListener("click", event => {
       if (window.innerWidth < 768 && state.selectedDate && document.querySelector("#dashboard.active")) {
         if (event.target.closest("#bottomNav")) return;
+        if (isAnyModalSheetOpen()) return;
 
         const panel = document.querySelector("#selectedDatePanel");
         const clickedInsidePanel = event.target.closest("#selectedDatePanel");
