@@ -105,6 +105,7 @@ drop policy if exists "owner update discussions" on public.discussions;
 drop policy if exists "owner delete discussions" on public.discussions;
 drop policy if exists "public read schedule declines" on public.schedule_declines;
 drop policy if exists "owner insert schedule declines" on public.schedule_declines;
+drop policy if exists "owner update schedule declines" on public.schedule_declines;
 drop policy if exists "owner delete schedule declines" on public.schedule_declines;
 
 create policy "public read members" on public.members for select using (true);
@@ -216,6 +217,13 @@ create policy "owner insert schedule declines"
   to authenticated
   with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
 
+create policy "owner update schedule declines"
+  on public.schedule_declines
+  for update
+  to authenticated
+  using (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com')
+  with check (lower((select auth.jwt() ->> 'email')) = 'harminis@gmail.com');
+
 create policy "owner delete schedule declines"
   on public.schedule_declines
   for delete
@@ -226,7 +234,7 @@ grant usage on schema public to anon, authenticated;
 grant select on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions, public.schedule_declines to anon, authenticated;
 revoke insert, update, delete, truncate on public.members, public.courts, public.court_units, public.schedules, public.events, public.discussions, public.schedule_declines from anon, authenticated;
 grant insert, update, delete on public.courts, public.court_units, public.schedules, public.events, public.discussions to authenticated;
-grant insert, delete on public.schedule_declines to authenticated;
+grant insert, update, delete on public.schedule_declines to authenticated;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
