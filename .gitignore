@@ -3,3 +3,6 @@
 .DS_Store
 mobile-calendar-*.png
 env.local.js
+.env.local
+.kakao-calendar-token.json
+tmp/

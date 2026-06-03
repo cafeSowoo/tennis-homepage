@@ -5994,6 +5994,12 @@
       const dismissThreshold = () => Math.max(72, Math.min(140, panel.offsetHeight * 0.16));
       let touchDrag = null;
       let suppressClick = false;
+      let recentPanelTouchAt = 0;
+
+      sheet.ignoreRecentPanelTouch = () => Date.now() - recentPanelTouchAt < 500;
+      const markPanelTouch = () => {
+        recentPanelTouchAt = Date.now();
+      };
 
       const restorePanel = () => {
         if (sheet.classList.contains("hidden")) return;
@@ -6016,6 +6022,7 @@
       };
 
       panel.addEventListener("click", event => {
+        markPanelTouch();
         if (!suppressClick) return;
         event.preventDefault();
         event.stopPropagation();
@@ -6023,19 +6030,20 @@
       }, true);
 
       panel.addEventListener("touchstart", event => {
+        markPanelTouch();
         if (!isMobileSheet() || sheet.classList.contains("hidden")) return;
         if (event.touches.length !== 1) return;
         if (event.target.closest("input, select, textarea, button, a, label")) return;
 
         const touch = event.touches[0];
         const onDismissZone = event.target.closest("[data-sheet-dismiss-zone]");
-        const startScrollTop = panel.scrollTop;
+        if (!onDismissZone) return;
 
         touchDrag = {
           startX: touch.clientX,
           startY: touch.clientY,
           mode: null,
-          canDismiss: Boolean(onDismissZone) || startScrollTop <= 0
+          canDismiss: true
         };
       }, { passive: true });
 
@@ -7401,7 +7409,10 @@
     window.addEventListener("popstate", handleAppPopState);
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
-    document.querySelector("#addScheduleBackdrop").addEventListener("click", closeAddSchedule);
+    document.querySelector("#addScheduleBackdrop").addEventListener("click", event => {
+      if (document.querySelector("#addScheduleSheet").ignoreRecentPanelTouch?.()) return;
+      closeAddSchedule(event);
+    });
     document.querySelector("#closeAddCourt").addEventListener("click", closeAddCourt);
     document.querySelector("#cancelAddCourt").addEventListener("click", closeAddCourt);
     document.querySelector("#addCourtBackdrop").addEventListener("click", closeAddCourt);
@@ -7432,7 +7443,10 @@
     });
     document.querySelector("#closeAddEvent").addEventListener("click", closeAddEvent);
     document.querySelector("#cancelAddEvent").addEventListener("click", closeAddEvent);
-    document.querySelector("#addEventBackdrop").addEventListener("click", closeAddEvent);
+    document.querySelector("#addEventBackdrop").addEventListener("click", event => {
+      if (document.querySelector("#addEventSheet").ignoreRecentPanelTouch?.()) return;
+      closeAddEvent(event);
+    });
     document.querySelector("#closeAttendeeSheet").addEventListener("click", closeAttendeeSheet);
     document.querySelector("#cancelAttendeeAdd").addEventListener("click", closeAttendeeSheet);
     document.querySelector("#attendeeBackdrop").addEventListener("click", closeAttendeeSheet);
