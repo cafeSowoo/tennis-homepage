@@ -2710,6 +2710,7 @@
     const PHOTO_VIEWER_MORPH_MS = 420;
     const PHOTO_VIEWER_MORPH_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
     const PHOTO_VIEWER_FINAL_RADIUS = "1.35rem";
+    const PHOTO_VIEWER_HASH = "#photo-viewer";
 
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
 
@@ -3492,10 +3493,54 @@
       activeSheetType = type;
     }
 
+    function currentHistoryBaseUrl() {
+      return `${window.location.pathname}${window.location.search}`;
+    }
+
     function openPhotoViewerHistory() {
-      if (photoViewerHistoryActive) return;
-      history.pushState({ tennisHomeView: "photo-viewer" }, "");
+      if (photoViewerHistoryActive && isSheetOpen("#memberPhotoViewer")) return;
+
+      const previousHash = window.location.hash || "";
+      history.pushState(
+        { tennisHomeView: "photo-viewer", previousHash },
+        "",
+        `${currentHistoryBaseUrl()}${PHOTO_VIEWER_HASH}`
+      );
       photoViewerHistoryActive = true;
+    }
+
+    function cleanupPhotoViewerHash() {
+      if (window.location.hash !== PHOTO_VIEWER_HASH) return;
+      const previousHash = history.state?.previousHash || "";
+      const nextState = history.state?.tennisHomeView
+        ? history.state
+        : { tennisHomeView: "dashboard" };
+      history.replaceState(nextState, "", `${currentHistoryBaseUrl()}${previousHash}`);
+    }
+
+    function syncPhotoViewerFromLocation() {
+      if (!isSheetOpen("#memberPhotoViewer") || !photoViewerHistoryActive) return;
+      if (window.location.hash === PHOTO_VIEWER_HASH) return;
+      photoViewerHistoryActive = false;
+      closeMemberPhotoViewer({ fromHistory: true });
+    }
+
+    function requestDismissPhotoViewerHistory() {
+      if (!photoViewerHistoryActive) return false;
+
+      history.back();
+      window.setTimeout(() => {
+        if (!photoViewerHistoryActive || !isSheetOpen("#memberPhotoViewer")) return;
+        if (window.location.hash !== PHOTO_VIEWER_HASH) {
+          photoViewerHistoryActive = false;
+          closeMemberPhotoViewer({ fromHistory: true });
+          return;
+        }
+        photoViewerHistoryActive = false;
+        cleanupPhotoViewerHash();
+        closeMemberPhotoViewer({ fromHistory: true });
+      }, 60);
+      return true;
     }
 
     function resetSheetPanelTransform(panel) {
@@ -3514,7 +3559,13 @@
       }
 
       if (isSheetOpen("#memberPhotoViewer")) {
+        photoViewerHistoryActive = false;
         closeMemberPhotoViewer({ fromHistory: true });
+        return;
+      }
+
+      if (photoViewerHistoryActive && window.location.hash !== PHOTO_VIEWER_HASH) {
+        photoViewerHistoryActive = false;
         return;
       }
 
@@ -5063,7 +5114,7 @@
       if (!viewer || viewer.classList.contains("hidden")) return;
 
       if (!fromHistory && photoViewerHistoryActive) {
-        history.back();
+        requestDismissPhotoViewerHistory();
         return;
       }
 
@@ -5079,6 +5130,9 @@
         resetPhotoViewerFrame(frame);
         photoViewerAnimating = false;
         viewer.classList.remove("is-opening", "is-closing", "is-scrim-visible", "is-measuring");
+        if (window.location.hash === PHOTO_VIEWER_HASH) {
+          cleanupPhotoViewerHash();
+        }
         returnTarget?.focus?.();
         photoViewerReturnFocus = null;
       };
@@ -7728,7 +7782,13 @@
     setupSheetSwipeDismiss({ sheetId: "#addEventSheet", onDismiss: closeAddEvent });
     window.addEventListener("resize", updatePanelGeometry, { passive: true });
     window.addEventListener("scroll", updatePanelGeometry, { passive: true });
-    window.addEventListener("popstate", handleAppPopState);
+    window.addEventListener("popstate", event => {
+      window.setTimeout(() => handleAppPopState(event), 0);
+    });
+    window.addEventListener("hashchange", syncPhotoViewerFromLocation);
+    window.addEventListener("pageshow", event => {
+      if (event.persisted) syncPhotoViewerFromLocation();
+    });
     document.querySelector("#closeAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#cancelAddSchedule").addEventListener("click", closeAddSchedule);
     document.querySelector("#addScheduleBackdrop").addEventListener("click", event => {
@@ -7871,7 +7931,10 @@
       try {
         document.body.classList.add("app-first-paint");
         if (!history.state?.tennisHomeView) {
-          history.replaceState({ tennisHomeView: "dashboard" }, "");
+          history.replaceState({ tennisHomeView: "dashboard" }, "", currentHistoryBaseUrl());
+        }
+        if (window.location.hash === PHOTO_VIEWER_HASH) {
+          cleanupPhotoViewerHash();
         }
         showDashboardShell();
         syncNavigation("dashboard");
