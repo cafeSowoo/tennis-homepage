@@ -2696,6 +2696,7 @@
     let sheetHistoryActive = false;
     let activeSheetType = "";
     let suppressSheetPopState = false;
+    let photoViewerHistoryActive = false;
     let weatherForecast = null;
     let scheduleFormMode = "create";
     let eventFormMode = "create";
@@ -3491,6 +3492,12 @@
       activeSheetType = type;
     }
 
+    function openPhotoViewerHistory() {
+      if (photoViewerHistoryActive) return;
+      history.pushState({ tennisHomeView: "photo-viewer" }, "");
+      photoViewerHistoryActive = true;
+    }
+
     function resetSheetPanelTransform(panel) {
       if (!panel) return;
       panel.classList.remove("is-sheet-dragging");
@@ -3503,6 +3510,11 @@
     function handleAppPopState() {
       if (suppressSheetPopState) {
         suppressSheetPopState = false;
+        return;
+      }
+
+      if (isSheetOpen("#memberPhotoViewer")) {
+        closeMemberPhotoViewer({ fromHistory: true });
         return;
       }
 
@@ -4987,6 +4999,7 @@
       viewer.classList.add("flex");
       viewer.setAttribute("aria-hidden", "false");
       document.body.classList.add("photo-viewer-open");
+      openPhotoViewerHistory();
     }
 
     function hideMemberPhotoViewerShell(viewer, image) {
@@ -5004,11 +5017,12 @@
       if (!src || photoViewerAnimating) return;
 
       const viewer = document.querySelector("#memberPhotoViewer");
+      if (!viewer || !viewer.classList.contains("hidden")) return;
       const image = document.querySelector("#memberPhotoViewerImage");
       const title = document.querySelector("#memberPhotoViewerTitle");
       const frame = document.querySelector("#memberPhotoViewerFrame");
       const dismissButton = viewer.querySelector(".photo-viewer-scrim");
-      if (!viewer || !frame) return;
+      if (!frame) return;
 
       photoViewerReturnFocus = target;
       title.textContent = name;
@@ -5042,20 +5056,39 @@
         });
     }
 
-    function closeMemberPhotoViewer() {
+    function closeMemberPhotoViewer({ fromHistory = false } = {}) {
       const viewer = document.querySelector("#memberPhotoViewer");
       const image = document.querySelector("#memberPhotoViewerImage");
       const frame = document.querySelector("#memberPhotoViewerFrame");
-      if (!viewer || viewer.classList.contains("hidden") || photoViewerAnimating) return;
+      if (!viewer || viewer.classList.contains("hidden")) return;
+
+      if (!fromHistory && photoViewerHistoryActive) {
+        history.back();
+        return;
+      }
+
+      if (fromHistory) {
+        photoViewerHistoryActive = false;
+      } else {
+        photoViewerHistoryActive = false;
+      }
 
       const returnTarget = photoViewerReturnFocus;
       const finishClose = () => {
         hideMemberPhotoViewerShell(viewer, image);
         resetPhotoViewerFrame(frame);
         photoViewerAnimating = false;
+        viewer.classList.remove("is-opening", "is-closing", "is-scrim-visible", "is-measuring");
         returnTarget?.focus?.();
         photoViewerReturnFocus = null;
       };
+
+      if (photoViewerAnimating && fromHistory) {
+        finishClose();
+        return;
+      }
+
+      if (photoViewerAnimating) return;
 
       if (
         prefersReducedPhotoMotion()
