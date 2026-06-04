@@ -577,6 +577,91 @@
       height: 100%;
       object-fit: cover;
     }
+    .avatar-photo[data-avatar-view] {
+      cursor: zoom-in;
+    }
+    .avatar-photo[data-avatar-view]:focus-visible {
+      outline: 3px solid rgba(0,104,93,.28);
+      outline-offset: 4px;
+    }
+    .photo-viewer-open {
+      overflow: hidden;
+    }
+    #memberPhotoViewer .photo-viewer-scrim {
+      cursor: zoom-out;
+    }
+    #memberPhotoViewer .photo-viewer-stage {
+      width: 100%;
+      max-height: 100%;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    #memberPhotoViewer .photo-viewer-figure {
+      margin: 0;
+      width: min(88vw, 440px);
+    }
+    #memberPhotoViewer {
+      transition: background-color 380ms ease, backdrop-filter 380ms ease;
+    }
+    #memberPhotoViewer.is-opening:not(.is-scrim-visible),
+    #memberPhotoViewer.is-closing:not(.is-scrim-visible) {
+      background-color: transparent !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
+    #memberPhotoViewer.is-measuring {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #memberPhotoViewer .photo-viewer-frame {
+      overflow: hidden;
+      border-radius: 1.35rem;
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.38),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    #memberPhotoViewer .photo-viewer-frame.is-shared-morph {
+      position: fixed;
+      z-index: 96;
+      margin: 0;
+      max-height: none;
+    }
+    #memberPhotoViewer .photo-viewer-frame.is-shared-morph img {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      aspect-ratio: auto;
+      object-fit: cover;
+    }
+    #memberPhotoViewer .photo-viewer-frame img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      max-height: min(72vh, 440px);
+      object-fit: cover;
+    }
+    #memberPhotoViewer .photo-viewer-caption {
+      margin-top: 0.85rem;
+      text-align: center;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #1d1d1f;
+      transition: opacity 280ms ease;
+    }
+    #memberPhotoViewer.is-opening .photo-viewer-caption,
+    #memberPhotoViewer.is-closing .photo-viewer-caption {
+      opacity: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #memberPhotoViewer {
+        transition: none;
+      }
+      #memberPhotoViewer .photo-viewer-caption {
+        transition: none;
+      }
+    }
 
     /* 랭킹 뱃지 입체감 앰보싱 스타일 */
     .avatar-rank-1 {
@@ -2544,9 +2629,21 @@
     </div>
   </section>
 
+  <section id="memberPhotoViewer" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/72 backdrop-blur-sm" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="memberPhotoViewerTitle">
+    <button class="photo-viewer-scrim absolute inset-0 z-0 border-0 bg-transparent p-0" type="button" data-close-photo-viewer aria-label="사진 확대 닫기"></button>
+    <div class="photo-viewer-stage relative z-[1] flex flex-col items-center justify-center px-5">
+      <figure class="photo-viewer-figure">
+        <div id="memberPhotoViewerFrame" class="photo-viewer-frame">
+          <img id="memberPhotoViewerImage" src="" alt="">
+        </div>
+        <figcaption id="memberPhotoViewerTitle" class="photo-viewer-caption">멤버</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <script>
     const MY_NAME = "김지석";
-    const MALE_MEMBER_NAMES = new Set(["조형철", "김지석", "한인호", "김태환", "이상백", "민문기", "박창언"]);
+    const MALE_MEMBER_NAMES = new Set(["조형철", "김지석", "한인호", "김태환", "이상백", "민문기", "박창언", "윤준"]);
     const LOCAL_SCHEDULES_KEY = "tennis.localSchedules";
     const LOCAL_EVENTS_KEY = "tennis.localEvents";
     const DELETED_SCHEDULES_KEY = "tennis.deletedScheduleIds";
@@ -2607,6 +2704,11 @@
     let editingEventId = "";
     let editingCourtId = "";
     let pendingCourtPreviewUrl = "";
+    let photoViewerReturnFocus = null;
+    let photoViewerAnimating = false;
+    const PHOTO_VIEWER_MORPH_MS = 420;
+    const PHOTO_VIEWER_MORPH_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+    const PHOTO_VIEWER_FINAL_RADIUS = "1.35rem";
 
     const unique = arr => [...new Set(arr)].sort((a,b) => a.localeCompare(b, "ko"));
 
@@ -3379,7 +3481,8 @@
       return isSheetOpen("#addScheduleSheet")
         || isSheetOpen("#addEventSheet")
         || isSheetOpen("#addCourtSheet")
-        || isSheetOpen("#attendeeSheet");
+        || isSheetOpen("#attendeeSheet")
+        || isSheetOpen("#memberPhotoViewer");
     }
 
     function openSheetHistory(type) {
@@ -4802,14 +4905,178 @@
       const avatarSrc = MEMBER_AVATAR_SOURCES[name];
       const avatarClass = avatarSrc ? "avatar-tactile avatar-photo" : getAvatarClassForMember(name);
       const label = escapeHTML(`${name} 프로필 사진`);
+      const viewerAttributes = avatarSrc
+        ? `data-avatar-view data-avatar-src="${escapeHTML(avatarSrc)}" data-avatar-name="${escapeHTML(name)}" role="button" tabindex="0" aria-label="${escapeHTML(`${name} 사진 확대 보기`)}"`
+        : "";
 
       return `
-        <div class="${className} ${avatarClass}" ${attributes}>
+        <div class="${className} ${avatarClass}" ${viewerAttributes} ${attributes}>
           ${avatarSrc
             ? `<img src="${avatarSrc}" alt="${label}" loading="lazy">`
             : initials(name)}
         </div>
       `;
+    }
+
+    function prefersReducedPhotoMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function photoViewerCircleRadius(rect) {
+      const diameter = Math.min(rect.width, rect.height);
+      return `${Math.max(0, diameter) / 2}px`;
+    }
+
+    function applyPhotoViewerFrameRect(frame, rect, borderRadius) {
+      frame.style.position = "fixed";
+      frame.style.top = `${rect.top}px`;
+      frame.style.left = `${rect.left}px`;
+      frame.style.width = `${rect.width}px`;
+      frame.style.height = `${rect.height}px`;
+      frame.style.margin = "0";
+      frame.style.borderRadius = borderRadius;
+      frame.style.transform = "none";
+      frame.style.zIndex = "96";
+    }
+
+    function resetPhotoViewerFrame(frame) {
+      frame.classList.remove("is-shared-morph");
+      frame.style.cssText = "";
+    }
+
+    function animatePhotoViewerFrame(frame, fromRect, toRect, fromRadius, toRadius) {
+      frame.classList.add("is-shared-morph");
+      const transition = [
+        `top ${PHOTO_VIEWER_MORPH_MS}ms ${PHOTO_VIEWER_MORPH_EASE}`,
+        `left ${PHOTO_VIEWER_MORPH_MS}ms ${PHOTO_VIEWER_MORPH_EASE}`,
+        `width ${PHOTO_VIEWER_MORPH_MS}ms ${PHOTO_VIEWER_MORPH_EASE}`,
+        `height ${PHOTO_VIEWER_MORPH_MS}ms ${PHOTO_VIEWER_MORPH_EASE}`,
+        `border-radius ${PHOTO_VIEWER_MORPH_MS}ms ${PHOTO_VIEWER_MORPH_EASE}`,
+      ].join(", ");
+
+      applyPhotoViewerFrameRect(frame, fromRect, fromRadius);
+      frame.style.transition = "none";
+
+      return new Promise(resolve => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            frame.style.transition = transition;
+            applyPhotoViewerFrameRect(frame, toRect, toRadius);
+
+            let settled = false;
+            const finish = () => {
+              if (settled) return;
+              settled = true;
+              frame.removeEventListener("transitionend", onEnd);
+              window.clearTimeout(fallbackTimer);
+              resolve();
+            };
+            const onEnd = event => {
+              if (event.target !== frame || event.propertyName !== "width") return;
+              finish();
+            };
+            const fallbackTimer = window.setTimeout(finish, PHOTO_VIEWER_MORPH_MS + 100);
+            frame.addEventListener("transitionend", onEnd);
+          });
+        });
+      });
+    }
+
+    function showMemberPhotoViewerShell(viewer) {
+      viewer.classList.remove("hidden");
+      viewer.classList.add("flex");
+      viewer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("photo-viewer-open");
+    }
+
+    function hideMemberPhotoViewerShell(viewer, image) {
+      viewer.classList.add("hidden");
+      viewer.classList.remove("flex", "is-opening", "is-closing", "is-scrim-visible", "is-measuring");
+      viewer.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("photo-viewer-open");
+      image.removeAttribute("src");
+      image.alt = "";
+    }
+
+    function openMemberPhotoViewer(target) {
+      const src = target?.dataset?.avatarSrc;
+      const name = target?.dataset?.avatarName || "멤버";
+      if (!src || photoViewerAnimating) return;
+
+      const viewer = document.querySelector("#memberPhotoViewer");
+      const image = document.querySelector("#memberPhotoViewerImage");
+      const title = document.querySelector("#memberPhotoViewerTitle");
+      const frame = document.querySelector("#memberPhotoViewerFrame");
+      const dismissButton = viewer.querySelector(".photo-viewer-scrim");
+      if (!viewer || !frame) return;
+
+      photoViewerReturnFocus = target;
+      title.textContent = name;
+      image.src = src;
+      image.alt = `${name} 프로필 사진`;
+
+      if (prefersReducedPhotoMotion()) {
+        showMemberPhotoViewerShell(viewer);
+        viewer.classList.add("is-scrim-visible");
+        dismissButton?.focus();
+        return;
+      }
+
+      photoViewerAnimating = true;
+      const sourceRect = target.getBoundingClientRect();
+      const sourceRadius = photoViewerCircleRadius(sourceRect);
+
+      showMemberPhotoViewerShell(viewer);
+      viewer.classList.add("is-opening", "is-measuring");
+      resetPhotoViewerFrame(frame);
+
+      const finalRect = frame.getBoundingClientRect();
+      viewer.classList.remove("is-measuring");
+      void animatePhotoViewerFrame(frame, sourceRect, finalRect, sourceRadius, PHOTO_VIEWER_FINAL_RADIUS)
+        .then(() => {
+          viewer.classList.add("is-scrim-visible");
+          resetPhotoViewerFrame(frame);
+          viewer.classList.remove("is-opening");
+          photoViewerAnimating = false;
+          dismissButton?.focus();
+        });
+    }
+
+    function closeMemberPhotoViewer() {
+      const viewer = document.querySelector("#memberPhotoViewer");
+      const image = document.querySelector("#memberPhotoViewerImage");
+      const frame = document.querySelector("#memberPhotoViewerFrame");
+      if (!viewer || viewer.classList.contains("hidden") || photoViewerAnimating) return;
+
+      const returnTarget = photoViewerReturnFocus;
+      const finishClose = () => {
+        hideMemberPhotoViewerShell(viewer, image);
+        resetPhotoViewerFrame(frame);
+        photoViewerAnimating = false;
+        returnTarget?.focus?.();
+        photoViewerReturnFocus = null;
+      };
+
+      if (
+        prefersReducedPhotoMotion()
+        || !frame
+        || !returnTarget?.isConnected
+        || returnTarget.getBoundingClientRect().width < 1
+      ) {
+        finishClose();
+        return;
+      }
+
+      photoViewerAnimating = true;
+      viewer.classList.add("is-closing");
+      viewer.classList.remove("is-scrim-visible");
+
+      const fromRect = frame.getBoundingClientRect();
+      const fromRadius = PHOTO_VIEWER_FINAL_RADIUS;
+      const toRect = returnTarget.getBoundingClientRect();
+      const toRadius = photoViewerCircleRadius(toRect);
+
+      void animatePhotoViewerFrame(frame, fromRect, toRect, fromRadius, toRadius).finally(finishClose);
     }
 
     function memberIdForName(name) {
@@ -4860,7 +5127,7 @@
               <div class="flex gap-4 items-start">
                 ${memberAvatarHTML(author, {
                   className: "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm font-black text-white shadow-sm transition hover:scale-105",
-                  attributes: `data-member-id="${authorMemberId}" role="button" tabindex="0" aria-label="${escapeHTML(author)} 프로필 보기"`
+                  attributes: `data-member-id="${authorMemberId}"`
                 })}
                 <div class="w-full rounded-xl rounded-tl-none bg-surface-container-low p-4 border border-outline-variant/10 shadow-sm">
                   <div class="mb-1.5 flex items-baseline justify-between gap-3">
@@ -7205,6 +7472,20 @@
     }, true);
 
     document.addEventListener("click", event => {
+      const closePhotoViewerButton = event.target.closest("[data-close-photo-viewer]");
+      if (closePhotoViewerButton) {
+        closeMemberPhotoViewer();
+        return;
+      }
+
+      const avatarViewButton = event.target.closest("[data-avatar-view]");
+      if (avatarViewButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        openMemberPhotoViewer(avatarViewButton);
+        return;
+      }
+
       const menu = document.querySelector("#calendarAddMenu");
       if (menu && !menu.classList.contains("hidden")) {
         const clickedInsideMenu = event.target.closest("#calendarAddMenu");
@@ -7459,7 +7740,9 @@
     document.querySelector("#cancelAttendeeAdd").addEventListener("click", closeAttendeeSheet);
     document.querySelector("#attendeeBackdrop").addEventListener("click", closeAttendeeSheet);
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && !document.querySelector("#attendeeSheet").classList.contains("hidden")) {
+      if (event.key === "Escape" && !document.querySelector("#memberPhotoViewer").classList.contains("hidden")) {
+        closeMemberPhotoViewer();
+      } else if (event.key === "Escape" && !document.querySelector("#attendeeSheet").classList.contains("hidden")) {
         closeAttendeeSheet();
       } else if (event.key === "Escape" && !document.querySelector("#addEventSheet").classList.contains("hidden")) {
         closeAddEvent();
@@ -7528,6 +7811,13 @@
     document.addEventListener("keydown", event => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && event.target.matches("[data-discussion-input]")) {
         addDiscussionMessage(event.target.value).catch(error => alert(error.message));
+      }
+      const avatarTarget = event.target.closest("[data-avatar-view]");
+      if (avatarTarget && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        event.stopPropagation();
+        openMemberPhotoViewer(avatarTarget);
+        return;
       }
       const memberTarget = event.target.closest("[data-member-id]");
       if (memberTarget && (event.key === "Enter" || event.key === " ")) {
