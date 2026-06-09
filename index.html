@@ -2495,16 +2495,10 @@
           <input id="addCourtName" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="name" placeholder="예: 송도 스포츠파크 1번코트" type="text" required>
         </label>
 
-        <div class="grid grid-cols-2 gap-2 sm:gap-3">
-          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            종류
-            <input id="addCourtType" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="type" placeholder="Outdoor Hard" type="text">
-          </label>
-          <label class="min-w-0 space-y-1.5 text-sm font-bold text-on-surface">
-            위치
-            <input id="addCourtLocation" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="location" placeholder="인천 연수구 송도동" type="text">
-          </label>
-        </div>
+        <label class="space-y-1.5 text-sm font-bold text-on-surface">
+          위치
+          <input id="addCourtLocation" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="location" placeholder="인천 연수구 송도동" type="text">
+        </label>
 
         <label class="space-y-1.5 text-sm font-bold text-on-surface">
           정식 표기
@@ -2532,7 +2526,7 @@
             </label>
           </div>
 
-          <div id="courtUnitRangeFields" class="hidden grid grid-cols-3 gap-2">
+          <div id="courtUnitRangeFields" class="hidden grid grid-cols-2 gap-2">
             <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
               시작
               <input id="addCourtUnitStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitStart" placeholder="1" type="text">
@@ -2542,14 +2536,25 @@
               <input id="addCourtUnitEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitEnd" placeholder="4" type="text">
             </label>
             <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
+              구분
+              <select id="addCourtUnitEnvironment" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitEnvironment">
+                <option value="실외">실외</option>
+                <option value="실내">실내</option>
+              </select>
+            </label>
+            <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
               표면
-              <input id="addCourtUnitSurface" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitSurface" placeholder="하드" type="text">
+              <select id="addCourtUnitSurface" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitSurface">
+                <option value="하드">하드</option>
+                <option value="인조잔디">인조잔디</option>
+                <option value="클레이">클레이</option>
+              </select>
             </label>
           </div>
 
           <label id="courtUnitCustomFields" class="hidden space-y-1.5 text-xs font-bold text-on-surface">
             직접 입력
-            <textarea id="addCourtUnitCustom" class="min-h-24 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold leading-6 outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitCustom" placeholder="A / 하드&#10;B / 하드&#10;1 / 인조잔디"></textarea>
+            <textarea id="addCourtUnitCustom" class="min-h-24 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold leading-6 outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitCustom" placeholder="A / 실외 하드&#10;B / 실외 하드&#10;1 / 실내 인조잔디"></textarea>
           </label>
 
           <div id="courtUnitPreview" class="hidden flex flex-wrap gap-1.5"></div>
@@ -3400,6 +3405,19 @@
       return `${courtId}-${courtUnitSlug(label)}`;
     }
 
+    function splitCourtUnitSurface(surface = "") {
+      const value = String(surface || "").trim();
+      const environmentMatch = value.match(/^(실내|실외)\s+(.+)$/);
+      if (environmentMatch) {
+        return { environment: environmentMatch[1], surface: environmentMatch[2] };
+      }
+      return { environment: "실외", surface: value || "하드" };
+    }
+
+    function composeCourtUnitSurface(environment = "실외", surface = "하드") {
+      return [environment, surface].filter(Boolean).join(" ").trim();
+    }
+
     function rangeCourtUnits(courtId, start, end, mode, surface = "") {
       if (mode === "number") {
         const startNumber = Number.parseInt(start, 10);
@@ -3458,12 +3476,16 @@
       const mode = formData.get("unitMode") || "none";
       if (mode === "none") return [];
       if (mode === "custom") return parseCustomCourtUnits(courtId, formData.get("unitCustom"));
+      const unitSurface = composeCourtUnitSurface(
+        String(formData.get("unitEnvironment") || "실외").trim(),
+        String(formData.get("unitSurface") || "하드").trim()
+      );
       return rangeCourtUnits(
         courtId,
         formData.get("unitStart"),
         formData.get("unitEnd"),
         mode,
-        String(formData.get("unitSurface") || "").trim()
+        unitSurface
       );
     }
 
@@ -6129,6 +6151,19 @@
       renderCourtUnitPreview();
     }
 
+    function handleCourtUnitModeChange() {
+      const form = document.querySelector("#addCourtForm");
+      const mode = selectedCourtUnitMode();
+      if (mode === "number") {
+        form.elements.unitStart.value = "1";
+        form.elements.unitEnd.value = "4";
+      } else if (mode === "letter") {
+        form.elements.unitStart.value = "A";
+        form.elements.unitEnd.value = "D";
+      }
+      renderCourtUnitFields();
+    }
+
     function renderCourtUnitPreview() {
       const preview = document.querySelector("#courtUnitPreview");
       const form = document.querySelector("#addCourtForm");
@@ -6158,13 +6193,16 @@
       const mode = courtUnitModeForUnits(units);
       form.elements.unitStart.value = "";
       form.elements.unitEnd.value = "";
-      form.elements.unitSurface.value = "";
+      form.elements.unitEnvironment.value = "실외";
+      form.elements.unitSurface.value = "하드";
       form.elements.unitCustom.value = "";
 
       if (mode === "number" || mode === "letter") {
+        const surfaceParts = splitCourtUnitSurface(units[0]?.surface || "");
         form.elements.unitStart.value = units[0]?.label || (mode === "number" ? "1" : "A");
         form.elements.unitEnd.value = units.at(-1)?.label || (mode === "number" ? "4" : "B");
-        form.elements.unitSurface.value = units[0]?.surface || "";
+        form.elements.unitEnvironment.value = surfaceParts.environment;
+        form.elements.unitSurface.value = ["하드", "인조잔디", "클레이"].includes(surfaceParts.surface) ? surfaceParts.surface : "하드";
       } else if (mode === "custom") {
         form.elements.unitCustom.value = units.map(unit => [unit.label, unit.surface].filter(Boolean).join(" / ")).join("\n");
       } else {
@@ -6194,7 +6232,6 @@
       document.querySelector("#addCourtSubmit").innerHTML = `<span class="material-symbols-outlined text-[18px]">${court ? "save" : "add_location_alt"}</span> ${court ? "저장" : "추가"}`;
       document.querySelector("#deleteCourtButton").classList.toggle("hidden", !court);
       document.querySelector("#addCourtName").value = court?.name || "";
-      document.querySelector("#addCourtType").value = court?.type || "";
       document.querySelector("#addCourtLocation").value = court?.location || "";
       document.querySelector("#addCourtCanonicalName").value = court?.canonicalName || "";
       showCourtImagePreview(court?.image || "");
@@ -7069,17 +7106,18 @@
       refreshViews();
     }
 
-    function createCourtFromForm(form, existingCourt = null) {
+    function createCourtFromForm(form, existingCourt = null, nextUnits = [], forcedId = "") {
       const formData = new FormData(form);
       const name = formData.get("name").trim();
       if (!name) throw new Error("코트명을 입력해 주세요.");
 
-      const id = existingCourt?.id || makeCourtId(name);
+      const id = existingCourt?.id || forcedId || makeCourtId(name);
+      const inferredType = [...new Set(nextUnits.map(unit => unit.surface).filter(Boolean))].join(" / ");
       return {
         id,
         name,
         image: existingCourt?.image || "",
-        type: formData.get("type").trim() || "Outdoor Court",
+        type: inferredType || existingCourt?.type || "Outdoor Court",
         location: formData.get("location").trim() || "인천",
         canonicalName: formData.get("canonicalName").trim() || name
       };
@@ -7136,8 +7174,9 @@
       const existingCourt = courtFormMode === "edit"
         ? dataStore.courts.find(court => String(court.id) === String(editingCourtId))
         : null;
-      const court = createCourtFromForm(form, existingCourt);
-      const nextUnits = courtUnitsFromForm(form, court.id);
+      const draftCourtId = existingCourt?.id || makeCourtId(new FormData(form).get("name") || "");
+      const nextUnits = courtUnitsFromForm(form, draftCourtId);
+      const court = createCourtFromForm(form, existingCourt, nextUnits, draftCourtId);
       const file = form.elements.imageFile?.files?.[0] || null;
       court.image = await uploadCourtImage(file, court.id, existingCourt?.image || court.image);
 
@@ -8053,10 +8092,13 @@
       previewCourtImage(event.target.files?.[0] || null);
     });
     document.querySelectorAll('input[name="unitMode"]').forEach(input => {
-      input.addEventListener("change", renderCourtUnitFields);
+      input.addEventListener("change", handleCourtUnitModeChange);
     });
-    ["#addCourtName", "#addCourtUnitStart", "#addCourtUnitEnd", "#addCourtUnitSurface", "#addCourtUnitCustom"].forEach(selector => {
+    ["#addCourtName", "#addCourtUnitStart", "#addCourtUnitEnd", "#addCourtUnitCustom"].forEach(selector => {
       document.querySelector(selector)?.addEventListener("input", renderCourtUnitPreview);
+    });
+    ["#addCourtUnitEnvironment", "#addCourtUnitSurface"].forEach(selector => {
+      document.querySelector(selector)?.addEventListener("change", renderCourtUnitPreview);
     });
     document.querySelector("#addScheduleCourt").addEventListener("change", () => {
       renderAddScheduleCourtUnitOptions();
