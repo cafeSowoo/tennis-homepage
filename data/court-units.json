@@ -119,6 +119,34 @@
     "sortOrder": 1
   },
   {
+    "id": "court-new-mq61ycgw-1",
+    "courtId": "court-new-mq61ycgw",
+    "label": "1",
+    "surface": "하드",
+    "sortOrder": 1
+  },
+  {
+    "id": "court-new-mq61ycgw-2",
+    "courtId": "court-new-mq61ycgw",
+    "label": "2",
+    "surface": "하드",
+    "sortOrder": 2
+  },
+  {
+    "id": "court-new-mq61ycgw-3",
+    "courtId": "court-new-mq61ycgw",
+    "label": "3",
+    "surface": "하드",
+    "sortOrder": 3
+  },
+  {
+    "id": "court-new-mq61ycgw-4",
+    "courtId": "court-new-mq61ycgw",
+    "label": "4",
+    "surface": "하드",
+    "sortOrder": 4
+  },
+  {
     "id": "court-ictus-a",
     "courtId": "court-ictus",
     "label": "A",

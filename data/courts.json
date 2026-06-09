@@ -39,6 +39,14 @@
     "canonicalName": "만석동테니스장"
   },
   {
+    "id": "court-new-mq61ycgw",
+    "name": "모나크",
+    "image": "assets/courts/moonlight_hard.png",
+    "type": "Outdoor Hard",
+    "location": "인천 연수구 송도동 187",
+    "canonicalName": "송도 모나크 테니스 클"
+  },
+  {
     "id": "court-ictus",
     "name": "익투스",
     "image": "https://myincubzgvhyreyqbban.supabase.co/storage/v1/object/public/court-images/court-new-mpngqpdm/mpngqpdm.webp",

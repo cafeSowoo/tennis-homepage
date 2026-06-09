@@ -2511,6 +2511,50 @@
           <input id="addCourtCanonicalName" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="canonicalName" placeholder="선택 사항" type="text">
         </label>
 
+        <fieldset class="space-y-3">
+          <legend class="text-sm font-bold text-on-surface">하위코트</legend>
+          <div class="grid grid-cols-4 gap-1.5 rounded-lg bg-surface-container-low p-1">
+            <label class="min-w-0">
+              <input class="peer sr-only" name="unitMode" type="radio" value="none" checked>
+              <span class="flex h-9 min-w-0 items-center justify-center rounded-md px-1.5 text-center text-[11px] font-bold text-[#6e6e73] transition peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">없음</span>
+            </label>
+            <label class="min-w-0">
+              <input class="peer sr-only" name="unitMode" type="radio" value="number">
+              <span class="flex h-9 min-w-0 items-center justify-center rounded-md px-1.5 text-center text-[11px] font-bold text-[#6e6e73] transition peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">숫자형</span>
+            </label>
+            <label class="min-w-0">
+              <input class="peer sr-only" name="unitMode" type="radio" value="letter">
+              <span class="flex h-9 min-w-0 items-center justify-center rounded-md px-1.5 text-center text-[11px] font-bold text-[#6e6e73] transition peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">알파벳</span>
+            </label>
+            <label class="min-w-0">
+              <input class="peer sr-only" name="unitMode" type="radio" value="custom">
+              <span class="flex h-9 min-w-0 items-center justify-center rounded-md px-1.5 text-center text-[11px] font-bold text-[#6e6e73] transition peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">직접</span>
+            </label>
+          </div>
+
+          <div id="courtUnitRangeFields" class="hidden grid grid-cols-3 gap-2">
+            <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
+              시작
+              <input id="addCourtUnitStart" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitStart" placeholder="1" type="text">
+            </label>
+            <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
+              끝
+              <input id="addCourtUnitEnd" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitEnd" placeholder="4" type="text">
+            </label>
+            <label class="min-w-0 space-y-1.5 text-xs font-bold text-on-surface">
+              표면
+              <input id="addCourtUnitSurface" class="w-full min-w-0 rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitSurface" placeholder="하드" type="text">
+            </label>
+          </div>
+
+          <label id="courtUnitCustomFields" class="hidden space-y-1.5 text-xs font-bold text-on-surface">
+            직접 입력
+            <textarea id="addCourtUnitCustom" class="min-h-24 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm font-semibold leading-6 outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="unitCustom" placeholder="A / 하드&#10;B / 하드&#10;1 / 인조잔디"></textarea>
+          </label>
+
+          <div id="courtUnitPreview" class="hidden flex flex-wrap gap-1.5"></div>
+        </fieldset>
+
         <label class="space-y-1.5 text-sm font-bold text-on-surface">
           사진
           <input id="addCourtImageFile" class="w-full rounded-lg border border-dashed border-outline-variant bg-surface px-3 py-3 text-sm font-semibold outline-none file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-xs file:font-bold file:text-white" name="imageFile" type="file" accept="image/*">
@@ -3054,6 +3098,16 @@
       };
     }
 
+    function toSupabaseCourtUnit(row) {
+      return {
+        id: String(row.id),
+        court_id: String(row.courtId),
+        label: String(row.label),
+        surface: row.surface || null,
+        sort_order: row.sortOrder || 0
+      };
+    }
+
     function fromSupabaseDiscussion(row) {
       return {
         id: row.id,
@@ -3331,6 +3385,86 @@
       if (!unit) return "";
       const suffix = unit.surface ? ` ${unit.surface}` : "";
       return `${unit.label}${suffix}`;
+    }
+
+    function courtUnitSlug(label) {
+      const asciiSlug = slugifyCourtName(label).slice(0, 24);
+      if (asciiSlug) return asciiSlug;
+      return Array.from(String(label || "unit"))
+        .map(char => char.codePointAt(0).toString(36))
+        .join("-")
+        .slice(0, 48);
+    }
+
+    function makeCourtUnitId(courtId, label) {
+      return `${courtId}-${courtUnitSlug(label)}`;
+    }
+
+    function rangeCourtUnits(courtId, start, end, mode, surface = "") {
+      if (mode === "number") {
+        const startNumber = Number.parseInt(start, 10);
+        const endNumber = Number.parseInt(end, 10);
+        if (!Number.isInteger(startNumber) || !Number.isInteger(endNumber) || startNumber < 0 || endNumber < startNumber || endNumber - startNumber > 99) {
+          throw new Error("하위코트 숫자 범위를 확인해 주세요.");
+        }
+        return Array.from({ length: endNumber - startNumber + 1 }, (_, index) => {
+          const label = String(startNumber + index);
+          return { id: makeCourtUnitId(courtId, label), courtId, label, surface, sortOrder: index + 1 };
+        });
+      }
+
+      const startLetter = String(start || "").trim().toUpperCase();
+      const endLetter = String(end || "").trim().toUpperCase();
+      const startCode = startLetter.charCodeAt(0);
+      const endCode = endLetter.charCodeAt(0);
+      if (!/^[A-Z]$/.test(startLetter) || !/^[A-Z]$/.test(endLetter) || endCode < startCode) {
+        throw new Error("하위코트 알파벳 범위를 확인해 주세요.");
+      }
+      return Array.from({ length: endCode - startCode + 1 }, (_, index) => {
+        const label = String.fromCharCode(startCode + index);
+        return { id: makeCourtUnitId(courtId, label), courtId, label, surface, sortOrder: index + 1 };
+      });
+    }
+
+    function parseCustomCourtUnits(courtId, value) {
+      return String(value || "")
+        .split(/[\n,]+/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map((item, index) => {
+          const parts = item.split(/\s*(?:\/|\||:|-)\s*/).filter(Boolean);
+          const label = (parts[0] || "").trim();
+          const surface = (parts.slice(1).join(" ") || "").trim();
+          if (!label) throw new Error("하위코트 직접 입력값을 확인해 주세요.");
+          return { id: makeCourtUnitId(courtId, label), courtId, label, surface, sortOrder: index + 1 };
+        });
+    }
+
+    function courtUnitModeForUnits(units) {
+      if (!units.length) return "none";
+      const surfaces = new Set(units.map(unit => unit.surface || ""));
+      const labels = units.map(unit => String(unit.label));
+      const numeric = labels.every(label => /^\d+$/.test(label));
+      const letters = labels.every(label => /^[A-Za-z]$/.test(label));
+      const sequentialNumbers = numeric && labels.every((label, index) => Number(label) === Number(labels[0]) + index);
+      const sequentialLetters = letters && labels.every((label, index) => label.toUpperCase().charCodeAt(0) === labels[0].toUpperCase().charCodeAt(0) + index);
+      if (surfaces.size === 1 && sequentialNumbers) return "number";
+      if (surfaces.size === 1 && sequentialLetters) return "letter";
+      return "custom";
+    }
+
+    function courtUnitsFromForm(form, courtId) {
+      const formData = new FormData(form);
+      const mode = formData.get("unitMode") || "none";
+      if (mode === "none") return [];
+      if (mode === "custom") return parseCustomCourtUnits(courtId, formData.get("unitCustom"));
+      return rangeCourtUnits(
+        courtId,
+        formData.get("unitStart"),
+        formData.get("unitEnd"),
+        mode,
+        String(formData.get("unitSurface") || "").trim()
+      );
     }
 
     function courtLabel(court, unit = null) {
@@ -5978,6 +6112,69 @@
       select.value = units.some(unit => unit.id === selectedUnitId) ? selectedUnitId : "";
     }
 
+    function selectedCourtUnitMode() {
+      return document.querySelector('input[name="unitMode"]:checked')?.value || "none";
+    }
+
+    function setCourtUnitMode(mode) {
+      const radio = document.querySelector(`input[name="unitMode"][value="${mode}"]`);
+      if (radio) radio.checked = true;
+      renderCourtUnitFields();
+    }
+
+    function renderCourtUnitFields() {
+      const mode = selectedCourtUnitMode();
+      document.querySelector("#courtUnitRangeFields")?.classList.toggle("hidden", !["number", "letter"].includes(mode));
+      document.querySelector("#courtUnitCustomFields")?.classList.toggle("hidden", mode !== "custom");
+      renderCourtUnitPreview();
+    }
+
+    function renderCourtUnitPreview() {
+      const preview = document.querySelector("#courtUnitPreview");
+      const form = document.querySelector("#addCourtForm");
+      if (!preview || !form) return;
+
+      let units = [];
+      try {
+        const name = form.elements.name?.value?.trim() || "preview";
+        const existingCourt = editingCourtId ? dataStore.courts.find(court => String(court.id) === String(editingCourtId)) : null;
+        const courtId = existingCourt?.id || makeCourtId(name);
+        units = courtUnitsFromForm(form, courtId);
+      } catch (error) {
+        preview.classList.remove("hidden");
+        preview.innerHTML = `<span class="rounded-md bg-red-50 px-2 py-1 text-[11px] font-bold text-red-600">${escapeHTML(error.message)}</span>`;
+        return;
+      }
+
+      preview.classList.toggle("hidden", units.length === 0);
+      preview.innerHTML = units.map(unit => `
+        <span class="rounded-md bg-[rgba(0,104,93,0.08)] px-2 py-1 text-[11px] font-bold text-primary">${escapeHTML(courtUnitLabel(unit))}</span>
+      `).join("");
+    }
+
+    function hydrateCourtUnitForm(courtId = "") {
+      const form = document.querySelector("#addCourtForm");
+      const units = courtId ? courtUnitsForCourt(courtId) : [];
+      const mode = courtUnitModeForUnits(units);
+      form.elements.unitStart.value = "";
+      form.elements.unitEnd.value = "";
+      form.elements.unitSurface.value = "";
+      form.elements.unitCustom.value = "";
+
+      if (mode === "number" || mode === "letter") {
+        form.elements.unitStart.value = units[0]?.label || (mode === "number" ? "1" : "A");
+        form.elements.unitEnd.value = units.at(-1)?.label || (mode === "number" ? "4" : "B");
+        form.elements.unitSurface.value = units[0]?.surface || "";
+      } else if (mode === "custom") {
+        form.elements.unitCustom.value = units.map(unit => [unit.label, unit.surface].filter(Boolean).join(" / ")).join("\n");
+      } else {
+        form.elements.unitStart.value = "1";
+        form.elements.unitEnd.value = "4";
+      }
+
+      setCourtUnitMode(mode);
+    }
+
     function openAddCourt(courtId = "") {
       try {
         requireOfficialWriteAccess();
@@ -6001,6 +6198,7 @@
       document.querySelector("#addCourtLocation").value = court?.location || "";
       document.querySelector("#addCourtCanonicalName").value = court?.canonicalName || "";
       showCourtImagePreview(court?.image || "");
+      hydrateCourtUnitForm(court?.id || "");
       sheet.classList.remove("hidden");
       sheet.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -6016,6 +6214,7 @@
       courtFormMode = "create";
       editingCourtId = "";
       showCourtImagePreview("");
+      setCourtUnitMode("none");
     }
 
     function openAddSchedule(dateValue = state.selectedDate?.startsWith(state.currentMonth) ? state.selectedDate : defaultDateForCurrentMonth(), schedule = null) {
@@ -6886,12 +7085,59 @@
       };
     }
 
+    async function syncCourtUnitsForCourt(courtId, nextUnits) {
+      const unitIds = new Set();
+      nextUnits.forEach(unit => {
+        if (unitIds.has(unit.id)) throw new Error("하위코트 이름이 중복되었습니다.");
+        unitIds.add(unit.id);
+      });
+
+      if (nextUnits.length) {
+        const { data, error } = await supabaseClient
+          .from("court_units")
+          .upsert(nextUnits.map(toSupabaseCourtUnit), { onConflict: "id" })
+          .select();
+        if (error) throw error;
+
+        const storedUnits = (data || []).map(fromSupabaseCourtUnit);
+        storedUnits.forEach(unit => {
+          const index = dataStore.courtUnits.findIndex(item => String(item.id) === String(unit.id));
+          if (index >= 0) {
+            dataStore.courtUnits[index] = unit;
+          } else {
+            dataStore.courtUnits.push(unit);
+          }
+        });
+      }
+
+      const keepIds = new Set(nextUnits.map(unit => String(unit.id)));
+      const existingUnits = dataStore.courtUnits.filter(unit => String(unit.courtId) === String(courtId));
+      const removedUnits = existingUnits.filter(unit => !keepIds.has(String(unit.id)));
+      const protectedUnits = removedUnits.filter(unit =>
+        dataStore.schedules.some(schedule => String(schedule.courtUnitId || "") === String(unit.id))
+      );
+      if (protectedUnits.length) {
+        throw new Error(`일정에서 사용 중인 하위코트는 삭제할 수 없습니다: ${protectedUnits.map(courtUnitLabel).join(", ")}`);
+      }
+      const removableUnits = removedUnits;
+
+      if (removableUnits.length) {
+        const { error } = await supabaseClient
+          .from("court_units")
+          .delete()
+          .in("id", removableUnits.map(unit => String(unit.id)));
+        if (error) throw error;
+        dataStore.courtUnits = dataStore.courtUnits.filter(unit => !removableUnits.some(removed => String(removed.id) === String(unit.id)));
+      }
+    }
+
     async function saveCourt(form) {
       requireOfficialWriteAccess();
       const existingCourt = courtFormMode === "edit"
         ? dataStore.courts.find(court => String(court.id) === String(editingCourtId))
         : null;
       const court = createCourtFromForm(form, existingCourt);
+      const nextUnits = courtUnitsFromForm(form, court.id);
       const file = form.elements.imageFile?.files?.[0] || null;
       court.image = await uploadCourtImage(file, court.id, existingCourt?.image || court.image);
 
@@ -6909,6 +7155,7 @@
       } else {
         dataStore.courts.push(storedCourt);
       }
+      await syncCourtUnitsForCourt(storedCourt.id, nextUnits);
       refreshViews();
       closeAddCourt();
     }
@@ -7804,6 +8051,12 @@
     });
     document.querySelector("#addCourtImageFile").addEventListener("change", event => {
       previewCourtImage(event.target.files?.[0] || null);
+    });
+    document.querySelectorAll('input[name="unitMode"]').forEach(input => {
+      input.addEventListener("change", renderCourtUnitFields);
+    });
+    ["#addCourtName", "#addCourtUnitStart", "#addCourtUnitEnd", "#addCourtUnitSurface", "#addCourtUnitCustom"].forEach(selector => {
+      document.querySelector(selector)?.addEventListener("input", renderCourtUnitPreview);
     });
     document.querySelector("#addScheduleCourt").addEventListener("change", () => {
       renderAddScheduleCourtUnitOptions();
