@@ -3418,11 +3418,19 @@
       return [environment, surface].filter(Boolean).join(" ").trim();
     }
 
+    const MAX_NUMERIC_COURT_UNIT = 20;
+
+    function clampNumericCourtUnitValue(value) {
+      const digits = String(value || "").replace(/\D/g, "");
+      if (!digits) return "";
+      return String(Math.min(MAX_NUMERIC_COURT_UNIT, Math.max(1, Number.parseInt(digits, 10))));
+    }
+
     function rangeCourtUnits(courtId, start, end, mode, surface = "") {
       if (mode === "number") {
         const startNumber = Number.parseInt(start, 10);
         const endNumber = Number.parseInt(end, 10);
-        if (!Number.isInteger(startNumber) || !Number.isInteger(endNumber) || startNumber < 0 || endNumber < startNumber || endNumber - startNumber > 99) {
+        if (!Number.isInteger(startNumber) || !Number.isInteger(endNumber) || startNumber < 1 || endNumber > MAX_NUMERIC_COURT_UNIT || endNumber < startNumber) {
           throw new Error("하위코트 숫자 범위를 확인해 주세요.");
         }
         return Array.from({ length: endNumber - startNumber + 1 }, (_, index) => {
@@ -6164,6 +6172,13 @@
       renderCourtUnitFields();
     }
 
+    function handleCourtUnitRangeInput(event) {
+      if (selectedCourtUnitMode() === "number") {
+        event.target.value = clampNumericCourtUnitValue(event.target.value);
+      }
+      renderCourtUnitPreview();
+    }
+
     function renderCourtUnitPreview() {
       const preview = document.querySelector("#courtUnitPreview");
       const form = document.querySelector("#addCourtForm");
@@ -8094,8 +8109,11 @@
     document.querySelectorAll('input[name="unitMode"]').forEach(input => {
       input.addEventListener("change", handleCourtUnitModeChange);
     });
-    ["#addCourtName", "#addCourtUnitStart", "#addCourtUnitEnd", "#addCourtUnitCustom"].forEach(selector => {
+    ["#addCourtName", "#addCourtUnitCustom"].forEach(selector => {
       document.querySelector(selector)?.addEventListener("input", renderCourtUnitPreview);
+    });
+    ["#addCourtUnitStart", "#addCourtUnitEnd"].forEach(selector => {
+      document.querySelector(selector)?.addEventListener("input", handleCourtUnitRangeInput);
     });
     ["#addCourtUnitEnvironment", "#addCourtUnitSurface"].forEach(selector => {
       document.querySelector(selector)?.addEventListener("change", renderCourtUnitPreview);
