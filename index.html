@@ -2837,50 +2837,44 @@
       };
     }
 
-    function renderMatchWeatherCard(item) {
+    function renderMatchWeatherCard(item, { embedded = false } = {}) {
       const forecast = forecastForSchedule(item);
       if (!forecast) {
         return `
-          <article class="app-card p-5">
-            <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Weather</h4>
+          <${embedded ? "div" : "article"} class="${embedded ? "mt-4" : "app-card p-5"}">
             <div class="flex items-start gap-3 rounded-xl bg-[#f5f5f7] p-3.5">
               ${icon("cloud_off", "text-primary shrink-0")}
               <span class="text-xs text-[#86868b] leading-normal">아직 이 일정 시간대의 예보를 표시할 수 없습니다.</span>
             </div>
-          </article>
+          </${embedded ? "div" : "article"}>
         `;
       }
 
-      const forecastDate = new Date(forecast.time);
-      const forecastLabel = `${forecastDate.toLocaleDateString("ko-KR", { month: "long", day: "numeric" })} ${String(forecastDate.getHours()).padStart(2, "0")}시 기준 예보`;
-      const precipitationLabel = forecast.precipitation === null ? "강수 정보 없음" : `강수 ${forecast.precipitation}%`;
-      const windLabel = forecast.wind === null ? "바람 정보 없음" : `바람 ${forecast.wind}km/h`;
+      const precipitationLabel = forecast.precipitation === null ? "정보 없음" : `${forecast.precipitation}%`;
+      const windLabel = forecast.wind === null ? "정보 없음" : `${forecast.wind}km/h`;
 
       return `
-        <article class="app-card p-5">
-          <h4 class="mb-4 text-xs font-medium uppercase tracking-wide text-[#86868b]">Weather</h4>
-
-          <div class="mb-4 flex items-center gap-4">
-            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-primary">
-              ${icon(forecast.icon)}
+        <${embedded ? "div" : "article"} class="${embedded ? "mt-4" : "app-card p-4"}">
+          <div class="flex min-h-11 items-center gap-2 rounded-xl bg-[#f5f5f7] px-3 py-2">
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-primary">
+                ${icon(forecast.icon, "text-[17px]")}
+              </div>
+              <span class="shrink-0 text-sm font-semibold text-[#1d1d1f]">${forecast.temperature === null ? "--" : `${forecast.temperature}°C`}</span>
+              <span class="min-w-0 truncate text-[11px] font-semibold text-[#424245]">${forecast.label}</span>
             </div>
-            <div>
-              <div class="text-lg font-semibold text-[#1d1d1f]">${forecast.temperature === null ? "--" : `${forecast.temperature}°C`} · ${forecast.label}</div>
-              <div class="text-sm text-[#86868b]">${forecastLabel}</div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="flex items-center gap-2 rounded-xl bg-[#f5f5f7] p-3">
-              ${icon("rainy", "text-primary shrink-0 text-[18px]")}
-              <span class="text-xs font-semibold text-[#424245]">${precipitationLabel}</span>
-            </div>
-            <div class="flex items-center gap-2 rounded-xl bg-[#f5f5f7] p-3">
-              ${icon("air", "text-primary shrink-0 text-[18px]")}
-              <span class="text-xs font-semibold text-[#424245]">${windLabel}</span>
+            <div class="flex shrink-0 items-center gap-2">
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#424245]">
+                ${icon("rainy", "text-primary shrink-0 text-[15px]")}
+                ${precipitationLabel}
+              </span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#424245]">
+                ${icon("air", "text-primary shrink-0 text-[15px]")}
+                ${windLabel}
+              </span>
             </div>
           </div>
-        </article>
+        </${embedded ? "div" : "article"}>
       `;
     }
 
@@ -4750,7 +4744,7 @@
           if (type === "event") return calendarEventChip(item);
 
           const isDeclined = isDeclinedSchedule(item);
-          let chipClass = isDeclined ? "border border-zinc-300 bg-zinc-100 text-zinc-500" : "bg-secondary-container text-on-secondary-container";
+          let chipClass = isDeclined ? "bg-zinc-100 text-zinc-500" : "bg-secondary-container text-on-secondary-container";
           if (!isDeclined) {
             if (item.closed) {
               chipClass = "bg-error-container text-on-error-container";
@@ -4763,7 +4757,7 @@
             }
           }
           if (!isDeclined && isMySchedule(item)) {
-            chipClass += " ring-2 ring-primary/45 ring-offset-1 ring-offset-surface-container-lowest";
+            chipClass += " border border-primary/60";
           }
           return `
             <span class="block truncate rounded px-1.5 py-0.5 text-[10px] font-bold leading-normal ${chipClass} shadow-sm" title="${timeStart(item)} ${schedulePlaceLabel(item)}">
@@ -5451,11 +5445,28 @@
         </button>
       `).join("");
 
+      const actionCard = `
+        <article class="sticky-detail-bar app-card p-4 md:p-5">
+          <div class="flex flex-row items-center justify-between gap-4 w-full">
+            <div class="flex flex-1 md:w-full items-center gap-2 justify-end">
+              <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
+                ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px]")}
+                <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
+              </button>
+              <button class="btn-outline flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold ${myDeclined ? "bg-zinc-100 text-zinc-600" : ""}" type="button" ${myDeclined ? "data-clear-decline-current" : "data-decline-current"} aria-label="${myDeclined ? "불참 취소" : "불참"}">
+                ${icon(myDeclined ? "event_available" : "person_off", "text-[16px]")}
+                <span>${myDeclined ? "불참 취소" : "불참"}</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+
       // Stitch bridge: Detail page HTML markup starts here.
       document.querySelector("#detailContent").innerHTML = `
         <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12">
           <!-- Left Column: Match Info & Description -->
-          <div class="flex flex-col gap-gutter lg:col-span-8">
+          <div class="flex flex-col gap-3 md:gap-4 lg:col-span-12">
             <!-- Hero Info Card -->
             <article class="app-card overflow-hidden">
               <div class="relative h-32 md:h-48 w-full overflow-hidden bg-[#f5f5f7]">
@@ -5492,6 +5503,8 @@
                 <!-- Overlap Alert Banners -->
                 ${conflictBanners}
 
+                ${renderMatchWeatherCard(item, { embedded: true })}
+
                 <hr class="my-5 md:my-6 border-[rgba(0,0,0,0.06)]">
 
                 <div>
@@ -5505,6 +5518,8 @@
                 </div>
               </div>
             </article>
+
+            ${actionCard}
 
             <!-- Comments/Discussion Card -->
             <article class="app-card p-4 md:p-6">
@@ -5528,26 +5543,6 @@
             </article>
           </div>
 
-          <!-- Right Column: Join Action & Conditions -->
-          <aside class="flex flex-col gap-gutter lg:col-span-4">
-            <!-- Join Action Card -->
-            <article class="sticky-detail-bar app-card md:p-5">
-                  <div class="flex flex-row items-center justify-between gap-4 w-full">
-                    <div class="flex flex-1 md:w-full items-center gap-2 justify-end">
-                      <button class="${myAttending ? "bg-[#ff3b30] text-white hover:opacity-90" : "btn-primary"} flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60" type="button" ${myAttending ? "data-leave-current" : "data-join-current"} ${!myAttending && !spotsLeft ? "disabled" : ""}>
-                        ${icon(myAttending ? "person_remove" : "sports_tennis", "text-[16px]")}
-                        <span>${myAttending ? "참석 취소" : spotsLeft ? "참석하기" : "마감됨"}</span>
-                      </button>
-                      <button class="btn-outline flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl py-3 text-xs sm:text-sm font-semibold ${myDeclined ? "bg-zinc-100 text-zinc-600" : ""}" type="button" ${myDeclined ? "data-clear-decline-current" : "data-decline-current"} aria-label="${myDeclined ? "불참 취소" : "불참"}">
-                        ${icon(myDeclined ? "event_available" : "person_off", "text-[16px]")}
-                        <span>${myDeclined ? "불참 취소" : "불참"}</span>
-                      </button>
-                    </div>
-                  </div>
-            </article>
-
-            ${renderMatchWeatherCard(item)}
-          </aside>
         </div>
       `;
     }
