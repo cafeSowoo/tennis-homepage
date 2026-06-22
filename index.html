@@ -5003,8 +5003,8 @@
     }
 
     function nextScheduleRsvpState(current) {
-      if (current === "pending") return "attending";
-      if (current === "attending") return "declined";
+      if (current === "pending") return "declined";
+      if (current === "declined") return "attending";
       return "pending";
     }
 
