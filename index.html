@@ -668,13 +668,20 @@
       height: 2.5rem;
       width: 2.5rem;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.72);
       color: #1d1d1f;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-      transition: transform 0.16s ease, background 0.16s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+    .schedule-photo-upload-btn .material-symbols-outlined {
+      font-size: 19px;
     }
     .schedule-photo-upload-btn:hover {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
       transform: translateY(-1px);
     }
     #memberPhotoViewer .photo-viewer-caption {
