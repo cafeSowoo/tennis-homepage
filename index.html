@@ -3255,6 +3255,21 @@
       };
     }
 
+    function supabaseRowsOrFallback(tableName, result, { required = false } = {}) {
+      if (!result.error) return result.data || [];
+
+      const error = result.error;
+      console.error(`Supabase ${tableName} load failed.`, {
+        table: tableName,
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+      if (required) throw error;
+      return [];
+    }
+
     async function loadSupabaseData() {
       const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
@@ -3266,16 +3281,21 @@
         supabaseClient.from("schedule_declines").select("*").order("created_at")
       ]);
 
-      const failed = [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult].find(result => result.error);
-      if (failed) throw failed.error;
+      const memberRows = supabaseRowsOrFallback("members", membersResult, { required: true });
+      const courtRows = supabaseRowsOrFallback("courts", courtsResult, { required: true });
+      const courtUnitRows = supabaseRowsOrFallback("court_units", courtUnitsResult, { required: true });
+      const scheduleRows = supabaseRowsOrFallback("schedules", schedulesResult, { required: true });
+      const eventRows = supabaseRowsOrFallback("events", eventsResult);
+      const discussionRows = supabaseRowsOrFallback("discussions", discussionsResult);
+      const declineRows = supabaseRowsOrFallback("schedule_declines", declinesResult);
 
-      dataStore.members = membersResult.data || [];
-      dataStore.courts = (courtsResult.data || []).map(fromSupabaseCourt);
-      dataStore.courtUnits = (courtUnitsResult.data || []).map(fromSupabaseCourtUnit);
-          dataStore.schedules = (schedulesResult.data || []).map(fromSupabaseSchedule);
-          dataStore.events = (eventsResult.data || []).map(fromSupabaseEvent);
-          dataStore.discussions = (discussionsResult.data || []).map(fromSupabaseDiscussion);
-          dataStore.scheduleDeclines = (declinesResult.data || []).map(fromSupabaseScheduleDecline);
+      dataStore.members = memberRows;
+      dataStore.courts = courtRows.map(fromSupabaseCourt);
+      dataStore.courtUnits = courtUnitRows.map(fromSupabaseCourtUnit);
+          dataStore.schedules = scheduleRows.map(fromSupabaseSchedule);
+          dataStore.events = eventRows.map(fromSupabaseEvent);
+          dataStore.discussions = discussionRows.map(fromSupabaseDiscussion);
+          dataStore.scheduleDeclines = declineRows.map(fromSupabaseScheduleDecline);
           if (!ALLOW_REMOTE_WRITES) applyClientLocalData();
           rebuildDataIndexes();
         }
@@ -8623,7 +8643,7 @@
         console.error(error);
         document.querySelector("main").innerHTML = emptyStateHTML(
           "데이터를 불러오지 못했습니다",
-          "로컬 서버가 켜져 있는지 확인한 뒤 다시 새로고침해 주세요.",
+          "잠시 후 다시 새로고침해 주세요. 문제가 계속되면 데이터 연결 상태를 확인해 주세요.",
           { showReload: true }
         );
       }
