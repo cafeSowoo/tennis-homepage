@@ -9,6 +9,21 @@ automation can be restored after accidental edits or app-side changes.
 
 ## Current Baseline
 
+- `kakao-schedule-visible-row-backspace-2026-07-10.md`
+  - Automation id: `automation-4`
+  - Exact live prompt snapshot from 2026-07-10.
+  - Uses one Backspace key press to return from detail to the schedule list.
+  - Starts from today or the first future schedule and processes visible rows
+    immediately.
+  - Excludes comments and the `discussions` table.
+  - Multi-court labels use `court_unit_id=null`.
+  - The attendee helper dynamically finds the current detail window and clicks
+    the center of the `N명 참석` text without fixed window indexes or coordinates.
+  - Live setting: `status=PAUSED`, `model=gpt-5.6-terra`,
+    `reasoning_effort=high`.
+
+## Previous Baselines
+
 - `kakao-schedule-visible-row-start-position-2026-06-08.md`
   - Automation id: `automation-4`
   - Strategy: process each currently visible KakaoTalk schedule row immediately,
@@ -24,8 +39,6 @@ automation can be restored after accidental edits or app-side changes.
     KakaoTalk board schedule tab and continue from the next fresh visible row
     snapshot when safe.
   - Successful run setting: `model=gpt-5.5`, `reasoning_effort=high`.
-
-## Previous Baselines
 
 - `kakao-schedule-visible-row-multicourt-2026-05-27.md`
   - Automation id: `automation-4`
