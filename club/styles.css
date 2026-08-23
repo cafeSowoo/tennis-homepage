@@ -125,7 +125,7 @@ button:focus-visible, a:focus-visible {
 .page-shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 64px 0 80px;
+  padding: 42px 0 72px;
 }
 
 .intro {
@@ -133,11 +133,11 @@ button:focus-visible, a:focus-visible {
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
-  margin-bottom: 34px;
+  margin-bottom: 24px;
 }
 
 .eyebrow {
-  margin: 0 0 9px;
+  margin: 0 0 6px;
   color: var(--green);
   font-size: 11px;
   font-weight: 800;
@@ -147,7 +147,7 @@ button:focus-visible, a:focus-visible {
 .intro h1 {
   max-width: 700px;
   margin: 0;
-  font-size: clamp(38px, 5vw, 64px);
+  font-size: clamp(34px, 4vw, 52px);
   font-weight: 700;
   letter-spacing: -.055em;
   line-height: 1.08;
@@ -155,10 +155,10 @@ button:focus-visible, a:focus-visible {
 
 .intro-copy {
   max-width: 620px;
-  margin: 20px 0 0;
+  margin: 12px 0 0;
   color: var(--muted);
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .sync-note {
@@ -472,7 +472,7 @@ button:focus-visible, a:focus-visible {
 .site-footer span { color: var(--faint); }
 
 @media (max-width: 860px) {
-  .page-shell { width: min(100% - 32px, 700px); padding-top: 42px; }
+  .page-shell { width: min(100% - 32px, 700px); padding-top: 30px; }
   .intro { display: block; }
   .intro .sync-note { margin-top: 22px; }
 }
@@ -533,10 +533,10 @@ button:focus-visible, a:focus-visible {
   .header-actions .sync-note #syncLabel { font-size: 0; }
   .header-actions .sync-note #syncLabel::after { content: "동기화됨"; font-size: 10px; }
   .header-actions .icon-button { width: 34px; height: 34px; }
-  .page-shell { width: calc(100% - 28px); padding: 36px 0 58px; }
-  .intro { margin-bottom: 25px; }
-  .intro h1 { font-size: 38px; }
-  .intro-copy { margin-top: 15px; font-size: 14px; }
+  .page-shell { width: calc(100% - 28px); padding: 24px 0 52px; }
+  .intro { margin-bottom: 18px; }
+  .intro h1 { font-size: 32px; }
+  .intro-copy { margin-top: 9px; font-size: 13px; }
   .intro .sync-note { width: 100%; justify-content: center; margin-top: 18px; }
   .site-footer { padding: 0 18px 34px; }
 }
