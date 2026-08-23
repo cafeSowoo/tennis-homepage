@@ -232,6 +232,7 @@
 
   function scheduleChipHtml(schedule) {
     const classes = ["schedule-chip", schedule.closed ? "chip-error" : schedule.regular ? "chip-tertiary" : "chip-secondary"];
+    if (isSoftTime(schedule.time)) classes.push("time-soft");
     if (schedule.important) classes.push("chip-important");
     const label = `${timeStartLabel(schedule.time)} · ${fullCourtLabel(schedule)}`;
     return `<span class="${classes.join(" ")}" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
@@ -241,7 +242,7 @@
     if (schedule.closed) return "dot-closed";
     if (schedule.important) return "dot-important";
     if (schedule.regular) return "dot-regular";
-    return "";
+    return isSoftTime(schedule.time) ? "dot-time-soft" : "";
   }
 
   function highlightSelectedWeekday() {
@@ -416,6 +417,11 @@
     if (match[1] === "오전" && hour === 12) hour = 0;
     if (match[1] === "오후" && hour !== 12) hour += 12;
     return hour * 60 + Number(match[3]);
+  }
+
+  function isSoftTime(time) {
+    const minutes = startMinutes(time);
+    return minutes >= 6 * 60 && minutes < 18 * 60;
   }
 
   function timeRangeLabel(time) {
