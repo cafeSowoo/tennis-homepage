@@ -5,6 +5,7 @@
   const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
   const DATE_PATTERN = /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/;
   const MALE_MEMBER_NAMES = new Set(["조형철", "김지석", "한인호", "김태환", "이상백", "민문기", "박창언", "윤준"]);
+  const PRIVATE_COURT_IDS = new Set(["court-yonsei-tennis"]);
   const state = {
     members: [],
     courts: [],
@@ -169,7 +170,7 @@
           closed: Boolean(row.closed),
           important: Boolean(row.important)
         }))
-        .filter(row => DATE_PATTERN.test(row.date || ""))
+        .filter(row => DATE_PATTERN.test(row.date || "") && !PRIVATE_COURT_IDS.has(row.courtId))
     };
   }
 
