@@ -3136,7 +3136,7 @@
         photo_position_y: Number.isFinite(Number(row.photoPositionY)) ? Number(row.photoPositionY) : 50,
         photo_zoom: Number.isFinite(Number(row.photoZoom)) ? Number(row.photoZoom) : 1,
         photo_uploaded_at: row.photoUploadedAt || null,
-        source: "supabase",
+        source: row.source === "kakao" ? "kakao" : "supabase",
         created_at: row.createdAt || new Date().toISOString()
       };
     }
