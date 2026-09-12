@@ -6,3 +6,7 @@ env.local.js
 .env.local
 .kakao-calendar-token.json
 tmp/
+
+.playwright-cli/
+output/playwright/
+supabase/.temp/
