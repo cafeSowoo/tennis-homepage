@@ -2337,6 +2337,7 @@
       <div class="mb-5 flex flex-col gap-4 md:mb-6 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 class="app-page-title">Schedule</h2>
+          <p id="kakaoSyncStatus" class="mt-2 hidden text-xs text-on-surface-variant"></p>
         </div>
         <div class="grid grid-cols-2 gap-2 md:flex md:flex-row md:flex-wrap">
           <button class="btn-primary min-w-0 justify-center px-3 py-2 text-sm md:px-4" type="button" data-add-schedule>
@@ -3277,14 +3278,15 @@
     }
 
     async function loadSupabaseData() {
-      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult] = await Promise.all([
+      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult, syncResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
         supabaseClient.from("courts").select("*").order("name"),
         supabaseClient.from("court_units").select("*").order("court_id").order("sort_order").order("label"),
         supabaseClient.from("schedules").select("*").order("date").order("time"),
         supabaseClient.from("events").select("*").order("date").order("start_time", { nullsFirst: true }),
         supabaseClient.from("discussions").select("*").order("created_at"),
-        supabaseClient.from("schedule_declines").select("*").order("created_at")
+        supabaseClient.from("schedule_declines").select("*").order("created_at"),
+        supabaseClient.from("kakao_sync_state").select("last_collected_at,schedule_count").eq("id", "kakao")
       ]);
 
       const memberRows = supabaseRowsOrFallback("members", membersResult, { required: true });
@@ -3294,6 +3296,10 @@
       const eventRows = supabaseRowsOrFallback("events", eventsResult);
       const discussionRows = supabaseRowsOrFallback("discussions", discussionsResult);
       const declineRows = supabaseRowsOrFallback("schedule_declines", declinesResult);
+      const sync = syncResult.error ? null : syncResult.data?.[0];
+      const syncLabel = document.querySelector("#kakaoSyncStatus");
+      syncLabel.textContent = sync ? `카카오 전체 확인 · ${discussionTimeLabel(sync.last_collected_at)} · ${sync.schedule_count}개 일정` : "";
+      syncLabel.classList.toggle("hidden", !sync);
 
       dataStore.members = memberRows;
       dataStore.courts = courtRows.map(fromSupabaseCourt);
@@ -5685,7 +5691,6 @@
       return `<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-outline-variant/30 pt-3 text-xs text-on-surface-variant">
         <span>개설자 ${escapeHTML(item.kakaoCreatorName || "확인 필요")}</span>
         <span>카카오 댓글 ${Number(item.kakaoCommentCount) || 0}개</span>
-        <span>마지막 동기화 ${escapeHTML(discussionTimeLabel(item.kakaoSyncedAt))}</span>
         ${kakaoSourceLink(item)}
       </div>`;
     }
@@ -5705,7 +5710,7 @@
       const snapshot = kakaoCommentSnapshots.get(String(item.id));
       const kakaoNotice = item.source === "kakao" && item.kakaoSyncedAt
         ? `<p class="mb-4 text-xs leading-relaxed text-on-surface-variant">${snapshot
-          ? `카카오 댓글은 읽기 전용입니다. 홈페이지 댓글은 카카오톡에 전송되지 않습니다. 댓글 확인 ${escapeHTML(discussionTimeLabel(snapshot.synced_at))}.${snapshot.comments_complete ? "" : " 일부 댓글만 동기화되어 이전 댓글을 함께 표시합니다."}`
+          ? `카카오 댓글은 읽기 전용입니다. 홈페이지 댓글은 카카오톡에 전송되지 않습니다.${snapshot.comments_complete ? "" : " 일부 댓글만 동기화되어 이전 댓글을 함께 표시합니다."}`
           : `카카오 댓글 ${Number(item.kakaoCommentCount) || 0}개 · 전문은 관리자 또는 열람 권한이 등록된 회원만 볼 수 있습니다. ${kakaoSourceLink(item)}`}</p>` : "";
       if (!rows.length) {
         return `
