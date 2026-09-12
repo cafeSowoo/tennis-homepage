@@ -2821,6 +2821,7 @@
     let discussions = [];
     let kakaoCommentSnapshots = new Map();
     let kakaoCommentsRequest = 0;
+    let rsvpOverrides = [];
     let scheduleDeclines = [];
     let people = [];
     let places = [];
@@ -3104,6 +3105,8 @@
         courtId: row.court_id,
         courtUnitId: row.court_unit_id || undefined,
         hostId: row.host_id || undefined,
+        absenteeIds: row.absentee_ids || [],
+        kakaoAbsenteesVerified: Array.isArray(row.kakao_absentee_ids),
         kakaoCreatorName: row.kakao_creator_name || "",
         kakaoCommentCount: row.kakao_comment_count,
         kakaoSyncedAt: row.kakao_synced_at,
@@ -3278,7 +3281,7 @@
     }
 
     async function loadSupabaseData() {
-      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult, syncResult] = await Promise.all([
+      const [membersResult, courtsResult, courtUnitsResult, schedulesResult, eventsResult, discussionsResult, declinesResult, syncResult, rsvpResult] = await Promise.all([
         supabaseClient.from("members").select("*").order("name"),
         supabaseClient.from("courts").select("*").order("name"),
         supabaseClient.from("court_units").select("*").order("court_id").order("sort_order").order("label"),
@@ -3286,7 +3289,8 @@
         supabaseClient.from("events").select("*").order("date").order("start_time", { nullsFirst: true }),
         supabaseClient.from("discussions").select("*").order("created_at"),
         supabaseClient.from("schedule_declines").select("*").order("created_at"),
-        supabaseClient.from("kakao_sync_state").select("last_collected_at,schedule_count").eq("id", "kakao")
+        supabaseClient.from("kakao_sync_state").select("last_collected_at,schedule_count").eq("id", "kakao"),
+        supabaseClient.from("schedule_rsvp_overrides").select("schedule_id,member_id,state")
       ]);
 
       const memberRows = supabaseRowsOrFallback("members", membersResult, { required: true });
@@ -3296,6 +3300,7 @@
       const eventRows = supabaseRowsOrFallback("events", eventsResult);
       const discussionRows = supabaseRowsOrFallback("discussions", discussionsResult);
       const declineRows = supabaseRowsOrFallback("schedule_declines", declinesResult);
+      rsvpOverrides = rsvpResult.error ? [] : (rsvpResult.data || []);
       const sync = syncResult.error ? null : syncResult.data?.[0];
       const syncLabel = document.querySelector("#kakaoSyncStatus");
       syncLabel.textContent = sync ? `카카오 전체 확인 · ${discussionTimeLabel(sync.last_collected_at)} · ${sync.schedule_count}개 일정` : "";
@@ -3469,7 +3474,10 @@
       courts = dataStore.courts;
       courtUnits = dataStore.courtUnits || [];
       discussions = dataStore.discussions;
-      scheduleDeclines = dataStore.scheduleDeclines || [];
+      scheduleDeclines = (dataStore.scheduleDeclines || []).filter(row => dataStore.schedules.find(s => String(s.id) === String(row.scheduleId))?.source !== "kakao");
+      for (const schedule of dataStore.schedules.filter(s => s.source === "kakao")) {
+        for (const memberId of schedule.absenteeIds || []) scheduleDeclines.push({scheduleId: schedule.id, memberId});
+      }
       const currentMemberId = myMemberId();
       declinedScheduleIds = new Set(
         scheduleDeclines
@@ -5695,6 +5703,18 @@
       </div>`;
     }
 
+    function renderAbsentees(item) {
+      const ids = item.source === "kakao" ? item.absenteeIds || [] : scheduleDeclines.filter(r => String(r.scheduleId) === String(item.id)).map(r => r.memberId);
+      const overrides = rsvpOverrides.filter(r => String(r.schedule_id) === String(item.id));
+      return `<div class="mt-4 border-t border-outline-variant/30 pt-3 text-sm">
+        <details><summary class="cursor-pointer text-on-surface-variant">참석 ${(item.attendeeIds || []).length}명 · 불참 ${ids.length}명</summary>
+          <p class="mt-2 leading-relaxed">${ids.length ? ids.map(id => escapeHTML(memberNameForId(id))).join(", ") : "불참자가 없습니다."}</p>
+        </details>
+        ${item.source === "kakao" && !item.kakaoAbsenteesVerified ? '<p class="mt-2 text-xs text-on-surface-variant">카카오 불참 명단 확인 전 · 홈페이지 선택만 표시합니다.</p>' : ""}
+        ${overrides.map(r => `<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs"><span>${escapeHTML(memberNameForId(r.member_id))} · 홈페이지 ${r.state === "attending" ? "참석" : r.state === "declined" ? "불참" : "미정"} 우선</span><button type="button" class="text-primary underline" data-follow-kakao="${escapeHTML(r.member_id)}">카카오 상태 따르기</button></div>`).join("")}
+      </div>`;
+    }
+
     function discussionsForSchedule(scheduleId) {
       const imported = (kakaoCommentSnapshots.get(String(scheduleId))?.comments || []).map(row => ({
         id: `kakao-comment-${row.id}`, scheduleId, authorName: row.author_name,
@@ -5880,6 +5900,7 @@
                     ${playerCards || ""}
                     ${emptySlots || ""}
                   </div>
+                  ${renderAbsentees(item)}
                 </div>
               </div>
             </article>
@@ -7632,6 +7653,12 @@
           .update(toSupabaseSchedule({ ...rawSchedule, ...updates }))
           .eq("id", String(scheduleId));
         if (error) throw error;
+        if (rawSchedule.source === "kakao") {
+          await loadSupabaseData();
+          state.selectedId = scheduleId;
+          refreshViews();
+          return;
+        }
       } else if (rawSchedule.source === "local") {
         saveLocalSchedules(loadLocalSchedules().map(item =>
           String(item.id) === String(scheduleId) ? { ...item, ...updates } : item
@@ -7732,6 +7759,12 @@
           .update({ attendee_ids: normalizedIds })
           .eq("id", String(scheduleId));
         if (error) throw error;
+        if (rawSchedule.source === "kakao") {
+          await loadSupabaseData();
+          state.selectedId = scheduleId;
+          refreshViews();
+          return;
+        }
       } else if (rawSchedule.source === "local") {
         const localSchedules = loadLocalSchedules().map(item =>
           String(item.id) === String(scheduleId) ? { ...item, attendeeIds: normalizedIds } : item
@@ -7876,6 +7909,15 @@
           }
         }
 
+        async function persistKakaoChoice(scheduleId, memberId, choice) {
+          requireOfficialWriteAccess();
+          const { error } = await supabaseClient.rpc("set_schedule_rsvp", {p_schedule_id: String(scheduleId), p_member_id: String(memberId), p_state: choice});
+          if (error) throw error;
+          await loadSupabaseData();
+          state.selectedId = scheduleId;
+          refreshViews();
+        }
+
         async function persistScheduleDecline(scheduleId, declined) {
           const memberId = myMemberId();
           if (!memberId) throw new Error(`${MY_NAME} 멤버 정보를 찾지 못했습니다.`);
@@ -7885,6 +7927,10 @@
 
           requireOfficialWriteAccess();
 
+          if (findScheduleById(scheduleId)?.source === "kakao") {
+            await persistKakaoChoice(scheduleId, memberId, declined ? "declined" : "pending");
+            return;
+          }
           if (declined) {
             const row = {
               scheduleId,
@@ -8221,6 +8267,11 @@
 
     document.addEventListener("click", event => {
       const closePhotoViewerButton = event.target.closest("[data-close-photo-viewer]");
+      const followKakao = event.target.closest("[data-follow-kakao]");
+      if (followKakao) {
+        persistKakaoChoice(state.selectedId, followKakao.dataset.followKakao, null).catch(error => alert(error.message));
+        return;
+      }
       if (closePhotoViewerButton) {
         closeMemberPhotoViewer();
         return;
