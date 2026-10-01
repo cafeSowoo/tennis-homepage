@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>테니스 봄 - 새 주소로 이동</title>
+  <meta http-equiv="refresh" content="0; url=https://tennisbom.com/">
+  <link rel="canonical" href="https://tennisbom.com/">
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+      background: #f5f5f7; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; text-align: center; }
+    a { color: #0a7d5a; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <p>테니스 일정 홈페이지가 새 주소로 옮겨졌어요.</p>
+    <p><a href="https://tennisbom.com/">tennisbom.com 으로 이동</a></p>
+  </main>
+  <script>
+    // Retire the old V1 service worker so cached V1 pages stop loading.
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => {
+        if (new URL(reg.scope).pathname.startsWith("/tennis-homepage/")) reg.unregister();
+      })).catch(() => {});
+    }
+    location.replace("https://tennisbom.com/" + location.search);
+  </script>
+</body>
+</html>
