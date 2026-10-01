@@ -14,13 +14,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (function () {
+      // members/schedules/discussions JSON hold personal data and are no longer published; Supabase serves them.
       const paths = [
-        "data/members.json",
         "data/courts.json",
         "data/court-units.json",
-        "data/schedules.json",
-        "data/events.json",
-        "data/discussions.json"
+        "data/events.json"
       ];
       window.__jsonPrefetch = Object.fromEntries(
         paths.map(path => [

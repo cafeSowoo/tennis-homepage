@@ -10,3 +10,9 @@ tmp/
 .playwright-cli/
 output/playwright/
 supabase/.temp/
+# Member personal data (real names, bank accounts, profile captures) stays local only;
+# this repo and its Pages site are public. Supabase is the source of truth.
+data/members.json
+data/schedules.json
+data/discussions.json
+kakao-member-photos/
